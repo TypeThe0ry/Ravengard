@@ -114,8 +114,11 @@ public final class DungeonInstanceRegistry {
                             .map(object -> new RavengardDungeonGenerator.PlacedObject(
                                     object.category(), object.type(), object.x(), object.y(), object.z(), object.yaw()))
                             .toList();
+            List<net.minestom.server.coordinate.Pos> spawnPoints = mode.equals("ADMIN")
+                    ? RavengardDungeonGenerator.spawnPoints(generated, officialObjects)
+                    : RavengardDungeonGame.SPAWN_POINTS;
             this.game = new RavengardDungeonGame(shared, TypeRavengardDungeonLoader.getGame().getConfig(),
-                    RavengardDungeonGenerator.spawnPoints(generated, officialObjects), extractions);
+                    spawnPoints, extractions);
             double[] bounds = bounds(generated);
             this.game.configureDeathWall(bounds[0], bounds[1], bounds[2]);
         }
