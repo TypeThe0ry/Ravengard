@@ -120,6 +120,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             player.setDungeonDead(false);
             RavengardRunState.begin(player.getUuid(), getGameId());
             Pos spawn = spawnPoints.get(playerIndex % spawnPoints.size());
+            player.setRespawnPoint(spawn);
             if (player.getInstance() == instance) {
                 player.teleport(spawn).whenComplete((ignored, error) -> {
                     if (error != null) {
@@ -224,6 +225,19 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
                 && RavengardRunState.isActive(player.getUuid(), getGameId());
     }
 
+    public boolean isParticipant(java.util.UUID playerUuid) {
+        return players.containsKey(playerUuid);
+    }
+
+    public boolean restoreRun(RavengardDungeonPlayer player) {
+        if (state != GameState.IN_PROGRESS || !players.containsKey(player.getUuid())
+                || player.isDungeonDead() || RavengardRunState.isActive(player.getUuid())) {
+            return false;
+        }
+        RavengardRunState.begin(player.getUuid(), getGameId());
+        return true;
+    }
+
     public void forfeitRun(RavengardDungeonPlayer player) {
         if (!RavengardRunState.isActive(player.getUuid(), getGameId())) return;
         if (startedAtNanos != 0) stripToKit(player);
@@ -240,7 +254,9 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         RavengardRunState.abort(player.getUuid());
         if (state == GameState.IN_PROGRESS) {
             int team = player.getDungeonTeam();
-            if (!removePlayerFromDungeon(player)) return;
+            boolean participant = players.containsKey(player.getUuid());
+            removePlayerFromDungeon(player);
+            if (!participant) return;
             if (alivePlayers(team).isEmpty()) routeTeamToLobby(team);
             else retargetSpectators(team);
         } else {
@@ -316,9 +332,8 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             for (RavengardDungeonPlayer player : unready) {
                 org.tinylog.Logger.warn("Dropping {} from Ravengard dungeon {}: never finished loading in",
                         player.getUsername(), getGameId());
-                forfeitRun(player);
-                removePlayerFromDungeon(player);
             }
+            routePlayersToLobby(unready);
             if (players.isEmpty()) {
                 end();
                 return false;
@@ -552,6 +567,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         if (ambienceTask != null) ambienceTask.cancel();
         resetDeathWall();
         for (RavengardDungeonPlayer player : players.values().stream().toList()) {
+            forfeitRun(player);
             removePlayerFromDungeon(player);
         }
         super.dispose();

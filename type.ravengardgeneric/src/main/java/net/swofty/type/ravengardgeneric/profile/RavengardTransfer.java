@@ -16,6 +16,18 @@ public final class RavengardTransfer {
     }
 
     public static void install(Consumer<RavengardPlayer> beforeLeave) {
+        install(beforeLeave, player -> {});
+    }
+
+    public static void install(Consumer<RavengardPlayer> beforeLeave, Consumer<RavengardPlayer> afterFailure) {
+        var failure = ProxyPlayer.getTransferFailure();
+        ProxyPlayer.setTransferFailure(playerUuid -> {
+            failure.accept(playerUuid);
+            if (MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(playerUuid)
+                    instanceof RavengardPlayer player) {
+                afterFailure.accept(player);
+            }
+        });
         var preparation = ProxyPlayer.getTransferPreparation();
         ProxyPlayer.setTransferPreparation((playerUuid, targetServer) -> {
             if (MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(playerUuid)

@@ -80,7 +80,7 @@ public final class DungeonInstanceRegistry {
         }
 
         public boolean isExpired() {
-            return players.isEmpty() && emptySince > 0
+            return ready.isDone() && players.isEmpty() && emptySince > 0
                     && System.currentTimeMillis() - emptySince > EMPTY_LIFETIME_MILLIS;
         }
 
@@ -1858,16 +1858,26 @@ public final class DungeonInstanceRegistry {
 
     public static boolean disconnectPlayer(RavengardDungeonPlayer player) {
         PENDING_TELEPORTS.remove(player.getUuid());
+        boolean handled = false;
         for (DungeonInstance instance : INSTANCES.values()) {
-            if (instance.getPlayers().remove(player.getUuid())) {
-                instance.getGame().disconnect(player);
-                if (instance.getPlayers().isEmpty()) {
-                    instance.emptySince = System.currentTimeMillis();
-                }
-                return true;
+            boolean member = instance.getPlayers().remove(player.getUuid());
+            if (!member && !instance.getGame().isParticipant(player.getUuid())) continue;
+            instance.getGame().disconnect(player);
+            if (instance.getPlayers().isEmpty()) {
+                instance.emptySince = System.currentTimeMillis();
+            }
+            handled = true;
+        }
+        return handled;
+    }
+
+    public static void restoreRun(RavengardDungeonPlayer player) {
+        for (DungeonInstance instance : INSTANCES.values()) {
+            if (instance.getGame().restoreRun(player)) {
+                player.sendMessage("<e>Your run continues.");
+                return;
             }
         }
-        return false;
     }
 
     public static boolean markPlayerLeft(UUID playerUuid) {
@@ -1977,7 +1987,12 @@ public final class DungeonInstanceRegistry {
                 player.getUsername(), instance.getGameId());
         if (player instanceof HypixelPlayer hypixelPlayer) {
             hypixelPlayer.sendMessage("<e>This dungeon expired and is being cleaned up.");
-            hypixelPlayer.sendTo(net.swofty.commons.ServerType.RAVENGARD_LOBBY);
+            hypixelPlayer.asProxyPlayer()
+                    .transferToWithIndication(net.swofty.commons.ServerType.RAVENGARD_LOBBY)
+                    .exceptionally(error -> {
+                        instance.retirementRoutes.remove(player.getUuid());
+                        return null;
+                    });
         }
     }
 

@@ -186,6 +186,10 @@ public record ProxyPlayer(UUID uuid) {
         transferPreparation = preparation;
     }
 
+    public static Consumer<UUID> getTransferFailure() {
+        return transferFailure;
+    }
+
     public static void setTransferFailure(Consumer<UUID> failure) {
         transferFailure = failure == null ? player -> {} : failure;
     }

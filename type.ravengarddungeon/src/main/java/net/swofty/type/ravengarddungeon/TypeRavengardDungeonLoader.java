@@ -78,8 +78,10 @@ public class TypeRavengardDungeonLoader implements RavengardTypeLoader {
         net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry.startExpiryTask();
         net.swofty.type.ravengarddungeon.game.DungeonTabMap.register();
         net.swofty.type.ravengarddungeon.interactables.InteractableRegistry.startTask();
-        net.swofty.type.ravengardgeneric.profile.RavengardTransfer.install(player ->
-                net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry.forfeitRun(
+        net.swofty.type.ravengardgeneric.profile.RavengardTransfer.install(
+                player -> net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry.forfeitRun(
+                        (net.swofty.type.ravengarddungeon.user.RavengardDungeonPlayer) player),
+                player -> net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry.restoreRun(
                         (net.swofty.type.ravengarddungeon.user.RavengardDungeonPlayer) player));
         net.swofty.type.ravengarddungeon.interactables.InteractableRegistry.setAccessGate(
                 net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry::canInteract);

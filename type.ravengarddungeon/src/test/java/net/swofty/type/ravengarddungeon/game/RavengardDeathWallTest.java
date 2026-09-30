@@ -16,6 +16,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RavengardDeathWallTest {
@@ -115,21 +116,50 @@ class RavengardDeathWallTest {
         loaded.setInstance(instance, new net.minestom.server.coordinate.Pos(0, 66, 0)).join();
         var stuck = new net.swofty.type.ravengarddungeon.user.RavengardDungeonPlayer(
                 new DummyConnection(), new GameProfile(UUID.randomUUID(), "ready-stuck"));
+        stuck.setInstance(instance, new net.minestom.server.coordinate.Pos(0, 66, 0)).join();
+        stuck.setGameId(game.getGameId());
+        stuck.setDungeonTeam(0);
         members.put(loaded.getUuid(), loaded);
         members.put(stuck.getUuid(), stuck);
 
-        for (int tick = 0; tick < RavengardDungeonGame.READY_GRACE_TICKS; tick++) game.tickGameForTest();
-        assertEquals(0, startedAt.getLong(game));
-        game.tickGameForTest();
+        var previousLoader = net.swofty.type.generic.HypixelConst.getTypeLoader();
+        net.swofty.type.generic.HypixelConst.setTypeLoader(new LobbyStub());
+        try {
+            for (int tick = 0; tick < RavengardDungeonGame.READY_GRACE_TICKS; tick++) game.tickGameForTest();
+            assertEquals(0, startedAt.getLong(game));
+            game.tickGameForTest();
+        } finally {
+            net.swofty.type.generic.HypixelConst.setTypeLoader(previousLoader);
+        }
 
         assertTrue(startedAt.getLong(game) != 0);
         assertFalse(members.containsKey(stuck.getUuid()));
         assertTrue(members.containsKey(loaded.getUuid()));
+        assertNull(stuck.getGameId());
+        assertEquals(-1, stuck.getDungeonTeam());
 
         members.clear();
         loaded.remove();
+        stuck.remove();
         game.dispose();
         net.minestom.server.MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    /** Routing to the lobby on the lobby's own type resolves to a local teleport, which keeps the proxy out of the test. */
+    private static final class LobbyStub implements net.swofty.type.generic.HypixelTypeLoader {
+        @Override public net.swofty.commons.ServerType getType() { return net.swofty.commons.ServerType.RAVENGARD_LOBBY; }
+        @Override public void onInitialize(net.minestom.server.MinecraftServer server) { }
+        @Override public void afterInitialize(net.minestom.server.MinecraftServer server) { }
+        @Override public List<net.swofty.commons.ServiceType> getRequiredServices() { return List.of(); }
+        @Override public net.swofty.type.generic.tab.TablistManager getTablistManager() { return null; }
+        @Override public LoaderValues getLoaderValues() {
+            return new LoaderValues(new net.minestom.server.coordinate.Pos(0, 66, 0), false);
+        }
+        @Override public List<net.swofty.type.generic.event.HypixelEventClass> getTraditionalEvents() { return List.of(); }
+        @Override public List<net.swofty.type.generic.event.HypixelEventClass> getCustomEvents() { return List.of(); }
+        @Override public List<net.swofty.type.generic.entity.npc.HypixelNPC> getNPCs() { return List.of(); }
+        @Override public List<net.swofty.commons.redis.RedisMessageHandler<?, ?>> getProxyHandlers() { return List.of(); }
+        @Override public net.swofty.commons.CustomWorlds getMainInstance() { return null; }
     }
 
     @Test
