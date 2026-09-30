@@ -167,9 +167,20 @@ public final class PlayerDataService {
         ReentrantLock lock = lifecycleLock(uuid);
         lock.lock();
         try {
+            List<PlayerDataDomain<?>> domains = active(type);
+            if (isSupersededSession(player)) {
+                Logger.warn("Skipping save/unload for a superseded session of {}", uuid);
+                for (PlayerDataDomain<?> domain : domains) {
+                    try {
+                        domain.cleanup(player);
+                    } catch (Exception e) {
+                        Logger.error(e, "Failed to clean up domain {} for user {}", domain.key().id(), uuid);
+                    }
+                }
+                return;
+            }
             boolean discarded = consumeDiscard(uuid);
             boolean handedOff = consumeHandoff(uuid);
-            List<PlayerDataDomain<?>> domains = active(type);
 
             DataWriteQueue.drain(uuid);
             if (!handedOff && !discarded) {
@@ -183,13 +194,24 @@ public final class PlayerDataService {
             }
 
             for (PlayerDataDomain<?> domain : domains) {
-                domain.cleanup(player);
-                domain.unload(uuid);
+                try {
+                    domain.cleanup(player);
+                    domain.unload(uuid);
+                } catch (Exception e) {
+                    Logger.error(e, "Failed to unload domain {} for user {}", domain.key().id(), uuid);
+                }
             }
         } finally {
-            DataWriteQueue.remove(uuid);
+            if (!isSupersededSession(player)) DataWriteQueue.remove(uuid);
             lock.unlock();
         }
+    }
+
+    /** A player object whose UUID is already served by a newer connection on this server. */
+    static boolean isSupersededSession(HypixelPlayer player) {
+        var current = net.minestom.server.MinecraftServer.getConnectionManager()
+                .getOnlinePlayerByUuid(player.getUuid());
+        return current != null && current != player;
     }
 
     public static void saveAll(ServerType type, HypixelPlayer player) {

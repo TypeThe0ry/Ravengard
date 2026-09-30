@@ -165,20 +165,28 @@ public final class RavengardProfiles {
         saveActive(player, shouldPersistInventory(player.getUuid()));
     }
 
-    public static void saveActive(RavengardPlayer player, boolean persistInventory) {
+    public static boolean saveActive(RavengardPlayer player, boolean persistInventory) {
+        if (PlayerDataService.isSaveSuppressed(player.getUuid())) return false;
         RavengardDataHandler handler = player.getRavengardDataHandler();
         UUID profileId = handler == null ? null : handler.getCurrentProfileId();
         if (profileId == null || !player.getUuid().equals(RavengardProfileStorage.owner(profileId))) {
             SESSION_STARTED.remove(player.getUuid());
-            return;
+            return false;
         }
 
         handler.saveBackedData();
-        RavengardProfileStorage.addPlaytime(profileId, endSession(player));
+        Long started = SESSION_STARTED.get(player.getUuid());
+        try {
+            RavengardProfileStorage.addPlaytime(profileId, endSession(player));
+        } catch (RuntimeException exception) {
+            if (started != null) SESSION_STARTED.putIfAbsent(player.getUuid(), started);
+            throw exception;
+        }
         if (persistInventory) {
             RavengardProfileStorage.writeInventory(profileId, snapshotInventory(player));
         }
         beginSession(player);
+        return true;
     }
 
     public static void endSessionAndSave(RavengardPlayer player) {
@@ -197,8 +205,7 @@ public final class RavengardProfiles {
                 || !isInventoryLoaded(player.getUuid())) {
             return false;
         }
-        saveActive(player, true);
-        return true;
+        return saveActive(player, true);
     }
 
     static boolean shouldPersistInventory(UUID playerUuid) {

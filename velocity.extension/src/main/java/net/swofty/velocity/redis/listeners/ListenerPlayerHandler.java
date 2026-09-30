@@ -31,6 +31,7 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
         PlayerHandlerProtocol.Response> {
 
     private static final PlayerHandlerProtocol.Response EMPTY = new PlayerHandlerProtocol.Response(Map.of(), true, null);
+    private static final long TRANSFER_TIMEOUT_SECONDS = 15;
 
     @Override
     public RedisProtocol<PlayerHandlerProtocol.Request, PlayerHandlerProtocol.Response> protocol() {
@@ -130,8 +131,16 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
                 }
 
                 transferHandler.addToDisregard();
-                transferHandler.transferTo(serverInfo.registeredServer())
-                    .thenRun(transferHandler::removeFromDisregard);
+                try {
+                    transferHandler.transferTo(serverInfo.registeredServer())
+                        .get(TRANSFER_TIMEOUT_SECONDS, java.util.concurrent.TimeUnit.SECONDS);
+                } catch (Exception exception) {
+                    Throwable cause = exception.getCause() != null ? exception.getCause() : exception;
+                    return new PlayerHandlerProtocol.Response(Map.of(), false,
+                        "Transfer failed: " + cause.getMessage());
+                } finally {
+                    transferHandler.removeFromDisregard();
+                }
                 return new PlayerHandlerProtocol.Response(Map.of(), true, null);
             }
             case TRANSFER -> {

@@ -111,10 +111,15 @@ public class RavengardDataHandler extends DataHandler {
 
         UUID previous = this.currentProfileId;
         this.currentProfileId = profileId;
-        if (profileId != null) SwoftyData.profile().load(profileId);
-
-        resetToDefaults();
-        loadBackedData();
+        try {
+            if (profileId != null) SwoftyData.profile().load(profileId);
+            resetToDefaults();
+            loadBackedData();
+        } catch (RuntimeException exception) {
+            this.currentProfileId = null;
+            resetToDefaults();
+            throw exception;
+        }
 
         if (previous != null && !previous.equals(profileId)) RavengardProfileStorage.release(previous);
     }

@@ -204,6 +204,7 @@ services:
     image: game_server_prepared
     container_name: ravengard_lobby
     restart: "unless-stopped"
+    stop_grace_period: 60s
     environment:
       <<: *forwarding_env
       SERVICE_CMD: java -jar HypixelCore.jar RAVENGARD_LOBBY
@@ -221,6 +222,7 @@ services:
     image: game_server_prepared
     container_name: ravengard_dungeon
     restart: "unless-stopped"
+    stop_grace_period: 60s
     environment:
       <<: *forwarding_env
       SERVICE_CMD: java -jar HypixelCore.jar RAVENGARD_DUNGEON

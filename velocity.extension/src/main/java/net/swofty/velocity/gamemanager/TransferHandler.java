@@ -240,8 +240,17 @@ public record TransferHandler(Player player) {
 									player.getUniqueId().toString(), originServerType.name()));
 				}
 
-				player.createConnectionRequest(toTransferTo).connectWithIndication();
-				future.complete(null);
+				player.createConnectionRequest(toTransferTo).connectWithIndication()
+						.whenComplete((connected, error) -> {
+							if (error != null) {
+								future.completeExceptionally(error);
+							} else if (!Boolean.TRUE.equals(connected)) {
+								future.completeExceptionally(new IllegalStateException(
+										"Could not connect to " + toTransferTo.getServerInfo().getName()));
+							} else {
+								future.complete(null);
+							}
+						});
 			} catch (Exception e) {
 				future.completeExceptionally(e);
 			}
