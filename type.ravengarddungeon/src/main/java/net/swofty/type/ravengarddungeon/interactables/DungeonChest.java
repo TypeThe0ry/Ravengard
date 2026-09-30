@@ -242,14 +242,14 @@ public final class DungeonChest extends DungeonInteractable {
         double distance = Math.hypot(base.x(), base.z());
         double tierBonus = tier.equals("gold") ? 200 : tier.equals("silver") ? 100 : 0;
         int rolls = 2 + random.nextInt(2) + (tier.equals("normal") ? 0 : 1);
-        for (int roll = 0; roll < rolls; roll++) {
-            inventory.setItemStack(LOOT_SLOTS[random.nextInt(LOOT_SLOTS.length)],
-                    DungeonLoot.roll(random, distance + tierBonus));
+        for (int slot : DungeonLoot.slots(random, LOOT_SLOTS, rolls)) {
+            inventory.setItemStack(slot, DungeonLoot.roll(random, distance + tierBonus));
         }
         InteractableRegistry.watchClose(inventory, this, closer -> explode());
         MinecraftServer.getSchedulerManager().buildTask(() -> {
                     if (removed) return;
-                    if (!player.isOnline() || player.getInstance() != instance) {
+                    if (!player.isOnline() || player.getInstance() != instance
+                            || !InteractableRegistry.canAccess(player)) {
                         explode();
                         return;
                     }

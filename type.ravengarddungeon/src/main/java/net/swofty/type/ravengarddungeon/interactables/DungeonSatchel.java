@@ -110,9 +110,8 @@ public final class DungeonSatchel extends DungeonInteractable {
         Random random = ThreadLocalRandom.current();
         double distance = Math.hypot(base.x(), base.z());
         int rolls = 1 + random.nextInt(3);
-        for (int roll = 0; roll < rolls; roll++) {
-            inventory.setItemStack(LOOT_SLOTS[random.nextInt(LOOT_SLOTS.length)],
-                    DungeonLoot.roll(random, distance));
+        for (int slot : DungeonLoot.slots(random, LOOT_SLOTS, rolls)) {
+            inventory.setItemStack(slot, DungeonLoot.roll(random, distance));
         }
         InteractableRegistry.watchClose(inventory, this, closer -> {
             instance.sendGroupedPacket(new ParticlePacket(Particle.POOF,

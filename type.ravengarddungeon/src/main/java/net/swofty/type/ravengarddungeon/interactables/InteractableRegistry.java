@@ -29,6 +29,10 @@ public final class InteractableRegistry {
     static final int UNVIEWED_CLOSE_TICKS = 40;
     private static volatile java.util.function.Predicate<Player> accessGate = player -> true;
 
+    static boolean canAccess(Player player) {
+        return accessGate.test(player);
+    }
+
     public static void setAccessGate(java.util.function.Predicate<Player> gate) {
         accessGate = gate;
     }

@@ -12,6 +12,18 @@ public final class DungeonLoot {
     private DungeonLoot() {
     }
 
+    public static int[] slots(Random random, int[] candidates, int count) {
+        int[] pool = candidates.clone();
+        int taken = Math.min(count, pool.length);
+        for (int index = 0; index < taken; index++) {
+            int pick = index + random.nextInt(pool.length - index);
+            int swap = pool[index];
+            pool[index] = pool[pick];
+            pool[pick] = swap;
+        }
+        return java.util.Arrays.copyOf(pool, taken);
+    }
+
     public static ItemStack roll(Random random, double distanceFromCenter) {
         List<RavengardItemType> pool = RavengardItemRegistry.all().stream()
                 .filter(type -> !type.getId().endsWith("_SLOT"))
