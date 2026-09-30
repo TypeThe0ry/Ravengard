@@ -208,6 +208,7 @@ public final class InteractableRegistry {
         if (current != null && current.target() == interactable) return;
         if (interactable instanceof DungeonDoor door
                 && !tryDoorClickEdge(player.getUuid(), door, player.getPosition())) return;
+        if (current != null) current.target().channelCancelled(player);
         CHANNELS.put(player.getUuid(), new Channel(interactable, 0f));
         bar(player, interactable, 0f);
         interactable.channelStarted(player);
@@ -305,6 +306,8 @@ public final class InteractableRegistry {
                 if (player != null) {
                     hideBar(player);
                     channel.target().channelCancelled(player);
+                } else {
+                    channel.target().channelAbandoned(entry.getKey());
                 }
                 continue;
             }

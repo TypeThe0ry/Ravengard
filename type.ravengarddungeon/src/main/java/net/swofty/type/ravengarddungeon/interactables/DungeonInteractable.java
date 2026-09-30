@@ -73,6 +73,10 @@ public abstract class DungeonInteractable {
     public void channelCancelled(Player player) {
     }
 
+    /** The channeling player is gone before the cancel could reach them. */
+    public void channelAbandoned(java.util.UUID playerUuid) {
+    }
+
     public void channelRejected(Player player) {
     }
 

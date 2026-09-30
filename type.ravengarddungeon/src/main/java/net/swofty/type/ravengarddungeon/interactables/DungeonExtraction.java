@@ -143,9 +143,14 @@ public final class DungeonExtraction extends DungeonInteractable {
         }
     }
 
-    private void stopChanneling(Player player) {
-        channelers.remove(player.getUuid());
+    @Override
+    public void channelAbandoned(java.util.UUID playerUuid) {
+        channelers.remove(playerUuid);
         if (channelers.isEmpty()) stopAnimation();
+    }
+
+    private void stopChanneling(Player player) {
+        channelAbandoned(player.getUuid());
     }
 
     private void stopAnimation() {

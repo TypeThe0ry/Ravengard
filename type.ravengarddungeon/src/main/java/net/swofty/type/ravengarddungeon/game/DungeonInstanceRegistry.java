@@ -698,6 +698,8 @@ public final class DungeonInstanceRegistry {
         private final List<Integer> opening;
         private final Set<Integer> activated = ConcurrentHashMap.newKeySet();
         private final Set<Integer> retryable = new java.util.LinkedHashSet<>();
+        private final Map<Integer, Integer> spawnFailures = new java.util.HashMap<>();
+        private static final int MAX_SPAWN_ATTEMPTS = 3;
         private final Map<UUID, net.minestom.server.coordinate.Pos> lastObservedPositions = new java.util.HashMap<>();
         private final Map<UUID, Double> activationMovement = new java.util.HashMap<>();
         private int spawned;
@@ -760,7 +762,14 @@ public final class DungeonInstanceRegistry {
                     spawned++;
                     spawnedPlans.add(plan);
                 } else if (!activated.contains(index)) {
-                    retryable.add(index);
+                    int failures = spawnFailures.merge(index, 1, Integer::sum);
+                    if (failures >= MAX_SPAWN_ATTEMPTS) {
+                        activated.add(index);
+                        org.tinylog.Logger.warn("Giving up on Ravengard encounter plan {} after {} failed spawns",
+                                index, failures);
+                    } else {
+                        retryable.add(index);
+                    }
                 }
             }
             if (!selected.isEmpty()) {

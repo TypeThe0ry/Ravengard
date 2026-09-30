@@ -36,7 +36,7 @@ public final class DungeonSatchel extends DungeonInteractable {
     }
 
     public static DungeonSatchel spawn(Instance instance, Pos position) {
-        Pos base = position.withY(groundY(instance, position) + 0.5)
+        Pos base = groundedAt(instance, position).add(0, 0.5, 0)
                 .withPitch(0f).withYaw(0f);
         DungeonSatchel satchel = new DungeonSatchel(instance, base);
         instance.sendGroupedPacket(new ParticlePacket(Particle.CAMPFIRE_COSY_SMOKE,
@@ -70,6 +70,41 @@ public final class DungeonSatchel extends DungeonInteractable {
                 }).delay(TaskSchedule.tick(delay)).schedule();
             }
         }
+    }
+
+    private static final int GROUND_SEARCH_RADIUS = 2;
+
+    static Pos groundedAt(Instance instance, Pos position) {
+        int originX = (int) Math.floor(position.x()), originZ = (int) Math.floor(position.z());
+        for (int radius = 0; radius <= GROUND_SEARCH_RADIUS; radius++) {
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != radius) continue;
+                    Integer feetY = standableY(instance, originX + dx, originZ + dz, position.y());
+                    if (feetY == null) continue;
+                    return radius == 0
+                            ? position.withY(feetY)
+                            : new Pos(originX + dx + 0.5, feetY, originZ + dz + 0.5);
+                }
+            }
+        }
+        return position.withY(groundY(instance, position));
+    }
+
+    private static Integer standableY(Instance instance, int x, int z, double referenceY) {
+        int top = (int) Math.floor(referenceY) + 1;
+        try {
+            for (int y = top; y >= top - 9; y--) {
+                if (!instance.getBlock(x, y, z).isSolid()) continue;
+                if (!instance.getBlock(x, y + 1, z).isSolid() && !instance.getBlock(x, y + 2, z).isSolid()) {
+                    return y + 1;
+                }
+                return null;
+            }
+        } catch (Exception exception) {
+            return null;
+        }
+        return null;
     }
 
     private static double groundY(Instance instance, Pos position) {

@@ -193,7 +193,8 @@ public final class RavengardProfiles {
     public static boolean secureExtraction(RavengardPlayer player) {
         RavengardDataHandler handler = player.getRavengardDataHandler();
         UUID profileId = handler == null ? null : handler.getCurrentProfileId();
-        if (profileId == null || !player.getUuid().equals(RavengardProfileStorage.owner(profileId))) {
+        if (profileId == null || !player.getUuid().equals(RavengardProfileStorage.owner(profileId))
+                || !isInventoryLoaded(player.getUuid())) {
             return false;
         }
         saveActive(player, true);
