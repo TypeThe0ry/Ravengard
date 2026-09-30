@@ -34,6 +34,11 @@ public final class Text implements ComponentLike {
     private static final Text EMPTY = new Text(Component.empty());
 
     private static volatile Predicate<String> translationKeyLookup = _ -> false;
+    private static volatile java.util.function.UnaryOperator<String> markupLocalizer = MarkupLocalization.identity();
+
+    public static void markupLocalizer(java.util.function.UnaryOperator<String> localizer) {
+        markupLocalizer = localizer == null ? MarkupLocalization.identity() : localizer;
+    }
 
     private final Object[] arguments;
     private final TextNode node;
@@ -53,6 +58,7 @@ public final class Text implements ComponentLike {
 
     public static Text of(String markup, Object... arguments) {
         Objects.requireNonNull(markup, "markup");
+        markup = markupLocalizer.apply(markup);
         TextParser.Compiled compiled = TextParser.compile(markup, false);
         Object[] copy = arguments == null || arguments.length == 0 ? NO_ARGUMENTS : arguments.clone();
         if (copy.length < compiled.argumentCount()) {

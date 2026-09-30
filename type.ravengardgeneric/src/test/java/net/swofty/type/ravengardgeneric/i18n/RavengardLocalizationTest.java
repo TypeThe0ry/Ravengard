@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RavengardLocalizationTest {
     private static RavengardLocalization.Catalog catalog() {
@@ -23,6 +24,7 @@ class RavengardLocalizationTest {
                 "欢迎来到 <5>渡鸦港<f>！很高兴见到新的冒险者。");
         catalog.put("Fight", "战斗");
         catalog.put("<7>Cooldown: <e>{}", "<7>冷却：<e>{}");
+        catalog.put("<#f0f05c>Press {} to use!", "<#f0f05c>按 {} 使用！");
         return catalog;
     }
 
@@ -101,6 +103,24 @@ class RavengardLocalizationTest {
         Component lore = Text.of("<7>Cooldown: <e>{}", "1m 40s").asComponent();
 
         assertEquals("冷却：1m 40s", RavengardLocalization.flatten(translate(catalog, lore)));
+    }
+
+    @Test
+    void keybindArgumentsSurviveTemplateTranslation() {
+        RavengardLocalization.Catalog catalog = catalog();
+        Component hint = Text.of("<#f0f05c>Press {} to use!", Component.keybind("key.swapOffhand")).asComponent();
+
+        Component translated = translate(catalog, hint);
+
+        String flat = RavengardLocalization.flatten(translated);
+        assertTrue(flat.startsWith("按 ") && flat.endsWith(" 使用！"), flat);
+        assertEquals(1, countKeybinds(translated));
+    }
+
+    private static int countKeybinds(Component component) {
+        int count = component instanceof net.kyori.adventure.text.KeybindComponent ? 1 : 0;
+        for (Component child : component.children()) count += countKeybinds(child);
+        return count;
     }
 
     private static Component translate(RavengardLocalization.Catalog catalog, Component component) {

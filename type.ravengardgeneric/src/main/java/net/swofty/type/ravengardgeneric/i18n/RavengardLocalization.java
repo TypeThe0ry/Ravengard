@@ -114,21 +114,8 @@ public final class RavengardLocalization {
         return current.exact.get(normalize(plain(english)));
     }
 
-    /** Wrapping and line joins move whitespace around; matching ignores that. */
     static String normalize(String text) {
-        StringBuilder builder = new StringBuilder(text.length());
-        boolean space = false;
-        for (int index = 0; index < text.length(); index++) {
-            char current = text.charAt(index);
-            if (Character.isWhitespace(current)) {
-                space = true;
-                continue;
-            }
-            if (space && !builder.isEmpty()) builder.append(' ');
-            space = false;
-            builder.append(current);
-        }
-        return builder.toString();
+        return net.swofty.commons.text.MarkupLocalization.normalize(text);
     }
 
     public static Component translate(Component component) {
@@ -152,9 +139,10 @@ public final class RavengardLocalization {
         Key font = component.style().font() != null ? component.style().font() : inheritedFont;
         // the rune font is used on purpose for text that must stay unreadable
         if (ILLAGERALT.equals(font)) return component;
-        String flat = normalize(flatten(component));
+        List<Component> tokens = new ArrayList<>();
+        String flat = normalize(flatten(component, tokens));
         if (hasLetters(flat)) {
-            Component whole = current.render(flat);
+            Component whole = current.render(flat, tokens);
             if (whole != null) return finish(whole, component, font);
         }
         Component result = component;
@@ -203,14 +191,32 @@ public final class RavengardLocalization {
     }
 
     static String flatten(Component component) {
+        return flatten(component, new ArrayList<>());
+    }
+
+    /** Leaves that are not plain text (keybinds, translatables) become private-use tokens so a template can capture them whole. */
+    static String flatten(Component component, List<Component> tokens) {
         StringBuilder builder = new StringBuilder();
-        flatten(component, builder);
+        flatten(component, builder, tokens);
         return builder.toString();
     }
 
-    private static void flatten(Component component, StringBuilder builder) {
-        if (component instanceof TextComponent text) builder.append(text.content());
-        for (Component child : component.children()) flatten(child, builder);
+    private static final char TOKEN_BASE = '';
+
+    private static void flatten(Component component, StringBuilder builder, List<Component> tokens) {
+        if (component instanceof TextComponent text) {
+            builder.append(text.content());
+        } else if (tokens.size() < 16) {
+            tokens.add(component.children(List.of()));
+            builder.append((char) (TOKEN_BASE + tokens.size() - 1));
+        }
+        for (Component child : component.children()) flatten(child, builder, tokens);
+    }
+
+    static @Nullable Component token(String captured, List<Component> tokens) {
+        if (captured.length() != 1) return null;
+        int index = captured.charAt(0) - TOKEN_BASE;
+        return index >= 0 && index < tokens.size() ? tokens.get(index) : null;
     }
 
     private static boolean hasLetters(String text) {
@@ -220,37 +226,8 @@ public final class RavengardLocalization {
         return false;
     }
 
-    /** English markup or plain text, reduced to what the client would show. */
     static String plain(String markup) {
-        StringBuilder builder = new StringBuilder(markup.length());
-        for (int index = 0; index < markup.length(); index++) {
-            char current = markup.charAt(index);
-            if (current == '\\' && index + 1 < markup.length()) {
-                builder.append(markup.charAt(++index));
-            } else if (current == '<') {
-                int close = closingTag(markup, index);
-                if (close < 0) {
-                    builder.append(current);
-                } else {
-                    index = close;
-                }
-            } else if (current == '§' && index + 1 < markup.length()) {
-                index++;
-            } else {
-                builder.append(current);
-            }
-        }
-        return builder.toString();
-    }
-
-    private static int closingTag(String markup, int open) {
-        boolean quoted = false;
-        for (int index = open + 1; index < markup.length(); index++) {
-            char current = markup.charAt(index);
-            if (current == '\'') quoted = !quoted;
-            else if (current == '>' && !quoted) return index;
-        }
-        return -1;
+        return net.swofty.commons.text.MarkupLocalization.plain(markup);
     }
 
     public static final class Catalog {
@@ -321,6 +298,10 @@ public final class RavengardLocalization {
         }
 
         @Nullable Component render(String flat) {
+            return render(flat, List.of());
+        }
+
+        @Nullable Component render(String flat, List<Component> tokens) {
             String direct = exact.get(flat);
             if (direct != null) return TextParser.parseLenient(direct);
             for (Template template : templates) {
@@ -330,8 +311,9 @@ public final class RavengardLocalization {
                 Object[] arguments = new Object[template.arguments()];
                 for (int index = 0; index < arguments.length; index++) {
                     String captured = matcher.group(index + 1).trim();
-                    Component nested = hasLetters(captured) ? render(captured) : null;
-                    arguments[index] = nested != null ? nested : captured;
+                    Component token = token(captured, tokens);
+                    Component nested = token == null && hasLetters(captured) ? render(captured, tokens) : null;
+                    arguments[index] = token != null ? token : nested != null ? nested : captured;
                 }
                 return TextParser.parseLenient(template.translated(), arguments);
             }

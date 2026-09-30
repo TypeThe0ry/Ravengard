@@ -22,3 +22,9 @@ services:
   pack_server:
     volumes:
       - ./localization/zh_CN/resourcepack:/app/configuration/resourcepacks/ravengard-zh_CN:ro
+  proxy:
+    environment:
+      RAVENGARD_LOCALE: zh_CN
+      RAVENGARD_LOCALE_DIR: /app/localization
+    volumes:
+      - ./localization/zh_CN:/app/localization:ro

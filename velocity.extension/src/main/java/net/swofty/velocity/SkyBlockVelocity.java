@@ -137,6 +137,7 @@ public class SkyBlockVelocity {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
+        net.swofty.commons.text.MarkupLocalization.installFromEnvironment();
         server = proxy;
         supportCrossVersion = ConfigProvider.settings().getIntegrations().isViaVersion();
 

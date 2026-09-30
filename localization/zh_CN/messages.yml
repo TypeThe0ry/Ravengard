@@ -13,6 +13,11 @@ entries:
   "<a>You have <e>👑{} Crowns<a>.": "<a>你有 <e>👑{} 王冠<a>。"
   "<a>Successfully set crowns to <e>{}<a>.": "<a>已将王冠设为 <e>{}<a>。"
   "Unable to transfer you: {}": "无法传送你：{}"
+  "<7>Sending to server {}...": "<7>正在传送到服务器 {}……"
+  "<7>Sending to Ravengard Lobby...": "<7>正在传送到拉文加德大厅……"
+  "<c>There are no Hypixel (type={}) servers available at the moment.": "<c>当前没有可用的 Hypixel（类型={}）服务器。"
+  "<c>Attempted to transfer to a {} server, but there are no empty slots available. Please try again later.": "<c>尝试传送到 {} 服务器，但没有空余位置，请稍后再试。"
+  "<c>This command can only be used by players.": "<c>该命令只能由玩家使用。"
   "seconds": "秒"
   "second": "秒"
 
