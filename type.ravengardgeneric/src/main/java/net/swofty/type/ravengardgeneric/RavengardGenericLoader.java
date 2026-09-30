@@ -61,6 +61,7 @@ public record RavengardGenericLoader(HypixelTypeLoader typeLoader) {
             tutorialInstance = HypixelWorldLoader.load(CustomWorlds.RAVENGARD_TUTORIAL, MinecraftServer.getInstanceManager());
         }
 
+        net.swofty.type.ravengardgeneric.i18n.RavengardLocalization.installFromEnvironment();
         net.swofty.type.ravengardgeneric.item.RavengardItemRegistry.load();
         net.swofty.type.ravengardgeneric.shop.RavengardShopRegistry.load();
         net.swofty.type.ravengardgeneric.item.attribute.RavengardItemAttribute.registerItemAttributes();

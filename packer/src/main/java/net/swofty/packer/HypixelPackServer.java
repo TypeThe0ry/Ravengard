@@ -34,6 +34,7 @@ public class HypixelPackServer {
 
         Map<String, BuiltResourcePack> packs = List.of(
                         RavengardPackDefinition.INSTANCE,
+                        net.swofty.packer.packs.ravengard.RavengardLocalePackDefinition.INSTANCE,
                         SkyblockPackDefinition.INSTANCE
                 ).stream()
                 .filter(HypixelPackServer::packDirectoryExists)

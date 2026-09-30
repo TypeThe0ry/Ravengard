@@ -145,6 +145,11 @@ public enum RavengardAbility implements RavengardSprite {
     public List<Text> getHighlightedDescription() {
         List<Text> lines = new ArrayList<>(description.length);
         for (String line : description) {
+            String localized = net.swofty.type.ravengardgeneric.i18n.RavengardLocalization.localize(line);
+            if (localized != null) {
+                lines.add(Text.of("<7>" + localized));
+                continue;
+            }
             String highlighted = line
                     .replaceAll("([+-]?\\d+(?:\\.\\d+)? ?HP)", "<c>$1</c>")
                     .replaceAll("(\\d+(?:\\.\\d+)?%)", "<a>$1</a>")

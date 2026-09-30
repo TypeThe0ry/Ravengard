@@ -19,6 +19,12 @@ public class ResourcePackManager {
 
     @Getter
     private final HypixelResourcePack activePack;
+    private static final java.util.List<ResourcePackInfo> EXTRA_PACKS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    /** Registers a pack sent underneath the active pack, for overlays such as localization fonts. */
+    public static void addExtraPack(ResourcePackInfo pack) {
+        EXTRA_PACKS.add(pack);
+    }
 
     public ResourcePackManager(HypixelResourcePack pack) {
         this.activePack = pack;
@@ -55,13 +61,15 @@ public class ResourcePackManager {
         );
 
         CompletableFuture<Void> resolved = new CompletableFuture<>();
+        java.util.List<ResourcePackInfo> packs = new java.util.ArrayList<>(EXTRA_PACKS);
+        packs.add(info);
         ResourcePackRequest request = ResourcePackRequest.resourcePackRequest()
-                .packs(info)
+                .packs(packs)
                 .replace(true)
                 .required(activePack.isRequired())
                 .prompt(Text.of("<a>This resource pack is required to play on Hypixel.").asComponent())
                 .callback((packId, status, audience) -> {
-                    if (status.intermediate()) return;
+                    if (status.intermediate() || !packId.equals(info.id())) return;
                     if (status == net.kyori.adventure.resource.ResourcePackStatus.SUCCESSFULLY_LOADED) {
                         player.getPlayerConnection().storeCookie("hypixel:applied_pack",
                                 packHash.getBytes(java.nio.charset.StandardCharsets.UTF_8));

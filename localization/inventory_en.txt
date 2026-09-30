@@ -1,0 +1,650 @@
+# Java literals
+only built-in regions will be available	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/RavengardGenericLoader.java:166
+Sentinel	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:13
+Increases physical defense by 30% for 10 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:14
+Provoke	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:15
+Taunts enemies within a 7-block radius to target you.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:16
+Shield Bash	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:17
+Pushes back all enemies within a 5-block radius.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:18
+Rally	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:19
+Temporarily boosts the damage dealt by all team members within a 6-block radius by 20%.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:20
+Wound	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:21
+Applies a bleed that deals 10 HP of damage every second for 5 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:22
+Recovery	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:23
+Instantly heals +30 HP.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:24
+Direct Hit	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:25
+Attacks deal 20% more damage for 5 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:26
+War Cry	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:28
+Increases damage by 20% on your next attack.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:29
+Armor Break	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:30
+Reduces the defense of the enemy by 10% for 5 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:31
+Bolster	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:32
+Incoming damage is reduced by 20% for 10 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:33
+Cool Off	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:34
+Heals +35 HP over 10 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:35 +1
+Rush	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:36
+No stamina loss for 5 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:37
+Overpower	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:38
+Knocks back all mobs within a radius of 5 blocks.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:39
+Carnage	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:40
+Increases knockback for 5 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:41
+Eagle Eye	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:43
+Increases arrow damage by 20% for 10 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:44
+Rapid Fire	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:45
+Loose your next 3 arrows instantly.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:46
+Poison Arrow	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:47
+Your next arrow will poison its target for 6 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:48
+Immobilize	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:49
+Your next arrow will slow its target for 2 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:50
+Med Kit	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:51
+Heals +30 HP.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:52
+Double Shot	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:53
+Loose two arrows simultaneously.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:54
+Power Shot	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:55
+Loose your next arrow instantly.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:56
+Precise Accuracy	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:58
+Attacks deal 30% more damage for 10 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:59
+Shadow Step	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:60
+Dashes forward 6 blocks.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:61
+Heal Wounds	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:62
+Lacerate	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:64
+Your next attack will deal 80% more damage.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:65
+Shadows	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:66
+Become invisible for 25 seconds, but movement speed is reduced.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:67
+Attacking or being attacked cancels the invisibility.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:68
+Swift	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:69
+Increases movement speed by 50% with no stamina loss.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:70
+Poison Dagger	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:71
+Applies 7 damage every 6 seconds to the target.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:72
+Lightning Strike	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:74
+Fires an electric strike towards players. On impact causes 40 damage to target and damages others close by.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:75
+Fireball	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:76
+Spawn a small moving fireball that deals 60 damage on impact.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:77
+Ice Shards	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:78
+Fires a continuous stream of ice that deals 10 damage and knockbacks on each hit.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:79
+Rumble	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:80
+Rips up the earth around its user, dealing 20 damage to any enemy within its radius.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:81
+Spring Healing	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:82
+Heals +45 HP over 10 seconds.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:83
+Wind Cutter	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:84
+Spawns 3 powerful air slashes through the air, dealing 50 damage and pushing enemies back.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:85
+Accelerate	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:86
+Temporarily reduces the cooldown on Magical Items by 50%!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:87
+([+-]?\\d+(?:\\.\\d+)? ?HP)	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:149 +1
+<c>$1</c>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:149 +1
+(\\d+(?:\\.\\d+)?%)	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:150 +1
+<a>$1</a>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:150 +3
+(\\d+ seconds?)	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:151 +1
+<e>$1</e>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:151 +1
+(\\d+(?:-block| blocks?))	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:152
+(\\d+)(?= damage)	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:153
+(Magical Items)	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:154
+<d>$1</d>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:154
+\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:186
+<wrap:36>{}</wrap>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:187
+m 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbility.java:200 +1
+<c>This ability is on cooldown for {}s!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbilityService.java:55
+<a>You used <f>{}<a>!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardAbilityService.java:61
+Knight	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:11
+Warrior	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:12
+Hunter	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:13
+Assassin	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:14
+Sorcerer	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:15
+<7>A tank class specializing in defense.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:40
+<7>Knights can support themselves and	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:41
+<7>teammates against incoming damage.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:42
+<7>Primary weapon: <f>Sword and Shield	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:44
+<7>A heavy damage dealer.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:46
+<7>Uses two-handed weapons to deal	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:47
+<7>devastating damage.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:48
+<7>Primary weapon: <f>Great Axe	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:50
+<7>Specializes in ranged combat.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:52
+<7>Hunters are known for using traps	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:53
+<7>to keep enemies at bay.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:54
+<7>Primary weapon: <f>Bow	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:56
+<7>A stealth-focused class adept at	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:58
+<7>sneaking.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:59
+<7>Primary weapon: <f>Daggers	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:61
+<7>A spellcaster focused on ability	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:63
+<7>damage.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:64
+<7>Sorcerers unleash elemental magic	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:65
+<7>to blast foes from a distance.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:66
+<7>Primary weapons: <f>Staves and Orbs	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardClass.java:68
+Ability: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardKit.java:67
+<7>Cooldown: <e>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardKit.java:70 +1
+<#f0f05c>Press {} to use!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardKit.java:72
+key.swapOffhand	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardKit.java:73 +1
+<a>You have selected the {} class!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/classes/RavengardSelection.java:38
+<a>Review stopped.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/AnimReviewCommand.java:39
+<c>No review session running. Use /animreview to pick a capture.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/AnimReviewCommand.java:79
+<c>You cannot change your class inside a dungeon!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/ClassCommand.java:32
+<c>Unknown class. Options: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/ClassCommand.java:38
+{} <f>You are now a <e>{}<f>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/ClassCommand.java:50
+<7>You have not chosen a class yet.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/ClassCommand.java:61
+{} <f>You are a <e>{}<f>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/ClassCommand.java:63
+<a>Successfully set crowns to <e>{}<a>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/CrownsCommand.java:28
+<a>You have <e>👑{} Crowns<a>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/CrownsCommand.java:33
+<e>/dungeon join <7>- queue into a dungeon	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:36
+<e>/dungeon join \\<instance> <7>- fly over an instance	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:37
+<e>/dungeon list <7>- every dungeon server and its instances	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:38
+<e>/dungeon generate [seed] [rooms] <7>- dedicated instance	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:39
+ADMIN:	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:58 +2
+<7>Allocating a dungeon instance...	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:81
+no servers available	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:90 +1
+<c>Could not allocate an instance: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:91
+<a>Instance <f>{}<a> created on <f>{}<a>. It self-destructs after 30s with nobody inside.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:94
+<click:run:'/dungeon join {0}'><e><l>[CLICK TO JOIN] <7>or run /dungeon join {1}</click>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:96
+<c>Allocation failed: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:99
+<c>Failed to look the instance up.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:112
+<a>Sending you to <f>{}<a>!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:127 +2
+<c>No instance found matching <f>{}<c>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:133
+<c>Lookup failed: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:135
+<7>Finding a dungeon server...	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:141
+<c>Could not find a dungeon: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:152
+<c>Failed to register for the dungeon: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:161 +2
+<c>Dungeon search failed: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:165 +1
+<c>Failed to list dungeon servers.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:175
+<c>No dungeon servers are online.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:179
+<e>{} <7>- <f>{}<7>/<f>{} players<7>, <f>{}<7> free instance slots	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:183
+  <8>- <f>{} <7>{} <f>{} players 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:188
+<a>open	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:190
+<c>closed	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:190
+ <c>(dies in {}s)	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:191
+  <8>- <7>no instances	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:195
+<c>Listing failed: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/DungeonCommand.java:199
+<c>Unknown mob. Options: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SpawnCommand.java:32
+<a>Spawned <f>{}<a>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SpawnCommand.java:38
+<c>Satchels only exist on dungeon servers.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SpawnSatchelCommand.java:27
+<a>Satchel dropped.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SpawnSatchelCommand.java:31
+<c>No capture named <f>{}<c>. Available: 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SwitchCommand.java:55
+<7>Loading <f>{}<7>...	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SwitchCommand.java:61
+<c>Failed to load <f>{}<c>: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SwitchCommand.java:69
+<7>You are already in <f>{}<7>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SwitchCommand.java:75
+<a>Switched to <f>{}<a>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SwitchCommand.java:80
+<c>No captures found in {}.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SwitchCommand.java:87
+<7>Captures: 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/commands/SwitchCommand.java:93
+Minestom	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/data/monogdb/RavengardProfileDatabase.java:22 +2
+serverType	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/data/monogdb/RavengardRegionDatabase.java:44 +1
+Welcome to 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:52
+Ravengard	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:53
+!\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:54
+Still under development. Issues may arise.\n\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:55
+PvPvE 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:58
+extraction where 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:59
+survival 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:60
+means everything!\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:61
+Enter the 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:63
+dungeon 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:64
+and 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:65
+escape 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:66
+with 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:67
+.\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:69 +1
+Avoid the 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:71
+death wall 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:72
+as it surrounds a random location.\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:73
+If you 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:75
+die 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:76
+you will lose 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:77
+everything 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:78
+you are carrying.\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:79
+Store items 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:81
+in your 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:82
+Lock Box	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:83 +2
+Defeat 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:86
+enemies to 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:87
+Level Up 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:88
+and unlock abilities!\n\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:89
+Play test end date: 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:90
+August 31st\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:91
+Have fun and good luck!\n\n	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:92
+CLICK HERE	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:93
+ to read more!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/NevermoreNoticeBoard.java:95
+{}<7>/<a>{}<7>] 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimatedRavengardNPC.java:226
+<d>{}<f>: 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimatedRavengardNPC.java:232
+<a>Reviewing <f>{}<a> ({} ticks). Swing or use the hotbar controls; 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:52
+<f>/animreview mark \\<name><a> saves a range.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:53
+<e>Pause / Play	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:210
+<f>◀ 1 tick	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:211
+<f>1 tick ▶	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:212
+<f>◀◀ 10 ticks	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:213
+<f>10 ticks ▶▶	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:214
+<b>Cycle speed	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:215
+<d>Rotate rig 45°	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:216
+<a>Set mark start here	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:217
+<d>Pick mob / capture	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:218
+<a>Mark start set at tick <f>{}<a>. Scrub to the end and run 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:241
+<f>/animreview mark \\<name><a>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:242
+<7>No marks yet on {}.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:253
+<f>{}<7>: {} - {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:257
+<c>Set a mark start first (emerald or /animreview markstart).	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:262
+<a>Marked <f>{}<a> as {} - {} and saved.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:269
+<a>Removed mark <f>{}<a>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:275
+{\"clip\":\"	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:286
+\",\"mob\":\"	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:287
+\",\"source\":\"	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:288
+\",\"marks\":{	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:289
+').append(entry.getKey()).append(	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:294
+<c>Failed to save marks: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:301
+<e>{} <f>{}<7>/{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:436
+ <c>⏸	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:437
+ <a>▶	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:437
+ <b>x{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:438
+ <a>start={}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:440
+ <c>[hit]	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/AnimReviewService.java:445
+_\\d+$	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/animation/RavengardAnimationRegistry.java:106 +1
+Ravengard mob attack: type={} entity={} target={} distance={} targetHealth={} -> {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/mob/RavengardMob.java:283
+Spawned Ravengard mob rig: mobType={} animationClipType={} appearance={} pos={} 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/mob/RavengardMob.java:522
+displayParts={} variantModelParts={}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/mob/RavengardMob.java:523
+Ravengard caster attack: type={} entity={} target={} distance={} targetHealth={}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/mob/RavengardMob.java:761
+Ravengard mob tick failed: type={} entity={} pos={}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/entity/mob/RavengardMob.java:878
+<f>{} discovered	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/event/actions/custom/ActionRegionDiscovered.java:27 +1
+<c>Your class cannot use this item!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/event/actions/player/ActionPlayerBow.java:81 +3
+[^\\x00-\\x7F]	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/event/actions/player/ActionPlayerChat.java:38
+<c>Unknown chat type.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/event/actions/player/ActionPlayerChat.java:45
+<c>You are not in a party and were moved to the ALL channel.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/event/actions/player/ActionPlayerChat.java:55
+<color:{}> <6><l>{}</l><color:{}>: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/event/actions/player/ActionPlayerChat.java:84
+<c>The Ravengard Menu is sealed during a dungeon run.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/event/actions/player/ActionPlayerMenuItem.java:43
+<c>You must select a class to use this menu!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/event/actions/player/ActionPlayerMenuItem.java:48
+First Ability	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:34
+Second Ability	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:34
+<a>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:60 +1
+<a><l>EQUIPPED	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:61
+<c>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:63
+<c><l>LOCKED	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:64
+<c>Already equipped in <e>Slot {}<c>!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:73
+<7>Cost: <e>1<b> Ability Point	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:75
+<c>Not enough points to purchase this skill!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:77
+<b>Ability Points <7>(<e>{}<7>)	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:86
+<7>You can unlock new <a>abilities<7> by	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:87
+<7>spending <b>Ability Points<7> in this menu.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:88
+<7>These points are rewarded for	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:90
+<7>earning <e>experience<7> and <6>levelling up<7>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:91
+<7>your class.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:92
+<e>Experience<7> is earned through:	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:94
+<7> <f>◦<7> Defeating mobs and bosses.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:95
+<7> <f>◦<7> Killing other players.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:96
+<7> <f>◦<7> Escaping through portals.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAbilityPage.java:97
+Animation Review	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:29
+Captures: 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:29
+<e>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:54 +1
+ capture	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:55
+ captures	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:55
+<e>Click to browse!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:56
+<c>All mobs	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:66
+<e>Click to go back!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:66 +1
+<f>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:76 +3
+<7>Raw capture replay.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:77
+<e>Click to review on the stage!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIAnimReview.java:78
+Delete profile?	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIDeleteProfile.java:25
+<a>Confirm	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIDeleteProfile.java:36
+<e>Click to confirm this change!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIDeleteProfile.java:38
+<c>Cancel	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIDeleteProfile.java:47
+<e>Click to cancel this change!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIDeleteProfile.java:49
+Items	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIItemList.java:46
+Items: 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIItemList.java:46
+<a>Gave you <f>{}<a>.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIItemList.java:67
+<a>Previous Page	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIItemList.java:73
+<a>Next Page	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIItemList.java:81
+<e>Page {} of {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIItemList.java:91
+next tier	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:27 +1
+Previous Page	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:93
+<7>Browse the previous page of items.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:94
+<e>Click to go back to the previous page!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:96
+Next Page	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:100
+<7>Browse the next page of items.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:101
+<e>Click to go to the next page!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:103
+Expand Lock Box!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:129
+<7>Upgrade your lock box to Tier {}!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:130
+<7>This will unlock an additional {} slots	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:131
+<7>in your lock box.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:132
+<7>Cost: <f>👑<#FFCE47>{} Crowns	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:134
+<c>Your lock box is full!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:158
+<c>Your inventory is full!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:190 +2
+<c>You don't have enough Crowns!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:207 +1
+<a>Your lock box is now Tier {}!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUILockBox.java:212
+Profiles	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:24
+Unclaimed	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:62
+<7>Class: <e>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:65
+None	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:65
+<7>Playtime: <e>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:66
+<7>Crowns: <e>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:67
+<7>Ability Points<e>: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:68
+<7>Level: <e>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:69
+<7>Experience: <e>{}/{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:70
+<a>Selected!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:75
+<e>Left-Click to select!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:77
+<c>Right-Click to delete!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:77
+<a>Create Profile	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:97
+<e>Click to create!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIProfiles.java:99
+Main Menu	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:27
+Profiles<7> - <f>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:56
+<7>Stats:	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:63
+<f> ◦ <7>Health: <c>{} ❤	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:64
+<f> ◦ <7>Protection: <b>{} ⛊	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:65
+<f> ◦ <7>Damage: <4>{} ⚔	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:66
+<7>Progression:	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:76
+<f> ◦ <7>Level: <6>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:77
+<f> ◦ <7>Experience: <e>{}<7>/<e>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:78
+<e>Click to change profile!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:83
+<7>Safely store your items here!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:90
+<e>Click to open!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:92
+Abcdefgh	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:100
+<7>Lorem ipsum dolor sit amet!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:101
+<c>Coming Soon!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:103 +4
+Ijklmno	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:107
+<7>Consectetur adipiscing elit.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:108
+Pqrstuv	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:114
+<7>Sed do eiusmod tempor incididunt!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:115 +1
+Pqrstu	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:121
+Vwxyz	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:128
+<7>Ut labore et dolore magna aliqua!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:129
+First	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:147
+Second	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:147
+ Ability<7> - <f>{}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:147
+<e>Click to change!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:151
+Leave Queue!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:164
+<7>Decided you don't want to fight?	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:165
+<e>Click to leave the queue!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:167
+Join the Fight!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:170
+<7>Jump into the action and fight	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:171
+<7>against other players and monsters!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:172
+<e>Click to join!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:174
+<c>You must select a class to open this menu!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIRavengardMenu.java:181
+Select Class	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUISelectClass.java:41
+<e>Click to select!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUISelectClass.java:61
+<c>Unavailable	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUISelectClass.java:74
+<7>This class is currently unavailable.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUISelectClass.java:75
+<7><c>Coming Soon.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUISelectClass.java:77
+<7>Buy and sell items to help you on.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:53 +1
+<7>your adventures!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:54 +1
+Stock Refresh	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:62
+<7>This shop's stock will refresh in:	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:63
+Buy	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:70 +1
+<7>Purchase items from this shop to	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:71 +1
+<7>help you on your adventures!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:72 +1
+<a>You are here!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:74 +1
+Sell	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:77 +1
+<7>Sell items from your inventory for	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:78 +1
+<7>some extra cash!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:79 +1
+<e>Click to sell!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:81
+<c>Out of stock!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:107
+<e>Click to get for FREE!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:112
+<e>Click to buy for <f>\uD83D\uDC51<#FFCE47>{}<e>!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:114
+<c>That item is out of stock!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:130 +1
+You bought 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:152
+ for 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShop.java:155
+<e>Click to buy!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShopSell.java:75
+Sell Items	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShopSell.java:93
+<e>Click to sell everything above!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShopSell.java:95
+<e>Selling for <f>\uD83D\uDC51<#FFCE47>{}<e>! Click to take back.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShopSell.java:137
+You sold your items for 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/GUIShopSell.java:173
+Go Back	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/RavengardView.java:126
+<7>Return to the previous menu.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/gui/RavengardView.java:127
+MM/dd/yy	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/hud/RavengardHud.java:23
+Ravenport	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/hud/RavengardHud.java:245 +2
+\uD2000	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/hud/RavengardHudLayer.java:21
+(?<hp>[+-]?\\d+(?:\\.\\d+)? ?HP(?: over)?)|(?<seconds>\\d+ seconds?)	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/RavengardItem.java:62
+ <#f0f05c>⭐</color>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/RavengardItem.java:120
+ Crown	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/RavengardItem.java:226
+ Crowns	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/RavengardItem.java:226
+<#5fec7b>{}</color> <f>{}</f> <#a3a3c2>(+{}x)</color>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/RavengardItem.java:263
+<#5fec7b>{}</color> <f>{}</f>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/RavengardItem.java:264
+<f>👑</f><#ffce47>{}{}</color>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/RavengardItem.java:274
+<c>{}</c>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/RavengardItem.java:294
+<e>{}</e>	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/RavengardItem.java:294
+Damage	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/statistics/RavengardItemStatistic.java:12
+Ranged Attack Damage	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/statistics/RavengardItemStatistic.java:13
+Attack Speed	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/statistics/RavengardItemStatistic.java:14
+Ranged Attack Speed	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/statistics/RavengardItemStatistic.java:15
+Ability Damage Boost	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/statistics/RavengardItemStatistic.java:16
+Defense	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/statistics/RavengardItemStatistic.java:17
+Reload	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/statistics/RavengardItemStatistic.java:18
+Cooldown	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/item/statistics/RavengardItemStatistic.java:19
+2 minutes, 16 seconds	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:66
+3 hours, 12 minutes	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:66
+ hour, 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:73
+ hours, 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:73
+ minute	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:74
+ minutes	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:74
+ minute, 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:76
+ minutes, 	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:76
+ second	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:77
+ seconds	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfile.java:77
+<8>Profile ID: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfiles.java:82 +3
+<c>You already have the maximum number of profiles!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfiles.java:102
+<7>Creating profile...	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfiles.java:107
+<7>Successfully created profile!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfiles.java:111
+<c>That profile no longer exists.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfiles.java:121
+<7>Successfully deleted profile!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfiles.java:147
+<7>Restoring default equipment...	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/profile/RavengardProfiles.java:318
+Ravengard Dungeon Trios	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:29
+<c>{} is already queued for a game!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:51
+<c>You are already in a dungeon!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:55
+<c>Choose a class before joining a fight!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:59
+<7>Joining fight...	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:62
+<a>Successfully queued for {}!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:63
+<7>Found server, initiating transfer to {}...	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:71
+no dungeon servers available	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:83
+<c>Could not start a dungeon: {}	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:84
+<c>Failed to register for the dungeon: no response	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:93
+dungeon registration failed	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:98
+<c>A dungeon is already being prepared for you!	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:123
+<c>You have left the queue.	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/queue/RavengardQueue.java:128
+The Nevermore	type.ravengardgeneric/src/main/java/net/swofty/type/ravengardgeneric/region/RavengardRegionType.java:9
+<c>No dungeon assignment was found. Returning to Ravengard Lobby.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/events/ActionPlayerDungeonAssign.java:30
+<c>Your dungeon assignment was invalid. Returning to Ravengard Lobby.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/events/ActionPlayerDungeonAssign.java:38
+<c>Your dungeon instance no longer exists.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/events/ActionPlayerDungeonAssign.java:43
+<c>No active dungeon assignment was found. Returning to Ravengard Lobby.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/events/ActionPlayerJoin.java:80
+Dungeon door markers: generated={} official={} duplicates={} merged={}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:279
+Dungeon encounter markers: generated={} official={} duplicates={} merged={}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:287
+Dungeon doors spawned: inputMarkers={} uniqueLeaves={} uniqueTops={} 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:311
+completePairs={} partialTops={} orphanLeaves={} displays={} 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:312
+interactions={} barrierRefs={} uniqueBarrierCells={}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:313
+Dungeon door marker: type={} pos=({}, {}, {}) distance={}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:326
+Static dungeon doors spawned: inputMarkers={} completePairs={} partialTops={} 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:351
+orphanLeaves={} displays={} interactions={} uniqueBarrierCells={}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:352
+Registered {} captured encounter markers as grounded proximity spawns; 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:575
+planned={} opening={} openingTypes={} initialProximityEligible={} dormant={} 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:576
+relocated={} unresolved={} spawnCoverage={} types={} distribution={}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:577
+Primed {} Ravengard encounter mobs near player spawns and across outer regions; 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:730
+active={}/{} types={} distribution={}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:731
+Activated {} of {} Ravengard encounter mobs from nearby movement and retries; 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:781
+retryable={} active={}/{} types={} distribution={}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:782
+<7>Your dungeon is still being prepared, hold on...	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:1785
+<c>This dungeon is no longer accepting players.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:1791
+<7>Preparing your dungeon (seed <f>{}<7>)...	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:1795
+<c>Dungeon preparation failed: {}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:1801
+Dungeon join was redirected	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:1838
+<c>Could not enter the dungeon: {}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:1839
+<a>Entered dungeon <f>{}<a> ({} rooms, mode {}).	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:1857
+<e>Your run continues.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:1893
+Deferring expired dungeon cleanup while player {} remains in instance {}; routing to lobby	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:2002
+<e>This dungeon expired and is being cleaned up.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/DungeonInstanceRegistry.java:2005
+Explore | 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:303
+ remaining | Wall signal in 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:304
+Death Wall 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:305 +2
+ | Moves in 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:305
+ | Moving | 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:307
+ | Stable | 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:309
+Final closure in 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:310
+Next signal in 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:310
+Dungeon expired	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:312 +1
+Death Wall dormant | Signal in 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:318
+Death Wall stage 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:320 +2
+ warning | 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:320
+ moving | 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:322
+ stable | 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:324
+Death Wall closed	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:326
+Explore	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:332
+Death Wall warning 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:333
+Death Wall moving 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:334
+Safe zone 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDeathWall.java:335
+<7>The game starts in <e>{}<7> {}!	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:99
+Player connection is not ready	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:124
+{} <7>was defeated by <f>{}<7>!	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:233
+Waiting for game start	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:323
+Game starting soon	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:324
+Dungeon ended	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:326
+<c>The death wall consumed the dungeon. You failed to extract in time.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:403
+<e>Death Wall stage {}/{} moves in {} seconds!	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:428
+<c>Death Wall: return inside the safe zone	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:450
+you are not in an active dungeon run	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:543
+the server could not verify your active run	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:547
+your Ravengard profile could not be secured	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:552
+Ravengard extraction save failed: game={} player={}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:557
+your loot could not be saved	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:559
+<a>Extraction successful! Your loot has been secured.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:567
+<c>Extraction failed: {}.	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/game/RavengardDungeonGame.java:580
+Opening Chest	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonChest.java:154
+MIMIC!	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonChest.java:218
+%.3f	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonDoor.java:324
+Closing Door	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonDoor.java:624
+Opening Door	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonDoor.java:624
+Ravengard extraction ready: anchor=({}, {}, {}) yaw={} model=({}, {}, {}) modelYaw={} interaction=({}, {}, {}) offset=({}, {}) channel=3.0s	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonExtraction.java:62
+Extracting	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonExtraction.java:79
+Opening	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonInteractable.java:59
+Searching Body	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonSatchel.java:131
+Dead Body	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/DungeonSatchel.java:144
+<#fefd02>{}	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/interactables/InteractableRegistry.java:364
+All dungeon instances are busy	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/redis/DungeonInstantiateGameHandler.java:26
+Failed to instantiate dungeon: 	type.ravengarddungeon/src/main/java/net/swofty/type/ravengarddungeon/redis/DungeonInstantiateGameHandler.java:32
+/recreation copyadvancements	type.ravengardlobby/src/main/java/net/swofty/type/ravengardlobby/TypeRavengardLobbyLoader.java:50
+Castle Guard	type.ravengardlobby/src/main/java/net/swofty/type/ravengardlobby/TypeRavengardLobbyLoader.java:68
+Guard	type.ravengardlobby/src/main/java/net/swofty/type/ravengardlobby/TypeRavengardLobbyLoader.java:69
+\uE120\uE121\uE122\uE123\uE124\uE125\n\uE102\n	type.ravengardlobby/src/main/java/net/swofty/type/ravengardlobby/TypeRavengardLobbyLoader.java:166
+detector tab	type.ravengardlobby/src/main/java/net/swofty/type/ravengardlobby/events/ActionPlayerSpawn.java:15
+
+# Config texts
+Iron Halberd	item:IRON_HALBERD +1
+Rusty Great Sword	item:RUSTY_GREATSWORD
+Steel Great Axe	item:STEEL_GREAT_AXE
+Barbarian Great Axe	item:BARBARIAN_GREAT_AXE
+Rusty Halberd	item:RUSTY_HALBERD +1
+Ballistic War Hammer	item:BALLISTIC_WAR_HAMMER
+Iron War Hammer	item:IRON_WAR_HAMMER
+War-Torn Great Axe	item:WAR_GREAT_AXE
+Iron Dagger	item:IRON_DAGGER
+War Bow	item:WAR_BOW
+Hunting Knife	item:HUNTING_KNIFE
+Elm Bow	item:ELM_BOW
+Iron Knife	item:IRON_KNIFE
+Steel Mace	item:STEEL_MACE
+Spiked Mace	item:SPIKED_MACE +1
+Stiletto Dagger	item:STILETTO_DAGGER
+Steel Sword	item:STEEL_SWORD
+Captain Sword	item:CAPTAINS_SWORD
+Leather Tunic	item:LEATHER_TUNIC +1
+Studded Breeches	item:STUDDED_BREECHES
+Light Boots	item:LIGHT_BOOTS
+Rogue Coat	item:ROGUE_COAT
+Doublet	item:DOUBLET
+Padded Tunic	item:PADDED_TUNIC
+Quilted Leggings	item:QUILTED_LEGGINGS
+Knight's Hauberk	item:KNIGHTS_HAUBERK
+Light Leggings	item:LIGHT_LEGGINGS +1
+Padded Leggings	item:PADDED_LEGGINGS
+Soldier's Sabatons	item:SOLDIERS_SABATONS +1
+Marksman Boots	item:MARKSMAN_BOOTS
+Bandage	item:BANDAGE +1
+A strong bandage that restores a	item.lore:BANDAGE
+moderate amount of health over time.	item.lore:BANDAGE
+Apple	item:APPLE
+A common fruit that restores a small	item.lore:APPLE
+amount of health when consumed.	item.lore:APPLE
+Great War Hammer	item:GREAT_WAR_HAMMER
+Steel War Hammer	item:STEEL_WAR_HAMMER
+Steel Halberd	item:STEEL_HALBERD
+Iron Great Sword	item:IRON_GREATSWORD
+Iron Sword	item:IRON_SWORD +1
+Power Bow	item:POWER_BOW
+Rusty Dagger	item:RUSTY_DAGGER
+Rusty Mace	item:RUSTY_MACE
+Steel Dagger	item:STEEL_DAGGER
+Leather Harness	item:LEATHER_HARNESS +1
+Soldier's Greaves	item:SOLDIERS_GREAVES
+War Boots	item:WAR_BOOTS
+War Leggings	item:WAR_LEGGINGS
+Leather Boots	item:LEATHER_BOOTS
+Studded Boots	item:STUDDED_BOOTS
+Knight Sabatons	item:KNIGHTS_SABATONS
+Rusty Great Axe	item:RUSTY_GREAT_AXE
+Iron Great Axe	item:IRON_GREAT_AXE
+Studded Chestplate	item:STUDDED_CHESTPLATE
+Topaz Gemstone	item:TOPAZ_GEMSTONE
+A smooth topaz gemstone.	item.lore:TOPAZ_GEMSTONE
+The stone looks a little faded.	item.lore:TOPAZ_GEMSTONE
+Ruby Jewel	item:RUBY_JEWEL
+A beautiful deep red jewel.	item.lore:RUBY_JEWEL
+Seems a little faded.	item.lore:RUBY_JEWEL
+Apprentice Boots	item:UNCOMMON_APPRENTICE_BOOTS
+Apprentice Pants	item:UNCOMMON_APPRENTICE_PANTS
+A simple bandage that restores a	item.lore:COMMON_BANDAGE
+small amount of health over time.	item.lore:COMMON_BANDAGE +1
+Mitigates 70% of incoming damage on	item.lore:BUCKLER
+successful block.	item.lore:BUCKLER
+Health Potion	item:HEALTH_POTION +1
+A basic alchemical brew that	item.lore:HEALTH_POTION
+restores a small amount of health	item.lore:HEALTH_POTION
+when consumed.	item.lore:HEALTH_POTION +1
+Leather Leggings	item:UNCOMMON_LEATHER_LEGGINGS
+Bronze Great Sword	item:BRONZE_GREATSWORD
+Gold Great Sword	item:GOLD_GREATSWORD
+A potent alchemical concoction that	item.lore:UNCOMMON_HEALTH_POTION
+restores a medium amount of health	item.lore:UNCOMMON_HEALTH_POTION
+Weathered Pants	item:WEATHERED_PANTS
+Basic Bandage	item:STARTER_BANDAGE
+A basic bandage that restores a	item.lore:STARTER_BANDAGE
+Earring Slot	item:EARRING_SLOT
+Belt Slot	item:BELT_SLOT
+Ring Slot	item:RING_SLOT
+Alchemist	shop:alchemist
+Armorer	shop:armorer
+Blacksmith	shop:blacksmith
+Free Gear	shop:free_gear
+Ashwyn	npc.speaker:alchemist
+Hello there, adventurer! Always good to see a new face.	npc.line:alchemist
+My name's Ashwyn. I'm an alchemist here in Ravengard.	npc.line:alchemist
+I offer medical treatments and remedies for a fair price.	npc.line:alchemist
+Things haven't been easy these last few months with so many wounded soldiers, but we do our best to help those in need.	npc.line:alchemist
+You don't seem to be injured. Let's hope it stays that way!	npc.line:alchemist +1
+If you need any medical supplies, or perhaps healing remedies, don't hesitate to come see me.	npc.line:alchemist +1
+Stay safe out there, adventurer!	npc.line:alchemist
+Rook	npc.speaker:armorer
+Well hello there! Haven't seen you around here before.	npc.line:armorer
+The name's Rook. I'm the town's armorer.	npc.line:armorer
+I make and sell the best armor and garbs money can buy.	npc.line:armorer
+Are you looking for anything in particular? Or perhaps looking to sell?	npc.line:armorer
+Wayland	npc.speaker:blacksmith
+Hello there! I'm Ravengard's finest blacksmith! Call me Wayland.	npc.line:blacksmith
+Now, what is it you'll be needing?	npc.line:blacksmith
+Swords? Axes? Maces?	npc.line:blacksmith
+I even dabble in a few magical weapons from time to time.	npc.line:blacksmith
+Darwin	npc.speaker:collector
+Coming soon	npc.line:collector
+Mr. Freegier	npc.speaker:free_gear
+Need some basic gear? I'm helping!	npc.line:free_gear
+It's not great... But it's better than nothing.	npc.line:free_gear
+I'm doing my part!	npc.line:free_gear
+Baldwin	npc.speaker:harbor_master
+Welcome to §5Ravenport§f! It's always nice to see a new adventurer.	npc.line:harbor_master
+Go ahead and visit the §9Raven's Nest§f. It's located §bnorth §fof here. You can't miss it!	npc.line:harbor_master
+Best of luck!	npc.line:harbor_master
+Ravenport Guard	npc.speaker:ravenport_guard
+I'm the second line of defense here against the rabble.	npc.line:ravenport_guard
+We've got a lot of work to do.	npc.line:ravenport_guard
+Most of the time.	npc.line:ravenport_guard
+Diago	npc.speaker:ship_captain +1
+We've arrived at the coastal city of §eRavenport§f!	npc.line:ship_captain
+You should go chat to the §6Harbor Master§f. He's located near the docks.	npc.line:ship_captain
+Best of luck, adventurer!	npc.line:ship_captain
+We've almost arrived, adventurer!	npc.line:ship_captain_tutorial
+Ravengard is in dire need of brave fighters.	npc.line:ship_captain_tutorial
+Tell me... What kind of fighter are you?	npc.line:ship_captain_tutorial
+Gabriel	npc.speaker:tavern_master +1
+Hello and welcome to the Raven's Nest! I'm Gabriel, owner of this fine establishment.	npc.line:tavern_master
+This tavern serves as a gathering point for adventurers such as yourself.	npc.line:tavern_master
+The guard outside will assist you when you're ready to enter the dungeon.	npc.line:tavern_master
+If you're looking for some helpful tips, see Hector in the training area to the south of the town center.	npc.line:tavern_master +1
+I wish you the best of luck on your adventures.	npc.line:tavern_master +1
+Villager	npc.speaker:villager_12 +3
+Hello!	npc.line:villager_12 +4
