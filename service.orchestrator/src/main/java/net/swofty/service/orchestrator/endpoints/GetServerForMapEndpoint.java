@@ -139,8 +139,10 @@ public class GetServerForMapEndpoint implements RedisMessageHandler
 			CompletableFuture<InstantiateGamePushProtocol.Response> responseFuture = RedisClient.requestServerFromService(
 					server.uuid(),
 					new InstantiateGamePushProtocol(),
-					new InstantiateGamePushProtocol.Request(mode, body.map()));
-			InstantiateGamePushProtocol.Response response = responseFuture.get(15, java.util.concurrent.TimeUnit.SECONDS);
+					new InstantiateGamePushProtocol.Request(mode, body.map()),
+					60,
+					java.util.concurrent.TimeUnit.SECONDS);
+			InstantiateGamePushProtocol.Response response = responseFuture.get(60, java.util.concurrent.TimeUnit.SECONDS);
 			if (response != null && response.success()) {
 				return new GetServerForMapProtocol.GetServerForMapResponse(
 						toProxyServer(server), response.gameId(), true, null);

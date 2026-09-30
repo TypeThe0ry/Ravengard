@@ -57,6 +57,23 @@ public final class RedisClient {
         return request(service.name(), RedisChannels.protocol(protocol), RedisChannels.protocol(protocol), protocol, message);
     }
 
+    public static <T, R> CompletableFuture<R> requestService(ServiceType service,
+                                                              RedisProtocol<T, R> protocol,
+                                                              T message,
+                                                              long timeout,
+                                                              TimeUnit unit) {
+        return RedisMessageBus.request(
+                localEndpoint(),
+                service.name(),
+                RedisChannels.protocol(protocol),
+                RedisChannels.protocol(protocol),
+                protocol,
+                message,
+                timeout,
+                unit
+        );
+    }
+
     public static <T, R> CompletableFuture<R> requestService(ServiceType service, T message) {
         RedisProtocol<T, R> protocol = protocolFor(message);
         return requestService(service, protocol, message);
@@ -86,6 +103,23 @@ public final class RedisClient {
                 RedisChannels.SERVICE_RESPONSE,
                 protocol,
                 message
+        );
+    }
+
+    public static <T, R> CompletableFuture<R> requestServerFromService(UUID server,
+                                                                        RedisProtocol<T, R> protocol,
+                                                                        T message,
+                                                                        long timeout,
+                                                                        TimeUnit unit) {
+        return RedisMessageBus.request(
+                localEndpoint(),
+                server.toString(),
+                RedisChannels.serviceRequest(protocol),
+                RedisChannels.SERVICE_RESPONSE,
+                protocol,
+                message,
+                timeout,
+                unit
         );
     }
 

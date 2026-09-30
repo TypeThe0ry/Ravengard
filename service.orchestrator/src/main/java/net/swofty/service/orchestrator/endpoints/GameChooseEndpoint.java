@@ -7,6 +7,9 @@ import net.swofty.commons.redis.RedisMessageHandler;
 import net.swofty.commons.redis.RedisClient;
 import net.swofty.commons.redis.RedisMessageContext;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+
 public class GameChooseEndpoint implements RedisMessageHandler
 		<ChooseGameProtocol.ChooseGameMessage,
 				ChooseGameProtocol.ChooseGameResponse> {
@@ -18,9 +21,26 @@ public class GameChooseEndpoint implements RedisMessageHandler
 
 	@Override
 	public ChooseGameProtocol.ChooseGameResponse handle(ChooseGameProtocol.ChooseGameMessage body, RedisMessageContext context) {
-		RedisClient.requestServerFromService(body.server().uuid(), new GameInformationPushProtocol(),
-				new GameInformationPushProtocol.Request(body.player(), body.gameId()));
-		return new ChooseGameProtocol.ChooseGameResponse(true, null);
+		try {
+			CompletableFuture<GameInformationPushProtocol.Response> responseFuture = RedisClient.requestServerFromService(
+					body.server().uuid(),
+					new GameInformationPushProtocol(),
+					new GameInformationPushProtocol.Request(body.player(), body.gameId()),
+					60,
+					TimeUnit.SECONDS);
+			GameInformationPushProtocol.Response response = responseFuture.get(60, TimeUnit.SECONDS);
+			if (response != null) {
+				return new ChooseGameProtocol.ChooseGameResponse(true, null);
+			}
+			return new ChooseGameProtocol.ChooseGameResponse(false, "Dungeon server returned no response");
+		} catch (InterruptedException exception) {
+			Thread.currentThread().interrupt();
+			return new ChooseGameProtocol.ChooseGameResponse(false, "Interrupted while choosing game");
+		} catch (Exception exception) {
+			String message = exception.getMessage();
+			return new ChooseGameProtocol.ChooseGameResponse(false,
+					message == null || message.isBlank() ? exception.getClass().getSimpleName() : message);
+		}
 	}
 
 }

@@ -23,6 +23,7 @@ import java.util.function.Function;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RedisMessageBus {
+    private static final long DEFAULT_REQUEST_TIMEOUT_SECONDS = 10;
     private static final Map<String, List<RegisteredHandler<?, ?>>> handlers = new ConcurrentHashMap<>();
     private static final Map<UUID, CompletableFuture<String>> pendingResponses = new ConcurrentHashMap<>();
     private static final Map<UUID, BroadcastCollector> pendingBroadcasts = new ConcurrentHashMap<>();
@@ -54,7 +55,20 @@ public final class RedisMessageBus {
                                                        String responseChannel,
                                                        RedisProtocol<T, R> protocol,
                                                        T message) {
-        return requestRaw(origin, target, requestChannel, responseChannel, protocol, message)
+        return requestRaw(origin, target, requestChannel, responseChannel, protocol, message,
+                        DEFAULT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .thenApply(protocol::translateReturnFromString);
+    }
+
+    public static <T, R> CompletableFuture<R> request(RedisEndpoint origin,
+                                                       String target,
+                                                       String requestChannel,
+                                                       String responseChannel,
+                                                       RedisProtocol<T, R> protocol,
+                                                       T message,
+                                                       long timeout,
+                                                       TimeUnit unit) {
+        return requestRaw(origin, target, requestChannel, responseChannel, protocol, message, timeout, unit)
                 .thenApply(protocol::translateReturnFromString);
     }
 
@@ -64,12 +78,24 @@ public final class RedisMessageBus {
                                                        String responseChannel,
                                                        RedisProtocol protocol,
                                                        Object message) {
+        return requestRaw(origin, target, requestChannel, responseChannel, protocol, message,
+                DEFAULT_REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    public static CompletableFuture<String> requestRaw(RedisEndpoint origin,
+                                                       String target,
+                                                       String requestChannel,
+                                                       String responseChannel,
+                                                       RedisProtocol protocol,
+                                                       Object message,
+                                                       long timeout,
+                                                       TimeUnit unit) {
         UUID requestId = UUID.randomUUID();
         CompletableFuture<String> future = new CompletableFuture<>();
 
         ensureChannelRegistered(responseChannel);
         pendingResponses.put(requestId, future);
-        future.orTimeout(10, TimeUnit.SECONDS)
+        future.orTimeout(timeout, unit)
                 .whenComplete((ignored, throwable) -> pendingResponses.remove(requestId));
 
         publishRaw(requestId, origin, target, requestChannel, protocol.translateToString(message));

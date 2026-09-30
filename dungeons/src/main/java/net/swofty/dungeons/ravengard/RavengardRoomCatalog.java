@@ -46,10 +46,15 @@ public final class RavengardRoomCatalog {
         private boolean letterTile;
         private List<int[]> mask;
         private List<DoorSocket> sockets;
+        private List<RoomObject> doors;
         private List<RoomObject> objects;
 
         public List<DoorSocket> getSockets() {
             return sockets == null ? List.of() : sockets;
+        }
+
+        public List<RoomObject> getDoors() {
+            return doors == null ? List.of() : doors;
         }
 
         /** Footprint rows as [rowZ, startX, endX] runs; falls back to the full box. */

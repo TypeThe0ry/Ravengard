@@ -9,6 +9,9 @@ import org.tinylog.Logger;
 
 import java.net.URI;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class ResourcePackManager {
     @Getter
@@ -45,29 +48,13 @@ public class ResourcePackManager {
             return;
         }
 
-        // the cookie lives for the client connection and rides across backend
-        // transfers, so the pack applies exactly once per session instead of
-        // triggering a full client resource reload on every server switch
-        try {
-            byte[] applied = player.getPlayerConnection()
-                    .fetchCookie("hypixel:applied_pack")
-                    .get(3, java.util.concurrent.TimeUnit.SECONDS);
-            if (applied != null && packHash.equals(new String(applied, java.nio.charset.StandardCharsets.UTF_8))) {
-                Logger.info("Pack {} already applied for {}, skipping push",
-                        packHash.substring(0, 8), player.getUsername());
-                return;
-            }
-        } catch (Exception exception) {
-            Logger.warn("Cookie fetch failed for {}, pushing pack anyway", player.getUsername());
-        }
-
         ResourcePackInfo info = ResourcePackInfo.resourcePackInfo(
                 UUID.nameUUIDFromBytes(packHash.getBytes()),
                 URI.create(packUrl),
                 packHash
         );
 
-        java.util.concurrent.CompletableFuture<Void> resolved = new java.util.concurrent.CompletableFuture<>();
+        CompletableFuture<Void> resolved = new CompletableFuture<>();
         ResourcePackRequest request = ResourcePackRequest.resourcePackRequest()
                 .packs(info)
                 .replace(true)
@@ -86,15 +73,36 @@ public class ResourcePackManager {
                 })
                 .build();
 
+        Logger.info("Sending resource pack {} to {} from {}",
+                packHash.substring(0, 8), player.getUsername(), packUrl);
         player.sendResourcePacks(request);
 
         if (timeoutSeconds > 0) {
-            try {
-                resolved.get(timeoutSeconds, java.util.concurrent.TimeUnit.SECONDS);
-            } catch (Exception exception) {
+            boolean completed = awaitResolution(resolved, timeoutSeconds, TimeUnit.SECONDS,
+                    () -> player.onResourcePackStatus(
+                            info.id(), net.kyori.adventure.resource.ResourcePackStatus.DISCARDED));
+            if (!completed) {
                 Logger.warn("Resource pack for {} did not resolve within {}s, continuing",
                         player.getUsername(), timeoutSeconds);
             }
+        }
+    }
+
+    static boolean awaitResolution(CompletableFuture<Void> resolved, long timeout, TimeUnit unit,
+                                   Runnable timeoutFallback) {
+        try {
+            resolved.get(timeout, unit);
+            return true;
+        } catch (TimeoutException exception) {
+            timeoutFallback.run();
+            return false;
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            timeoutFallback.run();
+            return false;
+        } catch (java.util.concurrent.ExecutionException exception) {
+            timeoutFallback.run();
+            return false;
         }
     }
 }

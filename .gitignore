@@ -69,6 +69,9 @@ build/
 /server/proxy/replay_pid*.log
 /server/forwarding.secret
 /configuration/config.yml
+.env
+.env.*
+!.env.example
 /server/proxy/configuration/config.yml
 .claude/
 server/proxy/ViaLoader/
@@ -77,3 +80,5 @@ server/proxy/ViaLoader/
 store/.next
 store/node_modules
 store/next-env.d.ts
+
+/configuration/forwarding.secret

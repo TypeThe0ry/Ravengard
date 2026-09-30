@@ -6,7 +6,6 @@ import net.swofty.commons.ServerType;
 import net.swofty.commons.protocol.objects.proxy.from.GivePlayersOriginTypeProtocol;
 import net.swofty.commons.protocol.objects.proxy.from.PlayerSwitchedProtocol;
 import net.swofty.commons.text.Text;
-import net.swofty.velocity.SkyBlockVelocity;
 import net.swofty.velocity.text.ProxyText;
 import net.swofty.commons.redis.RedisClient;
 
@@ -34,6 +33,19 @@ public record TransferHandler(Player player) {
 	public static void clearPlayerState(UUID playerUuid) {
 		afkOriginLobbyType.remove(playerUuid);
 		afkReturnInProgress.remove(playerUuid);
+		clearCrashRecovery(playerUuid);
+	}
+
+	public static boolean beginCrashRecovery(UUID playerUuid) {
+		return CrashRecoveryGate.begin(playerUuid);
+	}
+
+	public static void clearCrashRecovery(UUID playerUuid) {
+		CrashRecoveryGate.clear(playerUuid);
+	}
+
+	public static void clearCrashRecoveryOnServerConnected(UUID playerUuid, RegisteredServer server) {
+		clearCrashRecovery(playerUuid);
 	}
 
 	public void addToDisregard() {
@@ -45,54 +57,11 @@ public record TransferHandler(Player player) {
 	}
 
 	public CompletableFuture<Boolean> sendToLimbo() {
-		CompletableFuture<Boolean> future = new CompletableFuture<>();
-
-		Thread.startVirtualThread(() -> {
-			if (isInLimbo() && player.getCurrentServer()
-				.map(server -> server.getServer().equals(SkyBlockVelocity.getLimboServer()))
-				.orElse(false)) {
-				future.complete(true);
-				return;
-			}
-
-			if (player.getCurrentServer().isPresent()) {
-				RegisteredServer previousServer = player.getCurrentServer().get().getServer();
-				playersOriginServer.put(player, previousServer);
-			}
-
-			RegisteredServer limboServer = SkyBlockVelocity.getLimboServer();
-			player.createConnectionRequest(limboServer).connectWithIndication();
-			future.complete(true);
-		});
-
-		return future;
+		return sendToRavengardLobby();
 	}
 
 	public CompletableFuture<Boolean> sendToLimboFromAfk(ServerType originType) {
-		CompletableFuture<Boolean> future = new CompletableFuture<>();
-
-		Thread.startVirtualThread(() -> {
-			if (isInAfkLimbo() && player.getCurrentServer()
-				.map(server -> server.getServer().equals(SkyBlockVelocity.getLimboServer()))
-				.orElse(false)) {
-				future.complete(true);
-				return;
-			}
-
-			ServerType resolvedOriginType = isLobbyType(originType) ? originType : ServerType.PROTOTYPE_LOBBY;
-			afkOriginLobbyType.put(player.getUniqueId(), resolvedOriginType);
-
-			if (player.getCurrentServer().isPresent()) {
-				RegisteredServer previousServer = player.getCurrentServer().get().getServer();
-				playersOriginServer.put(player, previousServer);
-			}
-
-			RegisteredServer limboServer = SkyBlockVelocity.getLimboServer();
-			player.createConnectionRequest(limboServer).connectWithIndication();
-			future.complete(true);
-		});
-
-		return future;
+		return sendToRavengardLobby();
 	}
 
 	public void returnFromAfkLimbo() {
@@ -107,25 +76,7 @@ public record TransferHandler(Player player) {
 					return;
 				}
 
-				if (player.getCurrentServer().isEmpty()
-					|| !player.getCurrentServer().get().getServer().equals(SkyBlockVelocity.getLimboServer())) {
-					return;
-				}
-
-				ServerType preferredType = afkOriginLobbyType.get(uuid);
-				GameManager.GameServer destination = null;
-
-				if (isLobbyType(preferredType)
-					&& GameManager.hasType(preferredType)
-					&& GameManager.isAnyEmpty(preferredType)) {
-					destination = BalanceConfigurations.getServerFor(player, preferredType);
-				}
-
-				if (destination == null
-					&& GameManager.hasType(ServerType.PROTOTYPE_LOBBY)
-					&& GameManager.isAnyEmpty(ServerType.PROTOTYPE_LOBBY)) {
-					destination = BalanceConfigurations.getServerFor(player, ServerType.PROTOTYPE_LOBBY);
-				}
+				GameManager.GameServer destination = BalanceConfigurations.getServerFor(player, ServerType.RAVENGARD_LOBBY);
 
 				if (destination == null) {
 					player.sendMessage(Text.of("<c>There are no lobby servers available right now."));
@@ -139,6 +90,37 @@ public record TransferHandler(Player player) {
 				afkReturnInProgress.remove(uuid);
 			}
 		});
+	}
+
+	private CompletableFuture<Boolean> sendToRavengardLobby() {
+		CompletableFuture<Boolean> future = new CompletableFuture<>();
+		Thread.startVirtualThread(() -> {
+			try {
+				GameManager.GameServer destination = BalanceConfigurations.getServerFor(player, ServerType.RAVENGARD_LOBBY);
+				if (destination == null) {
+					player.sendMessage(Text.of("<c>There are no Ravengard Lobby servers available right now."));
+					future.complete(false);
+					return;
+				}
+				if (player.getCurrentServer()
+					.map(connection -> connection.getServer().equals(destination.registeredServer()))
+					.orElse(false)) {
+					future.complete(true);
+					return;
+				}
+				player.createConnectionRequest(destination.registeredServer()).connectWithIndication()
+					.whenComplete((connected, error) -> {
+						if (error != null) {
+							future.completeExceptionally(error);
+						} else {
+							future.complete(connected);
+						}
+					});
+			} catch (Exception exception) {
+				future.completeExceptionally(exception);
+			}
+		});
+		return future;
 	}
 
 	public void previousServerIsFinished(RegisteredServer manualPick) {
@@ -267,7 +249,4 @@ public record TransferHandler(Player player) {
 		return future;
 	}
 
-	private static boolean isLobbyType(ServerType type) {
-		return type != null && type.name().endsWith("_LOBBY");
-	}
 }

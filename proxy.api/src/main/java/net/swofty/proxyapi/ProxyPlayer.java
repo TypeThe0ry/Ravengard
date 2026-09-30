@@ -178,6 +178,10 @@ public record ProxyPlayer(UUID uuid) {
                 });
     }
 
+    public static BiFunction<UUID, UUID, CompletableFuture<String>> getTransferPreparation() {
+        return transferPreparation;
+    }
+
     public static void setTransferPreparation(BiFunction<UUID, UUID, CompletableFuture<String>> preparation) {
         transferPreparation = preparation;
     }

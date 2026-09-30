@@ -5,6 +5,7 @@ services:
   mongodb:
     image: mongo:8.0.9
     container_name: hypixel_mongo
+    restart: "unless-stopped"
     environment:
       MONGO_INITDB_DATABASE: Minestom # Default database name
       MONGO_URL: hypixel_mongo
@@ -25,6 +26,10 @@ services:
   redis:
     image: redis:latest
     container_name: hypixel_redis
+    restart: "unless-stopped"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
     ports:
       - "6379:6379"
     networks:
@@ -40,6 +45,7 @@ services:
       context: .
       dockerfile: "./DockerFiles/Dockerfile.proxy"
     container_name: hypixel_proxy
+    restart: "unless-stopped"
     environment:
       <<: *forwarding_env
     ports:
@@ -72,6 +78,7 @@ services:
       - hypixel_network
 
   hypixelcore_island:
+    profiles: ["full"]
     image: game_server_prepared
     container_name: hypixelcore_island
     restart: "unless-stopped"
@@ -89,6 +96,7 @@ services:
       - hypixel_network
 
   hypixelcore_hub:
+    profiles: ["full"]
     image: game_server_prepared
     container_name: hypixelcore_hub
     restart: "unless-stopped"
@@ -106,6 +114,7 @@ services:
       - hypixel_network
 
   hypixelcore_farming:
+    profiles: ["full"]
     image: game_server_prepared
     container_name: hypixelcore_farming
     restart: "unless-stopped"
@@ -123,6 +132,7 @@ services:
       - hypixel_network
 
   prototype_lobby:
+    profiles: ["full"]
     image: game_server_prepared
     container_name: prototype_lobby
     restart: "unless-stopped"
@@ -172,11 +182,48 @@ services:
   #     - hypixel_network
 
   pico_limbo:
-    image: ghcr.io/quozul/picolimbo:v1.12.2-mc26.1.2
+    profiles: ["full"]
+    image: ghcr.io/quozul/picolimbo:v1.13.2-mc26.2
     container_name: pico_limbo
     restart: unless-stopped
+    working_dir: /app/configuration_files
+    command: ["pico_limbo", "-c", "/app/configuration_files/server.toml"]
     environment:
       <<: *forwarding_env
+    depends_on:
+      proxy:
+        condition: service_healthy
+      game_server_builder:
+        condition: service_started
+    volumes:
+      - ./configuration:/app/configuration_files
+    networks:
+      - hypixel_network
+
+  ravengard_lobby:
+    image: game_server_prepared
+    container_name: ravengard_lobby
+    restart: "unless-stopped"
+    environment:
+      <<: *forwarding_env
+      SERVICE_CMD: java -jar HypixelCore.jar RAVENGARD_LOBBY
+    depends_on:
+      proxy:
+        condition: service_healthy
+      game_server_builder:
+        condition: service_started
+    volumes:
+      - ./configuration:/app/configuration_files
+    networks:
+      - hypixel_network
+
+  ravengard_dungeon:
+    image: game_server_prepared
+    container_name: ravengard_dungeon
+    restart: "unless-stopped"
+    environment:
+      <<: *forwarding_env
+      SERVICE_CMD: java -jar HypixelCore.jar RAVENGARD_DUNGEON
     depends_on:
       proxy:
         condition: service_healthy
@@ -197,6 +244,25 @@ services:
     ports:
       - "7270:7270"
     depends_on:
+      game_server_builder:
+        condition: service_started
+    volumes:
+      - ./configuration:/app/configuration_files
+    networks:
+      - hypixel_network
+
+  service_orchestrator:
+    image: game_server_prepared
+    container_name: service_orchestrator
+    restart: "unless-stopped"
+    environment:
+      <<: *forwarding_env
+      SERVICE_CMD: java -jar ServiceOrchestrator.jar
+    depends_on:
+      redis:
+        condition: service_healthy
+      proxy:
+        condition: service_healthy
       game_server_builder:
         condition: service_started
     volumes:
@@ -310,6 +376,9 @@ volumes:
   mongodb-data:
     driver: local
     name: mongo-data
+  redis-data:
+    driver: local
+    name: redis-data
 
 networks:
   hypixel_network:

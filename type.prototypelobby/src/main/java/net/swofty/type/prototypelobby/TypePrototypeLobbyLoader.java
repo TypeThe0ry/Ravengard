@@ -68,6 +68,8 @@ public class TypePrototypeLobbyLoader implements LobbyTypeLoader {
         parkourManager = new LobbyParkourManager(getParkour());
 
         LobbyTypeLoader.registerLobbyCommands();
+        MinecraftServer.getCommandManager().register(
+                new net.swofty.type.prototypelobby.commands.PlayCommand().getCommand());
     }
 
     @Override

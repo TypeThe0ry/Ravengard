@@ -2,11 +2,13 @@ package net.swofty.type.generic.data.domain;
 
 import net.swofty.commons.ServerType;
 import net.swofty.commons.data.SwoftyData;
+import net.minestom.server.entity.PlayerSkin;
 import net.swofty.proxyapi.PlayerTransferDataCache;
 import net.swofty.type.generic.HypixelConst;
 import net.swofty.type.generic.achievement.AchievementStatisticsService;
 import net.swofty.type.generic.data.HypixelDataHandler;
 import net.swofty.type.generic.data.datapoints.DatapointLocale;
+import net.swofty.type.generic.data.datapoints.DatapointString;
 import net.swofty.type.generic.entity.hologram.PlayerHolograms;
 import net.swofty.type.generic.entity.npc.HypixelNPC;
 import net.swofty.type.generic.resourcepack.ResourcePackManager;
@@ -55,6 +57,10 @@ public final class AccountDomain implements PlayerDataDomain<HypixelDataHandler>
 
         player.setLocale(handler.get(HypixelDataHandler.Data.LOCALE, DatapointLocale.class)
                 .getValue().getCurrentLocale().getLocale());
+        if (player.getSkin() == null) {
+            PlayerSkin storedSkin = storedSkin(handler);
+            if (storedSkin != null) player.setSkin(storedSkin);
+        }
         handler.runOnLoad(player);
 
         ResourcePackManager packManager = HypixelConst.getResourcePackManager();
@@ -97,5 +103,14 @@ public final class AccountDomain implements PlayerDataDomain<HypixelDataHandler>
 
         SwoftyData.account().flush(player.getUuid());
         return handler.toDocument().toJson();
+    }
+
+    static PlayerSkin storedSkin(HypixelDataHandler handler) {
+        String textures = handler.get(HypixelDataHandler.Data.SKIN_TEXTURE, DatapointString.class).getValue();
+        if (textures == null || textures.isBlank() || textures.equals("null")) return null;
+
+        String signature = handler.get(HypixelDataHandler.Data.SKIN_SIGNATURE, DatapointString.class).getValue();
+        if (signature == null || signature.isBlank() || signature.equals("null")) signature = null;
+        return new PlayerSkin(textures, signature);
     }
 }

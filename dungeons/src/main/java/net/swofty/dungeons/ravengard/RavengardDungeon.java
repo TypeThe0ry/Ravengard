@@ -7,12 +7,11 @@ import net.swofty.dungeons.ravengard.RavengardRoomCatalog.DungeonRoom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
+import java.util.Map;
 import java.util.Set;
 
 @Getter
@@ -133,7 +132,6 @@ public final class RavengardDungeon extends GameDungeon {
      */
     public static RavengardDungeon generate(RavengardRoomCatalog catalog, long seed, int targetRoomCount) {
         RavengardDungeon dungeon = new RavengardDungeon(seed);
-        Random random = new Random(seed);
         List<DungeonRoom> rooms = catalog.getRooms();
 
         DungeonRoom citadel = catalog.getCitadel();
@@ -152,22 +150,16 @@ public final class RavengardDungeon extends GameDungeon {
 
         Map<String, RoomPlacement> chosen = new HashMap<>();
         for (List<DungeonRoom> group : shapeGroups.values()) {
-            List<DungeonRoom> shuffled = new ArrayList<>(group);
-            Collections.shuffle(shuffled, random);
+            // The polar blueprint carries display entities at the fixed slot
+            // coordinates.  Swapping only block interiors leaves those
+            // displays (and their barrier collision cells) out of alignment,
+            // producing invisible collision in the playable map.  Keep the
+            // official slot contents together until display remapping exists.
             for (int index = 0; index < group.size(); index++) {
                 DungeonRoom slot = group.get(index);
-                DungeonRoom pick = shuffled.get(index);
-                Rotation rotation = rotationBetween(pick, slot);
-                if (rotation == null) {
-                    pick = slot;
-                    rotation = Rotation.NONE;
-                }
-                RoomPlacement placement = new RoomPlacement(pick, rotation,
+                RoomPlacement placement = new RoomPlacement(slot, Rotation.NONE,
                         slot.getMinX(), slot.getMinZ());
                 chosen.put(slot.getId(), placement);
-                if (pick != slot) {
-                    dungeon.swaps.add(placement);
-                }
             }
         }
         for (DungeonRoom slot : rooms) {

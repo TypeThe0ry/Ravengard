@@ -42,11 +42,9 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.swofty.commons.LobbyDestination;
 import net.swofty.commons.ServerType;
 import net.swofty.commons.ServiceType;
 import net.swofty.commons.config.ConfigProvider;
-import net.swofty.commons.config.Settings;
 import net.swofty.commons.data.SwoftyData;
 import net.swofty.commons.protocol.RedisProtocol;
 import net.swofty.commons.protocol.objects.proxy.from.*;
@@ -62,6 +60,7 @@ import net.swofty.commons.redis.RedisEndpoint;
 import net.swofty.commons.redis.RedisMessageHandler;
 import net.swofty.commons.text.Text;
 import net.swofty.proxyapi.ProxyService;
+import net.swofty.commons.redis.RedisWatchdog;
 import net.swofty.redisapi.api.RedisAPI;
 import net.swofty.velocity.command.*;
 import net.swofty.velocity.data.AuthenticationDatabase;
@@ -72,6 +71,7 @@ import net.swofty.velocity.data.UserDatabase;
 import net.swofty.velocity.gamemanager.BalanceConfiguration;
 import net.swofty.velocity.gamemanager.BalanceConfigurations;
 import net.swofty.velocity.gamemanager.GameManager;
+import net.swofty.velocity.gamemanager.CrashRecoveryRouting;
 import net.swofty.velocity.gamemanager.TransferHandler;
 import net.swofty.velocity.packet.PlayerChannelHandler;
 import net.swofty.velocity.packet.listener.PlayerMovementListener;
@@ -87,10 +87,8 @@ import net.swofty.velocity.viaversion.injector.SkyBlockViaInjector;
 import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
-import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -98,8 +96,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -122,8 +118,6 @@ public class SkyBlockVelocity {
     @Getter
     private final Path dataDirectory;
     @Getter
-    private static RegisteredServer limboServer;
-    @Getter
     private static boolean supportCrossVersion = false;
     @Inject
     private ProxyServer proxy;
@@ -139,8 +133,6 @@ public class SkyBlockVelocity {
         this.pluginContainer = pluginContainer;
         this.dataDirectory = dataDirectory;
 
-        Settings.LimboSettings limbo = ConfigProvider.settings().getLimbo();
-        limboServer = server.registerServer(new ServerInfo("limbo", new InetSocketAddress(limbo.getHostName(), limbo.getPort())));
     }
 
     @Subscribe
@@ -148,14 +140,16 @@ public class SkyBlockVelocity {
         server = proxy;
         supportCrossVersion = ConfigProvider.settings().getIntegrations().isViaVersion();
 
-        PacketEvents.setAPI(VelocityPacketEventsBuilder.build(server, this.pluginContainer, this.logger, this.dataDirectory));
-        PacketEvents.getAPI().getSettings().checkForUpdates(false);
-        PacketEvents.getAPI().load();
+        if (supportCrossVersion) {
+            PacketEvents.setAPI(VelocityPacketEventsBuilder.build(server, this.pluginContainer, this.logger, this.dataDirectory));
+            PacketEvents.getAPI().getSettings().checkForUpdates(false);
+            PacketEvents.getAPI().load();
 
-        EventManager events = PacketEvents.getAPI().getEventManager();
-        events.registerListener(new PlayerMovementListener(), PacketListenerPriority.NORMAL);
+            EventManager events = PacketEvents.getAPI().getEventManager();
+            events.registerListener(new PlayerMovementListener(), PacketListenerPriority.NORMAL);
 
-        PacketEvents.getAPI().init();
+            PacketEvents.getAPI().init();
+        }
 
         if (supportCrossVersion) {
             ViaManagerImpl.initAndLoad(
@@ -204,6 +198,8 @@ public class SkyBlockVelocity {
             (AwaitingEventExecutor<ServerConnectedEvent>) serverConnectedEvent ->
                 EventTask.async(() -> {
                     RegisteredServer newServer = serverConnectedEvent.getServer();
+                    TransferHandler.clearCrashRecoveryOnServerConnected(
+                        serverConnectedEvent.getPlayer().getUniqueId(), newServer);
                     var type = GameManager.getTypeFromRegisteredServer(newServer);
                     PresencePublisher.publish(serverConnectedEvent.getPlayer(), true, newServer, type != null ? type.name() : null);
                 }));
@@ -229,10 +225,6 @@ public class SkyBlockVelocity {
             .plugin(this)
             .build();
 
-        CommandMeta limboCommandMeta = commandManager.metaBuilder("limbo")
-            .plugin(this)
-            .build();
-
         CommandMeta loginCommandMeta = commandManager.metaBuilder("login")
             .plugin(this)
             .build();
@@ -247,7 +239,6 @@ public class SkyBlockVelocity {
 
         commandManager.register(statusCommandMeta, new ServerStatusCommand());
         commandManager.register(protocolVersionMeta, new ProtocolVersionCommand());
-        commandManager.register(limboCommandMeta, new LimboCommand());
         commandManager.register(loginCommandMeta, new LoginCommand());
         commandManager.register(registerCommandMeta, new RegisterCommand());
         commandManager.register(lobbyCommandMeta, new LobbyCommand());
@@ -283,6 +274,7 @@ public class SkyBlockVelocity {
             .filter(obj -> !obj.getClass().getPackageName().startsWith("net.swofty.commons.protocol.objects.proxy"))
             .forEach(RedisClient::registerResponseProtocol);
         RedisAPI.getInstance().startListeners();
+        RedisWatchdog.start("velocity-proxy");
 
         // Setup GameManager
         GameManager.loopServers(server);
@@ -290,6 +282,7 @@ public class SkyBlockVelocity {
 
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
+        RedisWatchdog.stop();
         try {
             SwoftyData.shutdown();
         } catch (Exception e) {
@@ -350,35 +343,17 @@ public class SkyBlockVelocity {
             }
 
             if (ConfigProvider.settings().isRequireAuth()) {
-                unauthenticated.add(player.getUniqueId());
-                event.setInitialServer(limboServer);
-
-                player.sendMessage(Text.of("<a>Hey! You need to authenticate your account to play on this server."));
-                player.sendMessage(Text.of("<a>All passwords are encrypted using modern standards, so you're safe!"));
-                player.sendMessage(Text.of(" "));
-
-                AuthenticationDatabase.AuthenticationData data = new AuthenticationDatabase(player.getUniqueId()).getAuthenticationData();
-                if (data == null) {
-                    player.sendMessage(Text.of("<e>You must first register to play this server!"));
-                    player.sendMessage(Text.of("<e>In the Minecraft chat, type <6>/register \\<password> \\<password><e>."));
-                } else {
-                    player.sendMessage(Text.of("<e>In the Minecraft chat, type <6>/login \\<password><e>."));
-                }
-
-                server.getScheduler().buildTask(SkyBlockVelocity.getPlugin(), () -> {
-                    if (player.isActive() && unauthenticated.contains(player.getUniqueId())) {
-                        ProxyText.disconnect(player, "<c>You have been kicked for not authenticating your account.");
-                    }
-                }).delay(Duration.ofSeconds(30)).schedule();
+                ProxyText.disconnect(player, "<c>Authentication requires a configured holding server; this Ravengard-only proxy has none.");
                 return;
             }
 
-            if (!GameManager.hasType(ServerType.PROTOTYPE_LOBBY) || !GameManager.isAnyEmpty(ServerType.PROTOTYPE_LOBBY)) {
-                ProxyText.disconnect(player, "<c>There are no Prototype Lobby servers available at the moment.");
+            if (!GameManager.hasType(ServerType.RAVENGARD_LOBBY)
+                    || !GameManager.isAnyEmpty(ServerType.RAVENGARD_LOBBY)) {
+                ProxyText.disconnect(player, "<c>There are no Ravengard Lobby servers available at the moment.");
                 return;
             }
 
-            List<GameManager.GameServer> gameServers = GameManager.getFromType(ServerType.PROTOTYPE_LOBBY);
+            List<GameManager.GameServer> gameServers = GameManager.getFromType(ServerType.RAVENGARD_LOBBY);
             if (TestFlowManager.isPlayerInTestFlow(player.getUsername())) {
                 TestFlowManager.ProxyTestFlowInstance instance = TestFlowManager.getTestFlowForPlayer(player.getUsername());
                 player.sendMessage(Text.of("<7>You are currently in test flow {}.", instance.getName()));
@@ -404,11 +379,11 @@ public class SkyBlockVelocity {
             }
 
             if (gameServers.isEmpty()) {
-                ProxyText.disconnect(player, "<c>There are no servers (type=PROTOTYPE_LOBBY) servers available at the moment.");
+                ProxyText.disconnect(player, "<c>There are no servers (type=RAVENGARD_LOBBY) available at the moment.");
                 return;
             }
 
-            List<BalanceConfiguration> configurations = BalanceConfigurations.CONFIGURATIONS.get(ServerType.BEDWARS_LOBBY);
+            List<BalanceConfiguration> configurations = BalanceConfigurations.CONFIGURATIONS.get(ServerType.RAVENGARD_LOBBY);
             GameManager.GameServer toSendTo = gameServers.getFirst();
 
             for (BalanceConfiguration configuration : configurations) {
@@ -427,74 +402,43 @@ public class SkyBlockVelocity {
     @Subscribe
     public void onPlayerDisconnect(DisconnectEvent event) {
         unauthenticated.remove(event.getPlayer().getUniqueId());
+        TransferHandler.clearPlayerState(event.getPlayer().getUniqueId());
     }
 
     @Subscribe
     public void onServerCrash(KickedFromServerEvent event) {
-        if (checkPunished(event.getPlayer())) {
+        UUID playerUuid = event.getPlayer().getUniqueId();
+        if (!TransferHandler.beginCrashRecovery(playerUuid)) {
+            event.setResult(KickedFromServerEvent.Notify.create(
+                ProxyText.render("<c>Your Ravengard connection is already recovering. Please reconnect.")));
             return;
         }
 
-        // Send the player to the limbo
+        if (checkPunished(event.getPlayer())) {
+            TransferHandler.clearCrashRecovery(playerUuid);
+            return;
+        }
+
         RegisteredServer originalServer = event.getServer();
         Component reason = event.getServerKickReason().orElseGet(() ->
             ProxyText.render("<c>Your connection to the server was lost. Please try again later."));
         ServerType serverType = GameManager.getTypeFromRegisteredServer(originalServer);
 
-        event.setResult(KickedFromServerEvent.RedirectPlayer.create(
-            limboServer,
-            null
-        ));
+        for (ServerType candidate : CrashRecoveryRouting.candidates(serverType)) {
+            if (!GameManager.hasType(candidate) || !GameManager.isAnyEmpty(candidate)) {
+                continue;
+            }
+            GameManager.GameServer destination = BalanceConfigurations.getServerFor(event.getPlayer(), candidate);
+            if (destination != null && !destination.registeredServer().equals(originalServer)) {
+                event.setResult(KickedFromServerEvent.RedirectPlayer.create(destination.registeredServer(), reason));
+                return;
+            }
+        }
 
-        TransferHandler transferHandler = new TransferHandler(event.getPlayer());
-
-        CompletableFuture.delayedExecutor(GameManager.SLEEP_TIME + 300, TimeUnit.MILLISECONDS)
-            .execute(() -> {
-                // Determine if the registeredServer disconnect was due to a crash —
-                // if it was, send the player to another server of that type;
-                // otherwise disconnect them with the original reason.
-                try {
-                    LinkedHashSet<ServerType> candidates = new LinkedHashSet<>();
-                    if (serverType != null && !LobbyDestination.isSessionType(serverType)) {
-                        candidates.add(serverType);
-                    }
-                    candidates.add(LobbyDestination.resolveDefaultDestination(serverType));
-                    candidates.add(ServerType.PROTOTYPE_LOBBY);
-
-                    ServerType serverTypeToTry = null;
-                    GameManager.GameServer server = null;
-                    for (ServerType candidate : candidates) {
-                        if (!GameManager.hasType(candidate) || !GameManager.isAnyEmpty(candidate)) {
-                            continue;
-                        }
-                        GameManager.GameServer candidateServer = BalanceConfigurations.getServerFor(event.getPlayer(), candidate);
-                        if (candidateServer == null || candidateServer.registeredServer().equals(originalServer)) {
-                            continue;
-                        }
-                        serverTypeToTry = candidate;
-                        server = candidateServer;
-                        break;
-                    }
-                    if (server == null) {
-                        transferHandler.forceRemoveFromLimbo();
-                        event.getPlayer().disconnect(reason);
-                        return;
-                    }
-                    transferHandler.transferTo(server.registeredServer());
-
-                    if (serverTypeToTry == serverType) {
-                        event.getPlayer().sendMessage(Text.of("<c>An exception occurred in your connection, so you were put into another server of the same type."));
-                    } else {
-                        event.getPlayer().sendMessage(Text.of("<c>An exception occurred in your connection, so you were put into a lobby."));
-                    }
-                    event.getPlayer().sendMessage(Text.of("<7>Sending to server {}...", server.displayName()));
-                } catch (Exception e) {
-                    Logger.getAnonymousLogger().log(Level.SEVERE, "An exception occurred while trying to transfer " + event.getPlayer().getUsername() + " to " + serverType, e);
-                    transferHandler.forceRemoveFromLimbo();
-                    event.getPlayer().disconnect(reason);
-                }
-            });
+        TransferHandler.clearCrashRecovery(playerUuid);
+        event.setResult(KickedFromServerEvent.Notify.create(reason));
     }
+
 
     @Subscribe
     public void onPing(ProxyPingEvent event) {
@@ -520,14 +464,6 @@ public class SkyBlockVelocity {
                 "\n", supportedFrom, supportedFrom));
         }
 
-        player.getCurrentServer().ifPresent(connection -> {
-            if (connection.getServer() == limboServer) {
-                if (unauthenticated.contains(player.getUniqueId())) return;
-
-                player.sendMessage(Text.of("<c>You were spawned in Limbo."));
-                player.sendMessage(Text.of("<b>/limbo for more information."));
-            }
-        });
     }
 
     public static <T> Stream<T> loopThroughPackage(String packageName, Class<T> clazz) {

@@ -4,7 +4,7 @@ welcome_message = ""
 action_bar = ""
 default_game_mode = "survival"
 hardcore = true
-fetch_player_skins = false
+fetch_player_skins = true
 reduced_debug_info = false
 accept_transfers = false
 

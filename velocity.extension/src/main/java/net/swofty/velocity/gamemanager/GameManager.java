@@ -18,7 +18,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameManager {
-    public static final int SLEEP_TIME = 300;
+    public static final int SLEEP_TIME = 1000;
+    private static final int PING_DEADLINE_MILLIS = 3000;
     public static final int MISSED_PINGS_BEFORE_REMOVAL = 5;
     @Getter
     private static Map<ServerType, ArrayList<GameServer>> servers = new HashMap<>();
@@ -140,7 +141,7 @@ public class GameManager {
                         if (currentServers == null || !currentServers.remove(registeredServer)) return;
 
                         TestFlowManager.handleServerDisconnect(registeredServer.internalID);
-                    }).delay(Duration.ofMillis(SLEEP_TIME)).schedule();
+                    }).delay(Duration.ofMillis(PING_DEADLINE_MILLIS)).schedule();
                 });
             });
         }).repeat(Duration.ofMillis(SLEEP_TIME)).schedule();

@@ -87,5 +87,10 @@ public class ProxyAPI {
 
     public void start() {
         RedisAPI.getInstance().startListeners();
+        RedisWatchdog.start("server-" + serverUUID);
+    }
+
+    public void stop() {
+        RedisWatchdog.stop();
     }
 }

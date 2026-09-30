@@ -7,6 +7,7 @@ import net.swofty.commons.text.Text;
 import net.swofty.commons.LobbyDestination;
 import net.swofty.commons.ServerType;
 import net.swofty.velocity.gamemanager.GameManager;
+import net.swofty.velocity.gamemanager.RavengardOnlyRouting;
 import net.swofty.velocity.gamemanager.TransferHandler;
 
 public class LobbyCommand implements SimpleCommand {
@@ -31,14 +32,22 @@ public class LobbyCommand implements SimpleCommand {
 
         ServerType destination;
         if (args.length == 0) {
-            destination = LobbyDestination.resolveDefaultDestination(currentType);
+            destination = RavengardOnlyRouting.lobbyDestination(
+                currentType, LobbyDestination.resolveDefaultDestination(currentType));
         } else {
-            destination = LobbyDestination.resolveFromAlias(args[0]);
+            destination = RavengardOnlyRouting.lobbyDestination(
+                currentType, LobbyDestination.resolveFromAlias(args[0]));
             if (destination == null) {
                 player.sendMessage(Text.of("<c>Unknown lobby destination. Try /lobby bw, /lobby sw, /lobby bedwars, /lobby skywars."));
                 return;
             }
         }
+
+		if ((!GameManager.hasType(destination) || !GameManager.isAnyEmpty(destination))
+			&& GameManager.hasType(ServerType.RAVENGARD_LOBBY)
+			&& GameManager.isAnyEmpty(ServerType.RAVENGARD_LOBBY)) {
+			destination = ServerType.RAVENGARD_LOBBY;
+		}
 
         new TransferHandler(player).transferTo(destination);
     }

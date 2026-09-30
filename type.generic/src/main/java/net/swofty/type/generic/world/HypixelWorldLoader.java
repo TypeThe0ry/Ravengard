@@ -63,6 +63,11 @@ public final class HypixelWorldLoader {
         return loadFrom(world.getPath(), manager.createInstanceContainer(), manager);
     }
 
+    public static void registerCustomBiomes(Path path) throws IOException {
+        PolarWorld polarWorld = PolarReader.read(Files.readAllBytes(path));
+        registerCustomBiomes(readUserData(polarWorld.userData()));
+    }
+
     /**
      * Loads any polar file into the given container, applying its custom biomes and display
      * entities the same way the main world does.

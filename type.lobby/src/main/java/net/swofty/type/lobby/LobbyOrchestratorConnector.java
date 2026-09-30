@@ -44,7 +44,8 @@ public record LobbyOrchestratorConnector(HypixelPlayer player) {
                         neededSlots
                 );
 
-        return PROXY_SERVICE.handleRequest(message)
+        long requestTimeout = targetServerType == ServerType.RAVENGARD_DUNGEON ? 60 : 10;
+        return PROXY_SERVICE.handleRequest(message, requestTimeout, TimeUnit.SECONDS)
                 .thenApply(response -> {
                     PLAYERS_SEARCHING.remove(player.getUuid());
 

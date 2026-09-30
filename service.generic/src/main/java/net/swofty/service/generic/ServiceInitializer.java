@@ -10,6 +10,7 @@ import net.swofty.commons.redis.RedisEnvelope;
 import net.swofty.commons.redis.RedisMessageBus;
 import net.swofty.commons.redis.RedisMessageContext;
 import net.swofty.commons.redis.RedisMessageHandler;
+import net.swofty.commons.redis.RedisWatchdog;
 import net.swofty.commons.skyblock.item.attribute.ItemAttribute;
 import net.swofty.redisapi.api.RedisAPI;
 import net.swofty.service.generic.redis.PingEndpoint;
@@ -56,8 +57,10 @@ public class ServiceInitializer {
         });
 
         RedisAPI.getInstance().startListeners();
+        RedisWatchdog.start("service-" + service.getType().name());
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
+                RedisWatchdog.stop();
                 RedisAPI.getInstance().shutdown();
             } catch (Exception exception) {
                 Logger.error(exception, "Failed to shut down Redis for service {}", service.getType().name());

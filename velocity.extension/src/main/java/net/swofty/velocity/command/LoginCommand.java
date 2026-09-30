@@ -44,7 +44,7 @@ public class LoginCommand implements SimpleCommand {
         if (data.matches(args[0])) {
             SkyBlockVelocity.getUnauthenticated().remove(player.getUniqueId());
             player.sendMessage(Text.of("<a>You have successfully logged in!"));
-            new TransferHandler(player).transferTo(ServerType.PROTOTYPE_LOBBY);
+            new TransferHandler(player).transferTo(ServerType.RAVENGARD_LOBBY);
         } else {
             player.sendMessage(Text.of("<c>Your password is incorrect."));
         }

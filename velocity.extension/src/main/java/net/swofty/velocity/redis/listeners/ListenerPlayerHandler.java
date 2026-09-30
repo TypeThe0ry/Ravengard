@@ -17,6 +17,7 @@ import net.swofty.commons.text.Text;
 import net.swofty.redisapi.api.requests.DataRequest;
 import net.swofty.velocity.SkyBlockVelocity;
 import net.swofty.velocity.gamemanager.GameManager;
+import net.swofty.velocity.gamemanager.RavengardOnlyRouting;
 import net.swofty.velocity.gamemanager.TransferHandler;
 import net.swofty.velocity.presence.PresencePublisher;
 import org.json.JSONObject;
@@ -193,24 +194,18 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
     }
 
     private ServerType resolveAfkOriginType(Map<String, Object> data, Optional<ServerConnection> potentialServer) {
+        ServerType requestedOriginType = null;
         if (data.containsKey("origin-type")) {
             String rawOriginType = (String) data.get("origin-type");
             if (ServerType.isServerType(rawOriginType)) {
-                ServerType parsedType = ServerType.valueOf(rawOriginType.toUpperCase());
-                if (parsedType.name().endsWith("_LOBBY")) {
-                    return parsedType;
-                }
+                requestedOriginType = ServerType.valueOf(rawOriginType.toUpperCase());
             }
         }
 
         ServerType currentType = potentialServer
             .map(connection -> GameManager.getTypeFromRegisteredServer(connection.getServer()))
             .orElse(null);
-        if (currentType != null && currentType.name().endsWith("_LOBBY")) {
-            return currentType;
-        }
-
-        return ServerType.PROTOTYPE_LOBBY;
+        return RavengardOnlyRouting.afkOrigin(requestedOriginType, currentType);
     }
 
     private void publishPresence(Player player, boolean online) {

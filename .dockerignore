@@ -1,0 +1,5 @@
+*
+!DockerFiles/
+!DockerFiles/**
+!configuration/
+!configuration/**

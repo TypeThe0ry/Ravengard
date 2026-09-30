@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.GameMode;
 import net.minestom.server.entity.Player;
+import net.minestom.server.entity.PlayerSkin;
 import net.minestom.server.scoreboard.Team;
 import net.minestom.server.scoreboard.TeamBuilder;
 import net.swofty.PlayerField;
@@ -328,12 +329,12 @@ public class HypixelDataHandler extends DataHandler {
         SKIN_SIGNATURE("skin_signature",
                 DatapointString.class, new DatapointString("skin_signature", "null"),
                 (player, datapoint) -> {},
-                (player, datapoint) -> ((DatapointString) datapoint).setValue(player.getSkin().signature())),
+                (player, datapoint) -> updateSkinValue(player.getSkin(), datapoint, PlayerSkin::signature)),
 
         SKIN_TEXTURE("skin_texture",
                 DatapointString.class, new DatapointString("skin_texture", "null"),
                 (player, datapoint) -> {},
-                (player, datapoint) -> ((DatapointString) datapoint).setValue(player.getSkin().textures())),
+                (player, datapoint) -> updateSkinValue(player.getSkin(), datapoint, PlayerSkin::textures)),
 
         HYPIXEL_EXPERIENCE("hypixel_experience",
                 DatapointHypixelExperience.class, new DatapointHypixelExperience("hypixel_experience", 0L)),
@@ -403,5 +404,9 @@ public class HypixelDataHandler extends DataHandler {
             for (Data d : values()) if (d.getKey().equals(key)) return d;
             return null;
         }
+    }
+
+    static void updateSkinValue(PlayerSkin skin, Datapoint<?> datapoint, Function<PlayerSkin, String> value) {
+        if (skin != null) ((DatapointString) datapoint).setValue(value.apply(skin));
     }
 }
