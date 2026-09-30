@@ -9,8 +9,6 @@ import net.swofty.type.ravengardgeneric.classes.RavengardAbility;
 import net.swofty.type.ravengardgeneric.classes.RavengardClass;
 import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
-import java.util.List;
-
 public class GUIRavengardMenu extends RavengardView {
     // origins taken from the captured menu
     private static final int SLOT_FIGHT = 3;
@@ -136,10 +134,14 @@ public class GUIRavengardMenu extends RavengardView {
             return;
         }
 
-        List<RavengardAbility> abilities = playerClass.defaultAbilities();
+        RavengardPlayer ravengardPlayer = (RavengardPlayer) ctx.player();
         int[] slots = {SLOT_ABILITY_ONE, SLOT_ABILITY_TWO};
-        for (int index = 0; index < slots.length && index < abilities.size(); index++) {
-            RavengardAbility ability = abilities.get(index);
+        for (int index = 0; index < slots.length; index++) {
+            RavengardAbility ability = net.swofty.type.ravengardgeneric.classes.RavengardKit
+                    .equippedAbility(ravengardPlayer, index);
+            if (ability == null) {
+                continue;
+            }
             final int page = index + 1;
             RavengardItems.Builder button = RavengardItems.button(ability)
                     .label(Text.of((page == 1 ? "First" : "Second") + " Ability<7> - <f>{}",

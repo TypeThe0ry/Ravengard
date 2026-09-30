@@ -25,6 +25,9 @@ public final class DungeonTemplate {
     public static DungeonTemplate get() {
         if (instance == null) {
             Path path = Path.of("./configuration/ravengard/dungeon_1.polar");
+            if (!Files.exists(path)) {
+                path = Path.of("..", "configuration", "ravengard", "dungeon_1.polar");
+            }
             try {
                 instance = new DungeonTemplate(PolarReader.read(Files.readAllBytes(path)));
             } catch (Exception exception) {

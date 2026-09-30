@@ -18,6 +18,14 @@ import java.util.List;
 import java.util.Set;
 
 public final class RavengardItems {
+    public static boolean hasFreeSlot(net.minestom.server.entity.Player player) {
+        var inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.getInnerSize(); slot++) {
+            if (inventory.getItemStack(slot).isAir()) return true;
+        }
+        return false;
+    }
+
     private static final Material BUTTON_MATERIAL = Material.LEATHER_CHESTPLATE;
     private static final ShadowColor LABEL_SHADOW = ShadowColor.shadowColor(4194303);
     private static final ShadowColor ICON_SHADOW = ShadowColor.shadowColor(0);

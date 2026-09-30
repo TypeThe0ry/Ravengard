@@ -91,7 +91,7 @@ public class TypeRavengardLobbyLoader implements RavengardTypeLoader {
 
     @Override
     public void afterInitialize(MinecraftServer server) {
-
+        net.swofty.type.ravengardgeneric.profile.RavengardTransfer.install(player -> {});
     }
 
     @Override

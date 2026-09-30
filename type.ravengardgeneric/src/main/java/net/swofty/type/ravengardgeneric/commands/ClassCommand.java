@@ -6,6 +6,7 @@ import net.swofty.type.generic.command.HypixelCommand;
 import net.swofty.type.generic.user.categories.Rank;
 import net.swofty.type.ravengardgeneric.classes.RavengardAbility;
 import net.swofty.type.ravengardgeneric.classes.RavengardClass;
+import net.swofty.type.ravengardgeneric.classes.RavengardSelection;
 import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
 import java.util.Arrays;
@@ -26,6 +27,11 @@ public class ClassCommand extends HypixelCommand {
 
         command.addSyntax((sender, context) -> {
             RavengardPlayer player = (RavengardPlayer) sender;
+            if (net.swofty.type.generic.HypixelConst.getTypeLoader().getType()
+                    == net.swofty.commons.ServerType.RAVENGARD_DUNGEON) {
+                player.sendMessage("<c>You cannot change your class inside a dungeon!");
+                return;
+            }
             RavengardClass chosen = RavengardClass.fromKey(context.get(classArg));
 
             if (chosen == null) {
@@ -36,6 +42,9 @@ public class ClassCommand extends HypixelCommand {
             }
 
             player.setRavengardClass(chosen);
+            player.setTutorial(false);
+            RavengardSelection.giveKit(player, chosen);
+            net.swofty.type.ravengardgeneric.profile.RavengardProfiles.saveActive(player);
             player.sendMessage("{} <f>You are now a <e>{}<f>.", chosen.getIcon(), chosen.getDisplayName());
             for (RavengardAbility ability : chosen.getAbilities()) {
                 player.sendMessage("  {} <7>{} <8>({})", ability.getIcon(), ability.getDisplayName(),

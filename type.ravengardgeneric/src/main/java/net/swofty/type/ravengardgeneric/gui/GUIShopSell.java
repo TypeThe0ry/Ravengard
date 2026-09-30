@@ -141,6 +141,10 @@ public class GUIShopSell extends RavengardView {
             if (!(viewContext.player() instanceof RavengardPlayer player)) {
                 return;
             }
+            if (!RavengardItems.hasFreeSlot(player)) {
+                player.sendMessage("<c>Your inventory is full!");
+                return;
+            }
             List<ItemStack> next = new ArrayList<>(staged);
             ItemStack removed = next.remove(index);
             player.getInventory().addItemStack(removed);

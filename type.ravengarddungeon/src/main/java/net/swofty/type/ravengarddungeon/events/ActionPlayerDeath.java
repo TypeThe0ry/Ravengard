@@ -6,6 +6,7 @@ import net.swofty.type.generic.event.HypixelEventClass;
 import net.swofty.type.generic.event.phase.PhasedEvent;
 import net.swofty.type.generic.utility.ScheduleUtility;
 import net.swofty.type.ravengarddungeon.TypeRavengardDungeonLoader;
+import net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry;
 import net.swofty.type.ravengarddungeon.user.RavengardDungeonPlayer;
 
 public class ActionPlayerDeath implements HypixelEventClass {
@@ -13,8 +14,21 @@ public class ActionPlayerDeath implements HypixelEventClass {
     public void run(PlayerDeathEvent event) {
         event.setChatMessage(null);
         RavengardDungeonPlayer player = (RavengardDungeonPlayer) event.getPlayer();
+        net.swofty.type.ravengarddungeon.interactables.InteractableRegistry.clearPlayer(player);
+        net.swofty.type.ravengardgeneric.sound.RavengardSounds.stop(player,
+                net.swofty.type.ravengardgeneric.sound.RavengardSounds.Cue.EXTRACTION_CHANNEL);
         String killer = killerName(player.getLastDamageSource());
-        ScheduleUtility.nextTick(() -> TypeRavengardDungeonLoader.getGame().eliminate(player, killer));
+        ScheduleUtility.nextTick(() -> {
+            var instance = DungeonInstanceRegistry.findByPlayer(player.getUuid());
+            if (instance != null) {
+                instance.getGame().eliminate(player, killer);
+                return;
+            }
+            var game = TypeRavengardDungeonLoader.getGame();
+            if (game != null) {
+                game.eliminate(player, killer);
+            }
+        });
     }
 
     private static String killerName(net.minestom.server.entity.damage.Damage damage) {

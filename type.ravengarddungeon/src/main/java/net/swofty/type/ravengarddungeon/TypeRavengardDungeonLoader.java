@@ -21,6 +21,7 @@ import net.swofty.type.generic.tab.TablistModule;
 import net.swofty.type.generic.world.HypixelWorldLoader;
 import net.swofty.type.ravengarddungeon.config.RavengardDungeonConfig;
 import net.swofty.type.ravengarddungeon.game.RavengardDungeonGame;
+import net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry;
 import net.swofty.type.ravengarddungeon.user.RavengardDungeonPlayer;
 import net.swofty.type.ravengardgeneric.RavengardGenericLoader;
 import org.jetbrains.annotations.Nullable;
@@ -62,23 +63,28 @@ public class TypeRavengardDungeonLoader implements RavengardTypeLoader {
         } catch (IOException e) {
             throw new IllegalStateException("Could not load Ravengard dungeon map: " + polarPath);
         }
-        game = new RavengardDungeonGame(instance, config);
+        game = new RavengardDungeonGame(instance, config,
+                RavengardDungeonGame.SPAWN_POINTS,
+                DungeonInstanceRegistry.officialExtractionAnchors());
+        game.configureDeathWall(5.5, -0.75, 264.0);
+        net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry
+                .spawnInteractables(instance, config, System.nanoTime());
         MinecraftServer.getConnectionManager().setPlayerProvider((connection, profile) ->
                 new RavengardDungeonPlayer(connection, profile));
     }
 
     @Override
     public void afterInitialize(MinecraftServer server) {
-        // same recipe as skyblock islands: a fullbright dimension renders on the
-        // client without any light data, which runtime-built instances lack
-        MinecraftServer.getDimensionTypeRegistry().register(
-                net.kyori.adventure.key.Key.key("ravengard:dungeon"),
-                net.minestom.server.world.DimensionType.builder()
-                        .ambientLight(1)
-                        .build());
         net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry.startExpiryTask();
-        net.swofty.type.ravengarddungeon.game.DungeonMinimapIcons.register();
+        net.swofty.type.ravengarddungeon.game.DungeonTabMap.register();
         net.swofty.type.ravengarddungeon.interactables.InteractableRegistry.startTask();
+        net.swofty.type.ravengardgeneric.profile.RavengardTransfer.install(player ->
+                net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry.forfeitRun(
+                        (net.swofty.type.ravengarddungeon.user.RavengardDungeonPlayer) player));
+        net.swofty.type.ravengarddungeon.interactables.InteractableRegistry.setAccessGate(
+                net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry::canInteract);
+        net.swofty.type.ravengardgeneric.entity.mob.RavengardMob.setTargetGate(
+                net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry::canInteract);
         net.swofty.type.ravengardgeneric.commands.SpawnSatchelCommand.spawner = player ->
                 net.swofty.type.ravengarddungeon.interactables.DungeonSatchel.spawn(
                         player.getInstance(), player.getPosition());

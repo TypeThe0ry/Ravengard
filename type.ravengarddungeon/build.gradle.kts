@@ -23,6 +23,9 @@ dependencies {
     compileOnly(libs.minestom) {
         exclude(group = "org.jboss.shrinkwrap.resolver", module = "shrinkwrap-resolver-depchain")
     }
+    testImplementation(libs.minestom) {
+        exclude(group = "org.jboss.shrinkwrap.resolver", module = "shrinkwrap-resolver-depchain")
+    }
     implementation(libs.gson)
     implementation(libs.tinylog.api)
     implementation(libs.tinylog.impl)

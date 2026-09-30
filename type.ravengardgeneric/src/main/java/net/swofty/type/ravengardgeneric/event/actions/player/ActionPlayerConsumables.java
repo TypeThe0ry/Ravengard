@@ -47,11 +47,11 @@ public class ActionPlayerConsumables implements HypixelEventClass {
         int seconds = matcher.group(2) == null ? 0 : Integer.parseInt(matcher.group(2));
         RavengardAbilityService.consumeHeal(player, amount, seconds);
 
-        ItemStack held = player.getItemInMainHand();
+        ItemStack held = player.getItemInHand(event.getHand());
         if (held.amount() > 1) {
-            player.setItemInMainHand(held.withAmount(held.amount() - 1));
+            player.setItemInHand(event.getHand(), held.withAmount(held.amount() - 1));
         } else {
-            player.setItemInMainHand(ItemStack.AIR);
+            player.setItemInHand(event.getHand(), ItemStack.AIR);
         }
     }
 }

@@ -6,6 +6,7 @@ import net.swofty.type.generic.gui.v2.ViewLayout;
 import net.swofty.type.generic.gui.v2.context.ViewContext;
 import net.swofty.type.ravengardgeneric.classes.RavengardAbility;
 import net.swofty.type.ravengardgeneric.classes.RavengardClass;
+import net.swofty.type.ravengardgeneric.classes.RavengardKit;
 import net.swofty.type.ravengardgeneric.data.RavengardProfileStorage;
 import net.swofty.type.ravengardgeneric.profile.RavengardProfile;
 import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
@@ -49,11 +50,10 @@ public class GUIAbilityPage extends RavengardView {
         }
 
         List<RavengardAbility> abilities = playerClass.getAbilities();
-        List<RavengardAbility> equipped = playerClass.defaultAbilities();
-
         for (int index = 0; index < ABILITY_SLOTS.length && index < abilities.size(); index++) {
             RavengardAbility ability = abilities.get(index);
-            int equippedSlot = equipped.indexOf(ability) + 1;
+            int equippedSlot = RavengardKit.equippedAbility(player, 0) == ability ? 1
+                    : RavengardKit.equippedAbility(player, 1) == ability ? 2 : 0;
 
             RavengardItems.Builder button = equippedSlot > 0
                     ? RavengardItems.button(ability)

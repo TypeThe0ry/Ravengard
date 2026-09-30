@@ -1,10 +1,14 @@
 package net.swofty.type.ravengardgeneric.classes;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.component.CustomData;
 import net.minestom.server.utils.inventory.PlayerInventoryUtils;
 import net.swofty.commons.text.Text;
 import net.swofty.type.ravengardgeneric.gui.RavengardItems;
+import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
 /**
  * Which registry items a class starts with, and where they go.
@@ -47,7 +51,8 @@ public record RavengardKit(String chestId, String legsId, String bootsId,
         return switch (value) {
             case KNIGHT -> new RavengardKit("TUNIC", "REINFORCED_PANTS", "OLD_BOOTS");
             case WARRIOR -> new RavengardKit("WEATHERED_HARNESS", "WEATHERED_PANTS", "OLD_BOOTS");
-            case HUNTER -> new RavengardKit("TUNIC", "REINFORCED_PANTS", "OLD_BOOTS");
+            case HUNTER -> new RavengardKit("TUNIC", "REINFORCED_PANTS", "OLD_BOOTS",
+                    java.util.List.of("ASH_BOW"));
             case ASSASSIN -> new RavengardKit("TUNIC", "REINFORCED_PANTS", "OLD_BOOTS");
             case SORCERER -> new RavengardKit("WEATHERED_ROBE", "WEATHERED_PANTS", "OLD_BOOTS",
                     java.util.List.of("APPRENTICE_STAFF", "STARTER_BANDAGE"));
@@ -66,6 +71,37 @@ public record RavengardKit(String chestId, String legsId, String bootsId,
                 .blankLine()
                 .lore(Text.of("<#f0f05c>Press {} to use!",
                         Component.keybind(first ? "key.drop" : "key.swapOffhand")))
-                .build();
+                .build()
+                .with(DataComponents.CUSTOM_DATA, new CustomData(CompoundBinaryTag.builder()
+                        .putString("ravengard_ability", value.name())
+                        .build()));
+    }
+
+    public static RavengardAbility abilityFrom(ItemStack stack) {
+        if (stack == null || stack.isAir()) {
+            return null;
+        }
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null) {
+            return null;
+        }
+        return RavengardAbility.fromKey(data.nbt().getString("ravengard_ability"));
+    }
+
+    public static RavengardAbility equippedAbility(RavengardPlayer player, int slot) {
+        if (player == null) {
+            return null;
+        }
+        int inventorySlot = slot == 0 ? SLOT_ABILITY_ONE : SLOT_ABILITY_TWO;
+        return abilityFrom(player.getInventory().getItemStack(inventorySlot));
+    }
+
+    public static java.util.List<RavengardAbility> equippedAbilities(RavengardPlayer player) {
+        java.util.ArrayList<RavengardAbility> result = new java.util.ArrayList<>(2);
+        RavengardAbility first = equippedAbility(player, 0);
+        RavengardAbility second = equippedAbility(player, 1);
+        if (first != null) result.add(first);
+        if (second != null) result.add(second);
+        return java.util.List.copyOf(result);
     }
 }

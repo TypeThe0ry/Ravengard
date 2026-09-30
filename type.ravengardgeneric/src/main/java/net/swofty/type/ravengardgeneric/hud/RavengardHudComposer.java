@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.ShadowColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.swofty.type.ravengardgeneric.gui.RavengardFont;
@@ -49,9 +50,19 @@ public final class RavengardHudComposer {
         Map<RavengardHudLayer, Component> layers = new EnumMap<>(RavengardHudLayer.class);
         for (RavengardHudLayer layer : RavengardHudLayer.values()) {
             if (layer == RavengardHudLayer.MINIMAP_TILES && state.isDungeon()) {
-                // generated dungeons have no pre-rendered map image; the live room
-                // icons on the marker line carry the map instead
-                layers.put(layer, Component.empty());
+                layers.put(layer, Component.text(RavengardHudGlyphs.cryptTiles())
+                        .font(RavengardFont.RAVENGARD)
+                        .color(TextColor.color(mapTint(state))));
+                continue;
+            }
+            if (layer == RavengardHudLayer.SPACER_10 && state.isDungeon() && state.getDeathWall() != null) {
+                layers.put(layer, minimapDeathWall(state));
+                continue;
+            }
+            if (layer == RavengardHudLayer.SPACER_2 && state.isDungeon() && state.getBossBarName() != null) {
+                // the pack draws its logo where vanilla names a boss bar and instead lifts
+                // this sidebar line into the gap above the bar
+                layers.put(layer, Component.text(state.getBossBarName(), RavengardHudTint.BOSS_NAME.color()));
                 continue;
             }
             if (layer == RavengardHudLayer.STATS && state.isDungeon()) {
@@ -172,15 +183,12 @@ public final class RavengardHudComposer {
         return line;
     }
 
-    private static final double MAP_SCALE = 4.0;
-    private static final double MAP_ORIGIN_X = 1931.56;
-    private static final double MAP_ORIGIN_Z = 1894.40;
     private static final int MARKER_ICON = 255;
     private static final double YAW_PER_STEP = 360.0 / 64.0;
 
     public static int mapTint(RavengardHudState state) {
-        int x = clamp12((int) Math.round(state.getWorldX() * MAP_SCALE + MAP_ORIGIN_X));
-        int z = clamp12((int) Math.round(state.getWorldZ() * MAP_SCALE + MAP_ORIGIN_Z));
+        int x = clamp12((int) Math.round((state.getWorldX() + 512.0) * 4.0));
+        int z = clamp12((int) Math.round((state.getWorldZ() + 512.0) * 4.0));
         return (x << 12) | z;
     }
 
@@ -191,6 +199,49 @@ public final class RavengardHudComposer {
         }
         int rotation = ((int) Math.round(yaw / YAW_PER_STEP)) & 0x3F;
         return (MARKER_ICON << 15) | (MARKER_ICON << 6) | rotation;
+    }
+
+    // the pack's deathwall glyph reads the square's side from its x offset inside the
+    // 99999px sidebar line and its centre, relative to the player, from the tint
+    private static final int DEATHWALL_GLYPH_ADVANCE = 5;
+
+    static Component minimapDeathWall(RavengardHudState state) {
+        RavengardDeathWallView wall = state.getDeathWall();
+        int side = wall.side();
+        Component line = Component.text(RavengardFont.pixelSpace(side) + RavengardHudGlyphs.DEATHWALL)
+                .font(RavengardFont.RAVENGARD)
+                .color(TextColor.color(deathWallTint(wall.centerX() - state.getWorldX(),
+                        wall.centerZ() - state.getWorldZ())))
+                .shadowColor(ShadowColor.shadowColor(0));
+        RavengardDeathWallView warning = state.getDeathWallWarning();
+        if (warning != null) {
+            int shift = warning.side() - side - DEATHWALL_GLYPH_ADVANCE;
+            line = line.append(Component.text(RavengardFont.pixelSpace(shift) + RavengardHudGlyphs.DEATHWALL_WARNING)
+                    .color(TextColor.color(deathWallTint(warning.centerX() - state.getWorldX(),
+                            warning.centerZ() - state.getWorldZ()))));
+        }
+        return line;
+    }
+
+    // fullscreen map lines are centred, which halves the effect of the leading space; the
+    // client drops the glyph when a negative space trails it, so the line has to stay this
+    // wide, and one wider than the tab header's wrap width would push the glyph onto its
+    // own line and paint the whole map as wall
+    static final int FULL_MAP_MAX_SIDE = 424;
+
+    static Component fullMapDeathWall(RavengardDeathWallView wall, String glyph) {
+        int side = wall.side();
+        if (side > FULL_MAP_MAX_SIDE) return null;
+        return Component.text(RavengardFont.pixelSpace(side + 1) + glyph)
+                .font(RavengardFont.RAVENGARD)
+                .color(TextColor.color(deathWallTint(wall.centerX(), wall.centerZ())))
+                .shadowColor(ShadowColor.shadowColor(0));
+    }
+
+    static int deathWallTint(double x, double z) {
+        int packedX = clamp12((int) Math.round((x + 1024.0) * 2.0));
+        int packedZ = clamp12((int) Math.round((z + 1024.0) * 2.0));
+        return (packedX << 12) | packedZ;
     }
 
     private static int clamp12(int value) {

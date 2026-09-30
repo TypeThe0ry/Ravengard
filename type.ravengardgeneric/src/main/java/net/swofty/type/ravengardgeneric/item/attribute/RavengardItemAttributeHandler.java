@@ -45,6 +45,11 @@ public class RavengardItemAttributeHandler {
     }
 
     public @Nullable RavengardItemType getType() {
+        String tracked = getTrackedId();
+        RavengardItemType exact = tracked.isEmpty() ? null : RavengardItemRegistry.get(tracked);
+        if (exact != null && tracked.equals(exact.getTrackedId())) {
+            return exact;
+        }
         String type = getTypeAsString();
         return type == null ? null : RavengardItemRegistry.get(type);
     }

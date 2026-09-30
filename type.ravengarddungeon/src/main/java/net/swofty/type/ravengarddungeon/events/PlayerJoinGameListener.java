@@ -13,7 +13,9 @@ public class PlayerJoinGameListener implements HypixelEventClass {
     public void onPlayerJoinGame(PlayerPostJoinGameEvent event) {
         RavengardDungeonPlayer player = (RavengardDungeonPlayer) event.player();
         int playerIndex = event.currentPlayerCount() - 1;
-        player.setInstance(event.getGame().getInstance(),
-                RavengardDungeonGame.SPAWN_POINTS.get(playerIndex % RavengardDungeonGame.SPAWN_POINTS.size()));
+        RavengardDungeonGame game = (RavengardDungeonGame) event.getGame();
+        if (player.getInstance() == game.getInstance()) {
+            player.teleport(game.getSpawnPoint(playerIndex));
+        }
     }
 }

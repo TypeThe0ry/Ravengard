@@ -100,23 +100,23 @@ public final class RavengardMobClip {
         }
 
         public double[] offset() {
-            return offset == null ? new double[]{0, 0, 0} : offset;
+            return offset == null || offset.length < 3 ? new double[]{0, 0, 0} : offset;
         }
 
         public float[] translation() {
-            return t;
+            return t == null || t.length < 3 ? null : t;
         }
 
         public float[] scale() {
-            return s == null ? new float[]{1, 1, 1} : s;
+            return s == null || s.length < 3 ? new float[]{1, 1, 1} : s;
         }
 
         public float[] leftRotation() {
-            return r;
+            return r == null || r.length < 4 ? null : r;
         }
 
         public float[] rightRotation() {
-            return rr == null ? new float[]{0, 0, 0, 1} : rr;
+            return rr == null || rr.length < 4 ? new float[]{0, 0, 0, 1} : rr;
         }
 
         public int context() {
@@ -148,15 +148,15 @@ public final class RavengardMobClip {
         private Integer d;
 
         public float[] translation() {
-            return t;
+            return t == null || t.length < 3 ? null : t;
         }
 
         public float[] leftRotation() {
-            return r;
+            return r == null || r.length < 4 ? null : r;
         }
 
         public float[] scale() {
-            return s;
+            return s == null || s.length < 3 ? null : s;
         }
 
         public Integer duration() {

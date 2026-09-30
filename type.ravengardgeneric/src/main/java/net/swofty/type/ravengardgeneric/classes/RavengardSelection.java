@@ -1,6 +1,8 @@
 package net.swofty.type.ravengardgeneric.classes;
 
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.item.ItemStack;
+import net.minestom.server.item.Material;
 import net.swofty.type.generic.HypixelConst;
 import net.swofty.type.ravengardgeneric.item.RavengardItem;
 import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
@@ -51,8 +53,15 @@ public final class RavengardSelection {
         for (String itemId : kit.hotbarIds()) {
             player.getInventory().setItemStack(hotbarSlot++, RavengardItem.of(itemId, player));
         }
+        if (value == RavengardClass.HUNTER) {
+            player.getInventory().setItemStack(hotbarSlot, ItemStack.of(Material.ARROW, 64));
+        }
         giveAccessorySlots(player);
 
+        syncAbilities(player, value);
+    }
+
+    public static void syncAbilities(RavengardPlayer player, RavengardClass value) {
         List<RavengardAbility> abilities = value.defaultAbilities();
         int[] slots = {RavengardKit.SLOT_ABILITY_ONE, RavengardKit.SLOT_ABILITY_TWO};
         for (int index = 0; index < slots.length && index < abilities.size(); index++) {

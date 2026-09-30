@@ -38,6 +38,12 @@ public class ActionPlayerMenuItem implements HypixelEventClass {
 
         event.setCancelled(true);
 
+        if (net.swofty.type.generic.HypixelConst.getTypeLoader().getType()
+                == net.swofty.commons.ServerType.RAVENGARD_DUNGEON) {
+            player.sendMessage("<c>The Ravengard Menu is sealed during a dungeon run.");
+            return;
+        }
+
         if (player.getRavengardClass() == null) {
             player.sendMessage("<c>You must select a class to use this menu!");
             return;

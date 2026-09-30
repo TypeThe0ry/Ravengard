@@ -115,7 +115,7 @@ public final class RavengardHud {
     private static final Map<java.util.UUID, Component> LAST_TAB_HEADER = new ConcurrentHashMap<>();
 
     private static void sendTabMap(HypixelPlayer player, RavengardHudState state) {
-        if (state.isDungeon() && RavengardHudComposer.dungeonTabMap != null) {
+        if (RavengardHudComposer.dungeonTabMap != null) {
             Component dungeonHeader = RavengardHudComposer.dungeonTabMap.apply(state);
             if (dungeonHeader != null) {
                 if (!dungeonHeader.equals(LAST_TAB_HEADER.put(player.getUuid(), dungeonHeader))) {
@@ -139,14 +139,26 @@ public final class RavengardHud {
                         .font(net.swofty.type.ravengardgeneric.gui.RavengardFont.RAVENGARD)
                         .color(net.kyori.adventure.text.format.NamedTextColor.WHITE)
                         .shadowColor(net.kyori.adventure.text.format.ShadowColor.shadowColor(0)))
-                .append(Component.newline())
+                .append(Component.newline());
+        header = header
                 .append(Component.text(PLAYER_MARKER)
                         .font(net.swofty.type.ravengardgeneric.gui.RavengardFont.RAVENGARD)
                         .color(net.kyori.adventure.text.format.TextColor.color(tint))
                         .shadowColor(net.kyori.adventure.text.format.ShadowColor.shadowColor(0)))
                 .append(Component.newline());
+        if (state.isDungeon()) {
+            header = appendDeathWall(header, state.getDeathWall(), RavengardHudGlyphs.DEATHWALL);
+            header = appendDeathWall(header, state.getDeathWallWarning(), RavengardHudGlyphs.DEATHWALL_WARNING);
+        }
 
-        player.sendPlayerListHeaderAndFooter(header, Component.empty());
+        if (!header.equals(LAST_TAB_HEADER.put(player.getUuid(), header))) {
+            player.sendPlayerListHeaderAndFooter(header, Component.empty());
+        }
+    }
+
+    private static Component appendDeathWall(Component header, RavengardDeathWallView wall, String glyph) {
+        Component line = wall == null ? null : RavengardHudComposer.fullMapDeathWall(wall, glyph);
+        return line == null ? header : header.append(line).append(Component.newline());
     }
 
     private static void hideTabList(HypixelPlayer player) {
@@ -191,9 +203,12 @@ public final class RavengardHud {
             net.swofty.type.ravengardgeneric.classes.RavengardClass playerClass =
                     ravengardPlayer.getRavengardClass();
             if (playerClass != null) {
-                var abilities = playerClass.defaultAbilities();
-                if (!abilities.isEmpty()) abilityOne = abilities.getFirst().getHudCodePoint();
-                if (abilities.size() > 1) abilityTwo = abilities.get(1).getHudCodePoint();
+                var first = net.swofty.type.ravengardgeneric.classes.RavengardKit
+                        .equippedAbility(ravengardPlayer, 0);
+                var second = net.swofty.type.ravengardgeneric.classes.RavengardKit
+                        .equippedAbility(ravengardPlayer, 1);
+                if (first != null) abilityOne = first.getHudCodePoint();
+                if (second != null) abilityTwo = second.getHudCodePoint();
             }
         }
         state.setAbilityOne(abilityOne);

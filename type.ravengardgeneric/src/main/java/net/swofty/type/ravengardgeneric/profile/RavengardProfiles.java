@@ -146,6 +146,10 @@ public final class RavengardProfiles {
     }
 
     public static void saveActive(RavengardPlayer player) {
+        saveActive(player, shouldPersistInventory(player.getUuid()));
+    }
+
+    public static void saveActive(RavengardPlayer player, boolean persistInventory) {
         RavengardDataHandler handler = player.getRavengardDataHandler();
         UUID profileId = handler == null ? null : handler.getCurrentProfileId();
         if (profileId == null || !player.getUuid().equals(RavengardProfileStorage.owner(profileId))) {
@@ -155,13 +159,33 @@ public final class RavengardProfiles {
 
         handler.saveBackedData();
         RavengardProfileStorage.addPlaytime(profileId, endSession(player));
-        RavengardProfileStorage.writeInventory(profileId, snapshotInventory(player));
+        if (persistInventory) {
+            RavengardProfileStorage.writeInventory(profileId, snapshotInventory(player));
+        }
         beginSession(player);
     }
 
     public static void endSessionAndSave(RavengardPlayer player) {
-        saveActive(player);
+        endSessionAndSave(player, shouldPersistInventory(player.getUuid()));
+    }
+
+    public static void endSessionAndSave(RavengardPlayer player, boolean persistInventory) {
+        saveActive(player, persistInventory);
         SESSION_STARTED.remove(player.getUuid());
+    }
+
+    public static boolean secureExtraction(RavengardPlayer player) {
+        RavengardDataHandler handler = player.getRavengardDataHandler();
+        UUID profileId = handler == null ? null : handler.getCurrentProfileId();
+        if (profileId == null || !player.getUuid().equals(RavengardProfileStorage.owner(profileId))) {
+            return false;
+        }
+        saveActive(player, true);
+        return true;
+    }
+
+    static boolean shouldPersistInventory(UUID playerUuid) {
+        return !RavengardRunState.isActive(playerUuid);
     }
 
     public static boolean hasIntro(RavengardPlayer player, String npc) {
@@ -207,7 +231,7 @@ public final class RavengardProfiles {
         Map<Integer, String> inventory = new HashMap<>();
         for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
             ItemStack stack = player.getInventory().getItemStack(slot);
-            if (stack.isAir()) {
+            if (stack.isAir() || RavengardMenuItem.isMenuItem(stack)) {
                 continue;
             }
             try {
@@ -226,12 +250,18 @@ public final class RavengardProfiles {
         if (!inventory.isEmpty()) {
             inventory.forEach((slot, snbt) -> {
                 try {
-                    player.getInventory().setItemStack(slot,
-                            ItemStack.fromItemNBT(TagStringIO.tagStringIO().asCompound(snbt)));
+                    ItemStack stack = ItemStack.fromItemNBT(TagStringIO.tagStringIO().asCompound(snbt));
+                    if (!RavengardMenuItem.isMenuItem(stack)) {
+                        player.getInventory().setItemStack(slot, stack);
+                    }
                 } catch (Exception exception) {
                     Logger.warn(exception, "Could not restore inventory slot {} for {}", slot, player.getUsername());
                 }
             });
+            RavengardClass profileClass = player.getRavengardClass();
+            if (profileClass != null) {
+                RavengardSelection.syncAbilities(player, profileClass);
+            }
             RavengardMenuItem.give(player);
             return;
         }

@@ -38,8 +38,8 @@ public final class DungeonMinimapIcons {
             return null;
         }
 
-        int packed = (clamp12((int) Math.round((state.getWorldX() + 512) * 4)) << 12)
-                | clamp12((int) Math.round((state.getWorldZ() + 512) * 4));
+        int packed = (clamp12((int) Math.round((state.getWorldX() + 512.0) * 4.0)) << 12)
+                | clamp12((int) Math.round((state.getWorldZ() + 512.0) * 4.0));
         Component tiles = Component.empty();
         for (int index = 0; index < SEGMENT_TILES.length(); index++) {
             tiles = tiles.append(Component.text(SEGMENT_TILES.charAt(index))

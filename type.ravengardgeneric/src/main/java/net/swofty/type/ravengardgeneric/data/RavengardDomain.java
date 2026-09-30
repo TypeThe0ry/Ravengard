@@ -22,7 +22,7 @@ public final class RavengardDomain implements PlayerDataDomain<RavengardDataHand
 
     @Override
     public boolean appliesTo(ServerType type) {
-        return true;
+        return type == ServerType.RAVENGARD_LOBBY || type == ServerType.RAVENGARD_DUNGEON;
     }
 
     @Override
@@ -48,7 +48,8 @@ public final class RavengardDomain implements PlayerDataDomain<RavengardDataHand
         RavengardDataHandler handler = PlayerDataService.find(KEY, player.getUuid()).orElse(null);
         if (handler == null) return;
         if (player instanceof RavengardPlayer ravengardPlayer) {
-            RavengardProfiles.endSessionAndSave(ravengardPlayer);
+            RavengardProfiles.endSessionAndSave(ravengardPlayer,
+                    !net.swofty.type.ravengardgeneric.profile.RavengardRunState.isActive(player.getUuid()));
         }
         handler.runOnSave(player);
         handler.saveBackedData();

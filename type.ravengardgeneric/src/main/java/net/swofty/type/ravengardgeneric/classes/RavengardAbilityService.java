@@ -30,11 +30,20 @@ public final class RavengardAbilityService {
         if (playerClass == null || player.isTutorial()) {
             return;
         }
-        List<RavengardAbility> abilities = playerClass.defaultAbilities();
-        if (slot >= abilities.size()) {
+        int inventorySlot = slot == 0 ? RavengardKit.SLOT_ABILITY_ONE : RavengardKit.SLOT_ABILITY_TWO;
+        RavengardAbility ability = RavengardKit.abilityFrom(player.getInventory().getItemStack(inventorySlot));
+        if (ability == null || ability.getOwner() != playerClass) {
             return;
         }
-        RavengardAbility ability = abilities.get(slot);
+        use(player, ability);
+    }
+
+    public static void use(RavengardPlayer player, RavengardAbility ability) {
+        RavengardClass playerClass = player.getRavengardClass();
+        if (playerClass == null || player.isTutorial() || ability == null
+                || ability.getOwner() != playerClass) {
+            return;
+        }
 
         long now = System.currentTimeMillis();
         long readyAt = COOLDOWNS.computeIfAbsent(player.getUuid(), ignored -> new ConcurrentHashMap<>())
@@ -64,6 +73,20 @@ public final class RavengardAbilityService {
         return buffs != null && buffs.getOrDefault(ability, 0L) > System.currentTimeMillis();
     }
 
+    public static boolean consumeBuff(RavengardPlayer player, RavengardAbility ability) {
+        Map<RavengardAbility, Long> buffs = BUFFS.get(player.getUuid());
+        if (buffs == null) {
+            return false;
+        }
+        long expiresAt = buffs.getOrDefault(ability, 0L);
+        if (expiresAt <= System.currentTimeMillis()) {
+            buffs.remove(ability);
+            return false;
+        }
+        buffs.remove(ability);
+        return true;
+    }
+
     private static void buff(RavengardPlayer player, RavengardAbility ability, int seconds) {
         BUFFS.computeIfAbsent(player.getUuid(), ignored -> new ConcurrentHashMap<>())
                 .put(ability, System.currentTimeMillis() + seconds * 1000L);
@@ -87,7 +110,7 @@ public final class RavengardAbilityService {
         float perSecond = displayTotal / (float) seconds / DISPLAY_SCALE;
         for (int second = 1; second <= seconds; second++) {
             MinecraftServer.getSchedulerManager().buildTask(() -> {
-                if (player.isOnline()) {
+                if (player.isOnline() && player.getGameMode() != net.minestom.server.entity.GameMode.SPECTATOR) {
                     float max = (float) player.getAttributeValue(Attribute.MAX_HEALTH);
                     player.setHealth(Math.min(max, player.getHealth() + perSecond));
                 }

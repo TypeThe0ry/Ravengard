@@ -141,7 +141,7 @@ public class GUILockBox extends RavengardView {
             return false;
         }
         ItemStack stack = player.getInventory().getItemStack(click.slot());
-        if (stack.isAir()) {
+        if (stack.isAir() || !storable(stack)) {
             return false;
         }
         UUID profile = player.getSelectedProfile();
@@ -169,16 +169,28 @@ public class GUILockBox extends RavengardView {
         return false;
     }
 
+    private static boolean storable(ItemStack stack) {
+        if (net.swofty.type.ravengardgeneric.item.RavengardMenuItem.isMenuItem(stack)) {
+            return false;
+        }
+        return stack.material() == net.minestom.server.item.Material.ARROW
+                || new net.swofty.type.ravengardgeneric.item.attribute.RavengardItemAttributeHandler(stack).isTracked();
+    }
+
     private void withdraw(ViewContext ctx, int absolute) {
         if (!(ctx.player() instanceof RavengardPlayer player)) {
             return;
         }
         UUID profile = player.getSelectedProfile();
         Map<Integer, String> stored = new HashMap<>(RavengardProfileStorage.readLockBox(profile));
-        String snbt = stored.remove(absolute);
-        if (snbt == null) {
+        if (!stored.containsKey(absolute)) {
             return;
         }
+        if (!RavengardItems.hasFreeSlot(player)) {
+            player.sendMessage("<c>Your inventory is full!");
+            return;
+        }
+        String snbt = stored.remove(absolute);
         ItemStack stack = fromSnbt(snbt);
         RavengardProfileStorage.writeLockBox(profile, stored);
         if (!stack.isAir()) {

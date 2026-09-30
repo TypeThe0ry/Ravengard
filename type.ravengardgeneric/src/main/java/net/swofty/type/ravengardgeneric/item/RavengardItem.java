@@ -174,7 +174,7 @@ public final class RavengardItem {
         }
     }
 
-    private static String displayName(RavengardItemType type) {
+    public static String displayName(RavengardItemType type) {
         if (type.getDisplayName() != null) {
             return type.getDisplayName();
         }

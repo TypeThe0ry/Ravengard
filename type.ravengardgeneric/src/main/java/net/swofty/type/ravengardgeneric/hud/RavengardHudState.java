@@ -33,6 +33,9 @@ public class RavengardHudState {
     private String serverId = "";
 
     private RavengardMinimapArea area = RavengardMinimapArea.HUB;
+    private RavengardDeathWallView deathWall;
+    private RavengardDeathWallView deathWallWarning;
+    private String bossBarName;
 
     public String healthText() {
         return health + "/" + maxHealth;

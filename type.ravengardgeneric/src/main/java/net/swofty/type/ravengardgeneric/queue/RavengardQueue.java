@@ -6,12 +6,18 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import net.swofty.commons.ServerType;
+import net.swofty.commons.ServiceType;
+import net.swofty.commons.UnderstandableProxyServer;
+import net.swofty.commons.protocol.objects.orchestrator.ChooseGameProtocol;
+import net.swofty.commons.protocol.objects.orchestrator.GetServerForMapProtocol;
+import net.swofty.proxyapi.ProxyService;
 import net.swofty.type.generic.user.HypixelPlayer;
 import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The fight queue as the 0.2 playtest presents it: joining answers with the gray then green
@@ -29,17 +35,28 @@ public final class RavengardQueue {
             .build();
 
     private static final Map<UUID, Task> QUEUED = new ConcurrentHashMap<>();
+    private static final ProxyService ORCHESTRATOR = new ProxyService(ServiceType.ORCHESTRATOR);
 
     private RavengardQueue() {
     }
 
+    private static final java.util.Set<UUID> SEARCHING = ConcurrentHashMap.newKeySet();
+
     public static boolean isQueued(HypixelPlayer player) {
-        return QUEUED.containsKey(player.getUuid());
+        return QUEUED.containsKey(player.getUuid()) || SEARCHING.contains(player.getUuid());
     }
 
     public static void join(RavengardPlayer player) {
         if (isQueued(player)) {
             player.sendMessage("<c>{} is already queued for a game!", player.getUsername());
+            return;
+        }
+        if (net.swofty.type.generic.HypixelConst.getTypeLoader().getType() == ServerType.RAVENGARD_DUNGEON) {
+            player.sendMessage("<c>You are already in a dungeon!");
+            return;
+        }
+        if (player.isTutorial() || player.getRavengardClass() == null) {
+            player.sendMessage("<c>Choose a class before joining a fight!");
             return;
         }
         player.sendMessage("<7>Joining fight...");
@@ -53,7 +70,42 @@ public final class RavengardQueue {
             }
             player.sendMessage("<7>Found server, initiating transfer to {}...",
                     ServerType.RAVENGARD_DUNGEON.name().toLowerCase());
-            player.sendTo(ServerType.RAVENGARD_DUNGEON);
+            GetServerForMapProtocol.GetServerForMapMessage request =
+                    new GetServerForMapProtocol.GetServerForMapMessage(
+                            ServerType.RAVENGARD_DUNGEON, null, "STANDARD", 1);
+            UUID searching = player.getUuid();
+            SEARCHING.add(searching);
+            ORCHESTRATOR.handleRequest(request, 90, TimeUnit.SECONDS).thenCompose(response -> {
+                if (!(response instanceof GetServerForMapProtocol.GetServerForMapResponse(
+                        UnderstandableProxyServer server, String gameId, boolean success, String error))
+                        || !success || server == null || gameId == null) {
+                    String reason = response instanceof GetServerForMapProtocol.GetServerForMapResponse r
+                            && r.error() != null ? r.error() : "no dungeon servers available";
+                    player.sendMessage("<c>Could not start a dungeon: {}", reason);
+                    return java.util.concurrent.CompletableFuture.<Void>completedFuture(null);
+                }
+                return ORCHESTRATOR.handleRequest(new ChooseGameProtocol.ChooseGameMessage(
+                        player.getUuid(), server, gameId), 90, TimeUnit.SECONDS).thenAccept(choice -> {
+                    if (!(choice instanceof ChooseGameProtocol.ChooseGameResponse result)) {
+                        player.sendMessage("<c>Failed to register for the dungeon: no response");
+                        return;
+                    }
+                    if (!result.success()) {
+                        String reason = result.error() != null
+                                ? result.error() : "dungeon registration failed";
+                        player.sendMessage("<c>Failed to register for the dungeon: {}", reason);
+                        return;
+                    }
+                    player.sendMessage("<a>Sending you to <f>{}<a>!", server.shortName());
+                    player.asProxyPlayer().transferToWithIndication(server.uuid());
+                }).exceptionally(throwable -> {
+                    player.sendMessage("<c>Failed to register for the dungeon: {}", throwable.getMessage());
+                    return null;
+                });
+            }).exceptionally(throwable -> {
+                player.sendMessage("<c>Dungeon search failed: {}", throwable.getMessage());
+                return null;
+            }).whenComplete((ignored, throwable) -> SEARCHING.remove(searching));
         }).delay(MATCH_DELAY).schedule();
         QUEUED.put(player.getUuid(), task);
     }
@@ -68,6 +120,7 @@ public final class RavengardQueue {
     }
 
     public static void forget(UUID uuid) {
+        SEARCHING.remove(uuid);
         Task task = QUEUED.remove(uuid);
         if (task != null) {
             task.cancel();

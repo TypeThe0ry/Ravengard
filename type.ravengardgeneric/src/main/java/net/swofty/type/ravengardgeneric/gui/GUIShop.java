@@ -130,6 +130,14 @@ public class GUIShop extends RavengardView {
             player.sendMessage("<c>That item is out of stock!");
             return;
         }
+        if (!type.usableBy(player.getRavengardClass())) {
+            player.sendMessage("<c>Your class cannot use this item!");
+            return;
+        }
+        if (!RavengardItems.hasFreeSlot(player)) {
+            player.sendMessage("<c>Your inventory is full!");
+            return;
+        }
         if (!RavengardProfiles.tryPurchase(player, entry.price())) {
             player.sendMessage("<c>You don't have enough Crowns!");
             return;
@@ -141,7 +149,7 @@ public class GUIShop extends RavengardView {
         }
         player.getInventory().addItemStack(RavengardItem.of(type, player, entry.boost()));
         player.sendMessage(Component.text("You bought ").color(NamedTextColor.GREEN)
-                .append(Component.text(type.getDisplayName() == null ? entry.item() : type.getDisplayName())
+                .append(Component.text(RavengardItem.displayName(type))
                         .color(NamedTextColor.WHITE))
                 .append(Component.text(" for ").color(NamedTextColor.GREEN))
                 .append(RavengardItem.crowns(entry.price(), ""))

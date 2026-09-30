@@ -13,6 +13,7 @@ import net.minestom.server.particle.Particle;
 import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import net.swofty.type.generic.gui.inventory.Inventories;
+import net.swofty.type.ravengardgeneric.sound.RavengardSounds;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -48,7 +49,10 @@ public final class DungeonSatchel extends DungeonInteractable {
     }
 
     private void riseSkull() {
-        if (opened) return;
+        if (opened || removed || !isActive(bag)) {
+            if (skullTask != null) skullTask.cancel();
+            return;
+        }
         java.util.concurrent.ThreadLocalRandom random = java.util.concurrent.ThreadLocalRandom.current();
         for (int burst = 0; burst < 3; burst++) {
             double jitterX = random.nextDouble(-0.25, 0.25);
@@ -57,7 +61,7 @@ public final class DungeonSatchel extends DungeonInteractable {
                 int delay = burst * 3 + height * 4 + 1;
                 double y = 0.2 + height * 0.28;
                 MinecraftServer.getSchedulerManager().buildTask(() -> {
-                    if (opened) return;
+                    if (opened || removed || !isActive(bag)) return;
                     instance.sendGroupedPacket(new ParticlePacket(
                             Particle.DUST.withColor(new net.minestom.server.color.Color(255, 30, 30))
                                     .withScale(0.7f),
@@ -94,7 +98,9 @@ public final class DungeonSatchel extends DungeonInteractable {
 
     @Override
     public void open(Player player) {
+        if (removed || !isActive(bag) || !player.isOnline() || player.getInstance() != instance) return;
         opened = true;
+        RavengardSounds.play(player, RavengardSounds.Cue.LOOT_OPEN);
         if (skullTask != null) {
             skullTask.cancel();
         }
@@ -108,12 +114,21 @@ public final class DungeonSatchel extends DungeonInteractable {
             inventory.setItemStack(LOOT_SLOTS[random.nextInt(LOOT_SLOTS.length)],
                     DungeonLoot.roll(random, distance));
         }
-        InteractableRegistry.watchClose(inventory, closer -> {
+        InteractableRegistry.watchClose(inventory, this, closer -> {
             instance.sendGroupedPacket(new ParticlePacket(Particle.POOF,
                     base.x(), base.y(), base.z(), 0.25f, 0.25f, 0.25f, 0.02f, 12));
             bag.remove();
             remove();
         });
         player.openInventory(inventory);
+        RavengardSounds.play(player, RavengardSounds.Cue.LOOT_READY);
+    }
+
+    @Override
+    public void remove() {
+        if (removed) return;
+        if (skullTask != null) skullTask.cancel();
+        super.remove();
+        if (!bag.isRemoved()) bag.remove();
     }
 }

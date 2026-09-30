@@ -15,6 +15,7 @@ public abstract class DungeonInteractable {
     protected final Instance instance;
     protected Entity interaction;
     protected boolean opened;
+    protected volatile boolean removed;
 
     protected DungeonInteractable(Instance instance) {
         this.instance = instance;
@@ -38,6 +39,22 @@ public abstract class DungeonInteractable {
         return true;
     }
 
+    public boolean requiresHeldRightClick() {
+        return false;
+    }
+
+    public boolean requiresLookingDuringChannel() {
+        return true;
+    }
+
+    public boolean channelStillValid(Player player) {
+        return true;
+    }
+
+    public int channelTicks() {
+        return 18;
+    }
+
     public String castLabel() {
         return "Opening";
     }
@@ -46,30 +63,63 @@ public abstract class DungeonInteractable {
         return false;
     }
 
+    public boolean matchesVisibleTarget(Entity target) {
+        return false;
+    }
+
+    public void channelStarted(Player player) {
+    }
+
+    public void channelCancelled(Player player) {
+    }
+
+    public void channelRejected(Player player) {
+    }
+
     public void remove() {
+        if (removed) return;
+        removed = true;
         InteractableRegistry.unregister(this);
-        if (interaction != null) {
+        if (interaction != null && !interaction.isRemoved()) {
             interaction.remove();
         }
     }
 
+    protected final boolean isActive(Entity entity) {
+        return !removed && entity != null && !entity.isRemoved() && entity.getInstance() == instance;
+    }
+
     protected Entity spawnInteraction(Pos position, float width, float height) {
-        Entity entity = new Entity(EntityType.INTERACTION);
-        entity.setNoGravity(true);
+        Entity entity = new Entity(EntityType.INTERACTION) {
+            @Override
+            public boolean hasEntityCollision() {
+                return false;
+            }
+        };
         entity.editEntityMeta(InteractionMeta.class, meta -> {
             meta.setWidth(width);
             meta.setHeight(height);
             meta.setResponse(true);
         });
+        entity.setAutoViewable(true);
+        entity.setNoGravity(true);
+        entity.setBoundingBox(width, height, width);
         entity.setInstance(instance, position);
         return entity;
     }
 
     protected Entity spawnDisplay(Pos position, String model) {
+        return spawnDisplay(position, model, ItemDisplayMeta.DisplayContext.NONE);
+    }
+
+    protected Entity spawnDisplay(Pos position, String model,
+                                  ItemDisplayMeta.DisplayContext displayContext) {
         Entity display = new Entity(EntityType.ITEM_DISPLAY);
         display.setNoGravity(true);
+        display.setAutoViewable(true);
         display.editEntityMeta(ItemDisplayMeta.class, meta -> {
             meta.setItemStack(modelStack(model));
+            meta.setDisplayContext(displayContext);
             meta.setPosRotInterpolationDuration(2);
             meta.setViewRange(4096f);
             meta.setBrightnessOverride(7340144);

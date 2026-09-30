@@ -24,6 +24,7 @@ public final class RavengardDungeonGenerator {
     private static final Block DOOR_PLUG = Block.POLISHED_BLACKSTONE_BRICKS;
     private static final Map<String, Block> ROTATED_BLOCKS = new ConcurrentHashMap<>();
     private static final String[] CARDINAL_PROPERTIES = {"north", "east", "south", "west"};
+    private static final double SPAWN_DOOR_CLEARANCE = 3.0;
 
     private static RavengardRoomCatalog catalog;
 
@@ -36,7 +37,9 @@ public final class RavengardDungeonGenerator {
 
     public static synchronized RavengardRoomCatalog getCatalog() {
         if (catalog == null) {
-            catalog = RavengardRoomCatalog.load(CATALOG_PATH);
+            Path path = java.nio.file.Files.exists(CATALOG_PATH)
+                    ? CATALOG_PATH : Path.of("..", "configuration", "ravengard", "dungeon_rooms.json");
+            catalog = RavengardRoomCatalog.load(path);
         }
         return catalog;
     }
@@ -46,18 +49,93 @@ public final class RavengardDungeonGenerator {
 
         List<PlacedObject> objects = new ArrayList<>();
         for (RoomPlacement placement : dungeon.getPlacements()) {
+            for (RavengardRoomCatalog.RoomObject object : placement.room().getDoors()) {
+                objects.add(placeObject(placement, object));
+            }
             for (RavengardRoomCatalog.RoomObject object : placement.room().getObjects()) {
-                objects.add(new PlacedObject(object.getCategory(), object.getType(),
-                        placement.getWorldX(object.getX(), object.getZ()), object.getY(),
-                        placement.getWorldZ(object.getX(), object.getZ()),
-                        (object.getYaw() + placement.rotation().getDegrees()) % 360));
+                objects.add(placeObject(placement, object));
             }
         }
 
         RoomPlacement start = dungeon.getStartRoom();
-        Pos spawn = new Pos(start.originX() + start.getFootprintWidth() / 2.0, 66,
+        Pos spawn = new Pos(start.originX() + start.getFootprintWidth() / 2.0, 67,
                 start.originZ() + start.getFootprintDepth() / 2.0);
         return new GeneratedDungeon(dungeon, objects, spawn, seed);
+    }
+
+    public static List<Pos> spawnPoints(GeneratedDungeon generated) {
+        return spawnPoints(generated, List.of());
+    }
+
+    public static List<Pos> spawnPoints(GeneratedDungeon generated, List<PlacedObject> additionalObjects) {
+        var start = generated.dungeon().getStartRoom();
+        int width = start.getFootprintWidth();
+        int depth = start.getFootprintDepth();
+        java.util.Set<Long> cells = new java.util.HashSet<>();
+        start.forEachMaskCell((x, z) -> cells.add((((long) x) << 32) | (z & 0xFFFFFFFFL)));
+        int centerX = width / 2;
+        int centerZ = depth / 2;
+        boolean alongX = width >= depth;
+        List<Pos> result = new ArrayList<>();
+        for (int offset : new int[]{0, -6, 6}) {
+            int desiredX = centerX + (alongX ? offset : 0);
+            int desiredZ = centerZ + (alongX ? 0 : offset);
+            int[] nearest = cells.stream()
+                    .map(key -> new int[]{(int) (key >> 32), (int) (long) key})
+                    .filter(cell -> !result.contains(new Pos(start.originX() + cell[0] + 0.5, 67,
+                            start.originZ() + cell[1] + 0.5)))
+                    .filter(cell -> isSafeSpawn(generated, additionalObjects,
+                            start.originX() + cell[0] + 0.5, start.originZ() + cell[1] + 0.5))
+                    .min(java.util.Comparator.comparingInt(cell ->
+                            Math.abs(cell[0] - desiredX) + Math.abs(cell[1] - desiredZ)))
+                    .orElse(null);
+            if (nearest != null) {
+                result.add(new Pos(start.originX() + nearest[0] + 0.5, 67,
+                        start.originZ() + nearest[1] + 0.5));
+            }
+        }
+        if (result.size() < 3) {
+            cells.stream()
+                    .map(key -> new int[]{(int) (key >> 32), (int) (long) key})
+                    .filter(cell -> {
+                        Pos point = new Pos(start.originX() + cell[0] + 0.5, 67,
+                                start.originZ() + cell[1] + 0.5);
+                        return !result.contains(point) && isSafeSpawn(generated, additionalObjects, point.x(), point.z());
+                    })
+                    .sorted(java.util.Comparator.comparingInt(cell ->
+                            Math.abs(cell[0] - centerX) + Math.abs(cell[1] - centerZ)))
+                    .limit(3 - result.size())
+                    .forEach(cell -> result.add(new Pos(start.originX() + cell[0] + 0.5, 67,
+                            start.originZ() + cell[1] + 0.5)));
+        }
+        return result.isEmpty() ? List.of(generated.spawn()) : List.copyOf(result);
+    }
+
+    private static boolean isSafeSpawn(GeneratedDungeon generated, List<PlacedObject> additionalObjects,
+                                       double x, double z) {
+        return java.util.stream.Stream.concat(generated.objects().stream(),
+                        additionalObjects.stream())
+                .filter(object -> isDoorObject(object))
+                .noneMatch(object -> {
+                    double dx = object.x() - x;
+                    double dz = object.z() - z;
+                    return dx * dx + dz * dz < SPAWN_DOOR_CLEARANCE * SPAWN_DOOR_CLEARANCE;
+                });
+    }
+
+    private static boolean isDoorObject(PlacedObject object) {
+        String category = object.category() == null ? "" : object.category().toLowerCase(java.util.Locale.ROOT);
+        String type = object.type() == null ? "" : object.type().toLowerCase(java.util.Locale.ROOT);
+        return category.equals("door") || category.equals("doors")
+                || type.contains("door") || type.contains("gate");
+    }
+
+    static PlacedObject placeObject(RoomPlacement placement, RavengardRoomCatalog.RoomObject object) {
+        double yaw = object.getYaw() + placement.rotation().getDegrees();
+        return new PlacedObject(object.getCategory(), object.getType(),
+                placement.getWorldX(object.getX(), object.getZ()), object.getY(),
+                placement.getWorldZ(object.getX(), object.getZ()),
+                ((yaw % 360.0) + 360.0) % 360.0);
     }
 
     /** City-base generation only needs the swapped slot interiors restamped;
@@ -68,6 +146,7 @@ public final class RavengardDungeonGenerator {
         List<RoomPlacement> swaps = generated.dungeon().getSwaps();
         CompletableFuture<Void> future = new CompletableFuture<>();
         if (swaps.isEmpty()) {
+            org.tinylog.Logger.info("Stamped 0 room swaps; official polar display layout retained");
             future.complete(null);
             return future;
         }
@@ -289,7 +368,12 @@ public final class RavengardDungeonGenerator {
                 .max(Map.Entry.comparingByValue()).map(Map.Entry::getKey)
                 .orElse(Block.POLISHED_BLACKSTONE_BRICKS);
         for (int[] cell : openCells) {
-            for (int y = floorY + 4; y <= 84; y++) {
+            // Seal the complete vertical boundary.  Leaving the four blocks
+            // above the floor open lets a player walk out of a room mask and
+            // fall into the blank space between the fixed blueprint slots.
+            // Door cells are excluded above, so real door openings remain
+            // passable until their DungeonDoor barrier is closed.
+            for (int y = floorY; y <= 84; y++) {
                 if (template.blockAt(cell[2], y, cell[3]) == Block.AIR) {
                     batch.setBlock(placement.originX() + cell[0], y,
                             placement.originZ() + cell[1], wall);

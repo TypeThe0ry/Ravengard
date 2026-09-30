@@ -22,6 +22,20 @@ public final class RavengardFont {
         return new String(Character.toChars(SPACE_ORIGIN + clamped));
     }
 
+    // the pack only maps every pixel advance up to +-512, so exact wider gaps are chained
+    private static final int PIXEL_SPACE_STEP = 512;
+
+    public static String pixelSpace(int pixels) {
+        int remaining = Math.max(SPACE_MIN, Math.min(SPACE_MAX, pixels));
+        StringBuilder spaces = new StringBuilder();
+        while (Math.abs(remaining) > PIXEL_SPACE_STEP) {
+            int step = Integer.signum(remaining) * PIXEL_SPACE_STEP;
+            spaces.appendCodePoint(SPACE_ORIGIN + step);
+            remaining -= step;
+        }
+        return spaces.appendCodePoint(SPACE_ORIGIN + remaining).toString();
+    }
+
     public static String glyph(int codePoint) {
         return new String(Character.toChars(codePoint));
     }
