@@ -274,6 +274,9 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             float before = living.getHealth();
             playAttackSound();
             living.damage(net.minestom.server.entity.damage.Damage.fromEntity(this, damage));
+            if (living instanceof net.swofty.type.ravengardgeneric.user.RavengardPlayer player) {
+                net.swofty.type.ravengardgeneric.classes.RavengardAbilityService.breakShadows(player);
+            }
             if (!attackReported) {
                 attackReported = true;
                 org.tinylog.Logger.info(
@@ -318,6 +321,10 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             chargeCooldown = CHARGE_COOLDOWN_TICKS;
             speed.setBaseValue(base * CHARGE_SPEED_MULTIPLIER);
         }
+    }
+
+    public boolean isDying() {
+        return dying;
     }
 
     @Override
@@ -722,6 +729,9 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     static boolean isTargetable(Entity entity) {
         return entity instanceof Player player
                 && targetGate.test(player)
+                && !(player instanceof net.swofty.type.ravengardgeneric.user.RavengardPlayer ravengardPlayer
+                && net.swofty.type.ravengardgeneric.classes.RavengardAbilityService.hasBuff(
+                        ravengardPlayer, net.swofty.type.ravengardgeneric.classes.RavengardAbility.SHADOWS))
                 && !player.isRemoved()
                 && !player.isDead()
                 && player.getGameMode() != net.minestom.server.entity.GameMode.SPECTATOR

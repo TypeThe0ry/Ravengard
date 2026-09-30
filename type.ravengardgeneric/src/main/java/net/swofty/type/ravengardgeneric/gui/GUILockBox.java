@@ -137,7 +137,7 @@ public class GUILockBox extends RavengardView {
 
     @Override
     public boolean onBottomClick(ClickContext<DefaultState> click, ViewContext ctx) {
-        if (!(ctx.player() instanceof RavengardPlayer player)) {
+        if (!(ctx.player() instanceof RavengardPlayer player) || click.slot() < 0) {
             return false;
         }
         ItemStack stack = player.getInventory().getItemStack(click.slot());
@@ -162,9 +162,9 @@ public class GUILockBox extends RavengardView {
         if (snbt == null) {
             return false;
         }
-        player.getInventory().setItemStack(click.slot(), ItemStack.AIR);
         stored.put(free, snbt);
         RavengardProfileStorage.writeLockBox(profile, stored);
+        player.getInventory().setItemStack(click.slot(), ItemStack.AIR);
         ViewNavigator.get(player).push(new GUILockBox(free / CONTENT_SLOTS));
         return false;
     }
@@ -208,6 +208,7 @@ public class GUILockBox extends RavengardView {
             return;
         }
         RavengardProfileStorage.writeLockBoxTier(player.getSelectedProfile(), tier + 1);
+        RavengardProfiles.saveActive(player);
         player.sendMessage("<a>Your lock box is now Tier {}!", tier + 1);
         ViewNavigator.get(player).push(new GUILockBox(page));
     }

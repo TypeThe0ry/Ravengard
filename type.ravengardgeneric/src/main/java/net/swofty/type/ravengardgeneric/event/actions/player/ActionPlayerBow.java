@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.UUID;
 
 public class ActionPlayerBow implements HypixelEventClass {
-    private static final double MIN_POWER = 0.75;
+    private static final double MIN_POWER = 0.1;
     private static final double DISPLAY_DAMAGE_SCALE = 4.0;
     private static final double ARROW_SPEED = 3.0;
     private static final double ARROW_SPREAD = 0.0;
@@ -68,13 +68,10 @@ public class ActionPlayerBow implements HypixelEventClass {
             long measuredTicks = Math.max(1L, Math.round((System.nanoTime() - startedAt) / 50_000_000.0));
             useTicks = Math.max(useTicks, measuredTicks);
         }
-        if (startedAt != null) {
-            useTicks = Math.max(useTicks, 3L);
-        }
         double power = bowPower(useTicks);
         org.tinylog.Logger.debug("Ravengard bow release: player={} ticks={} power={} item={} ",
                 player.getUsername(), useTicks, power, event.getItemStack().material());
-        power = Math.max(power, MIN_POWER);
+        if (power < MIN_POWER) return;
 
         ItemStack bow = event.getItemStack();
         RavengardItemAttributeHandler handler = new RavengardItemAttributeHandler(bow);
@@ -127,12 +124,13 @@ public class ActionPlayerBow implements HypixelEventClass {
     }
 
     public static boolean tryHit(RavengardArrow arrow, RavengardMob mob) {
-        if (arrow.resolved()) return false;
+        if (arrow.resolved() || mob.isDying()) return false;
         float before = mob.getHealth();
-        arrow.markResolved();
-        mob.damage(arrow.getShooter() != null
+        boolean applied = mob.damage(arrow.getShooter() != null
                 ? new EntityDamage(arrow.getShooter(), arrow.damage())
                 : new Damage(DamageType.PLAYER_ATTACK, arrow, null, null, arrow.damage()));
+        if (!applied) return false;
+        arrow.markResolved();
         org.tinylog.Logger.debug("Ravengard arrow damage: mob={} before={} after={} amount={}",
                 mob.getUuid(), before, mob.getHealth(), arrow.damage());
         arrow.remove();

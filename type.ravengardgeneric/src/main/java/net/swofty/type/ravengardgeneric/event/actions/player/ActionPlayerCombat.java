@@ -24,6 +24,7 @@ public class ActionPlayerCombat implements HypixelEventClass {
     private static final double DISPLAY_DAMAGE_SCALE = 4.0;
     private static final float FIST_DAMAGE = 1f;
     private static final double DEFAULT_ATTACK_SPEED = 4.0;
+    static final double MIN_ATTACK_INTERVAL_FRACTION = 0.5;
     private static final ConcurrentHashMap<UUID, Long> LAST_ATTACK_NANOS = new ConcurrentHashMap<>();
 
     @PhasedEvent(node = EventNodes.ENTITY, requireDataLoaded = true, phase = EventPhase.GAMEPLAY)
@@ -55,7 +56,9 @@ public class ActionPlayerCombat implements HypixelEventClass {
             double bonus = type.statistic(RavengardItemStatistic.ATTACK_SPEED) * handler.getStatBoost();
             if (bonus > 0) attackSpeed += bonus;
         }
+        if (mob.isDying()) return;
         double strength = attackStrength(player.getUuid(), System.nanoTime(), attackSpeed);
+        if (strength < 0) return;
 
         float damage = FIST_DAMAGE;
         if (type != null) {
@@ -76,22 +79,28 @@ public class ActionPlayerCombat implements HypixelEventClass {
             }
             damage *= (float) sustainedMultiplier;
         }
-        if (RavengardAbilityService.consumeBuff(player, RavengardAbility.WAR_CRY)) {
-            damage *= 1.2f;
-        }
-        if (RavengardAbilityService.consumeBuff(player, RavengardAbility.LACERATE)) {
-            damage *= 1.8f;
-        }
+        boolean warCry = RavengardAbilityService.hasBuff(player, RavengardAbility.WAR_CRY);
+        boolean lacerate = RavengardAbilityService.hasBuff(player, RavengardAbility.LACERATE);
+        if (warCry) damage *= 1.2f;
+        if (lacerate) damage *= 1.8f;
         Logger.debug("Ravengard player damage: player={} mob={} amount={} healthBefore={}",
                 player.getUsername(), mob.getEntityId(), damage, mob.getHealth());
-        mob.damage(new EntityDamage(player, damage));
+        if (!mob.damage(new EntityDamage(player, damage))) return;
+        if (warCry) RavengardAbilityService.consumeBuff(player, RavengardAbility.WAR_CRY);
+        if (lacerate) RavengardAbilityService.consumeBuff(player, RavengardAbility.LACERATE);
     }
 
+    /** A swing inside half the weapon's recovery answers with a negative strength and is dropped. */
     static double attackStrength(UUID player, long nowNanos, double attackSpeed) {
-        Long previous = LAST_ATTACK_NANOS.put(player, nowNanos);
-        if (previous == null) return 1.0;
+        Long previous = LAST_ATTACK_NANOS.get(player);
+        if (previous == null) {
+            LAST_ATTACK_NANOS.put(player, nowNanos);
+            return 1.0;
+        }
         long elapsed = Math.max(0L, nowNanos - previous);
         double intervalNanos = 1_000_000_000.0 * 20.0 / Math.max(0.1, attackSpeed) / 20.0;
+        if (elapsed < intervalNanos * MIN_ATTACK_INTERVAL_FRACTION) return -1.0;
+        LAST_ATTACK_NANOS.put(player, nowNanos);
         return Math.clamp(elapsed / intervalNanos, 0.0, 1.0);
     }
 

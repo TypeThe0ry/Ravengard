@@ -5,6 +5,7 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.instance.Instance;
 import net.swofty.type.generic.HypixelConst;
+import net.swofty.type.generic.data.domain.PlayerDataService;
 import net.swofty.type.ravengardgeneric.RavengardGenericLoader;
 import net.swofty.type.ravengardgeneric.classes.RavengardClass;
 import net.swofty.type.ravengardgeneric.classes.RavengardSelection;
@@ -84,6 +85,18 @@ public final class RavengardProfiles {
     }
 
     public static void create(RavengardPlayer player) {
+        PlayerDataService.runLifecycleTransition(player.getUuid(), () -> createLocked(player));
+    }
+
+    public static void select(RavengardPlayer player, UUID profileId) {
+        PlayerDataService.runLifecycleTransition(player.getUuid(), () -> selectLocked(player, profileId));
+    }
+
+    public static void delete(RavengardPlayer player, UUID profileId) {
+        PlayerDataService.runLifecycleTransition(player.getUuid(), () -> deleteLocked(player, profileId));
+    }
+
+    private static void createLocked(RavengardPlayer player) {
         RavengardProfileIndex index = RavengardProfileIndex.read(player.getUuid());
         if (index.profiles().size() >= MAX_PROFILES) {
             player.sendMessage("<c>You already have the maximum number of profiles!");
@@ -102,7 +115,7 @@ public final class RavengardProfiles {
         activate(player, profileId);
     }
 
-    public static void select(RavengardPlayer player, UUID profileId) {
+    private static void selectLocked(RavengardPlayer player, UUID profileId) {
         RavengardProfileIndex index = RavengardProfileIndex.read(player.getUuid());
         if (!index.contains(profileId) || !player.getUuid().equals(RavengardProfileStorage.owner(profileId))) {
             player.sendMessage("<c>That profile no longer exists.");
@@ -118,7 +131,7 @@ public final class RavengardProfiles {
         activate(player, profileId);
     }
 
-    public static void delete(RavengardPlayer player, UUID profileId) {
+    private static void deleteLocked(RavengardPlayer player, UUID profileId) {
         RavengardProfileIndex index = RavengardProfileIndex.read(player.getUuid());
         if (!index.contains(profileId) || !player.getUuid().equals(RavengardProfileStorage.owner(profileId))) {
             return;
@@ -138,7 +151,7 @@ public final class RavengardProfiles {
         }
 
         if (remaining.profiles().isEmpty()) {
-            create(player);
+            createLocked(player);
             return;
         }
 
@@ -238,8 +251,15 @@ public final class RavengardProfiles {
             return false;
         }
         player.setCrowns(player.getCrowns() - price);
-        saveActive(player);
         return true;
+    }
+
+    public static void returnCursorItem(RavengardPlayer player) {
+        ItemStack cursor = player.getInventory().getCursorItem();
+        if (cursor.isAir()) return;
+        if (player.getInventory().addItemStack(cursor)) {
+            player.getInventory().setCursorItem(ItemStack.AIR);
+        }
     }
 
     public static Map<Integer, String> snapshotInventory(RavengardPlayer player) {

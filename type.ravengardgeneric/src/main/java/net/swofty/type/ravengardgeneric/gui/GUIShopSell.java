@@ -98,7 +98,8 @@ public class GUIShopSell extends RavengardView {
 
     @Override
     public boolean onBottomClick(ClickContext<DefaultState> click, ViewContext ctx) {
-        if (!(ctx.player() instanceof RavengardPlayer player) || staged.size() >= GRID.length) {
+        if (!(ctx.player() instanceof RavengardPlayer player) || staged.size() >= GRID.length
+                || click.slot() < 0) {
             return false;
         }
         ItemStack stack = player.getInventory().getItemStack(click.slot());
@@ -110,6 +111,7 @@ public class GUIShopSell extends RavengardView {
         List<ItemStack> next = new ArrayList<>(staged);
         next.add(stack);
         handedOver = true;
+        staged.clear();
         ViewNavigator.get(player).push(new GUIShopSell(shop, next));
         return false;
     }
@@ -149,6 +151,7 @@ public class GUIShopSell extends RavengardView {
             ItemStack removed = next.remove(index);
             player.getInventory().addItemStack(removed);
             handedOver = true;
+            staged.clear();
             ViewNavigator.get(player).push(new GUIShopSell(shop, next));
         });
     }

@@ -2,6 +2,7 @@ package net.swofty.type.ravengardgeneric.classes;
 
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.attribute.Attribute;
+import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Runs the starter abilities. Heals work on the hud's 160 point scale over the forty point
@@ -21,6 +23,7 @@ public final class RavengardAbilityService {
 
     private static final Map<UUID, Map<RavengardAbility, Long>> COOLDOWNS = new ConcurrentHashMap<>();
     private static final Map<UUID, Map<RavengardAbility, Long>> BUFFS = new ConcurrentHashMap<>();
+    private static final Map<UUID, List<Task>> HEALING = new ConcurrentHashMap<>();
 
     private RavengardAbilityService() {
     }
@@ -108,14 +111,24 @@ public final class RavengardAbilityService {
 
     private static void healOverTime(RavengardPlayer player, int displayTotal, int seconds) {
         float perSecond = displayTotal / (float) seconds / DISPLAY_SCALE;
+        List<Task> tasks = HEALING.computeIfAbsent(player.getUuid(), ignored -> new CopyOnWriteArrayList<>());
         for (int second = 1; second <= seconds; second++) {
-            MinecraftServer.getSchedulerManager().buildTask(() -> {
-                if (player.isOnline() && player.getGameMode() != net.minestom.server.entity.GameMode.SPECTATOR) {
+            Task[] handle = new Task[1];
+            handle[0] = MinecraftServer.getSchedulerManager().buildTask(() -> {
+                tasks.remove(handle[0]);
+                if (player.isOnline() && !player.isDead()
+                        && player.getGameMode() != net.minestom.server.entity.GameMode.SPECTATOR) {
                     float max = (float) player.getAttributeValue(Attribute.MAX_HEALTH);
                     player.setHealth(Math.min(max, player.getHealth() + perSecond));
                 }
             }).delay(TaskSchedule.tick(second * 20)).schedule();
+            tasks.add(handle[0]);
         }
+    }
+
+    public static void stopHealing(UUID uuid) {
+        List<Task> tasks = HEALING.remove(uuid);
+        if (tasks != null) tasks.forEach(Task::cancel);
     }
 
     private static void shadows(RavengardPlayer player) {
@@ -147,5 +160,6 @@ public final class RavengardAbilityService {
     public static void forget(UUID uuid) {
         COOLDOWNS.remove(uuid);
         BUFFS.remove(uuid);
+        stopHealing(uuid);
     }
 }

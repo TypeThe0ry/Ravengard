@@ -143,11 +143,12 @@ public class GUIShop extends RavengardView {
             return;
         }
         if (!entry.take()) {
-            RavengardProfiles.addCrowns(player, entry.price());
+            player.setCrowns(player.getCrowns() + entry.price());
             player.sendMessage("<c>That item is out of stock!");
             return;
         }
         player.getInventory().addItemStack(RavengardItem.of(type, player, entry.boost()));
+        RavengardProfiles.saveActive(player);
         player.sendMessage(Component.text("You bought ").color(NamedTextColor.GREEN)
                 .append(Component.text(RavengardItem.displayName(type))
                         .color(NamedTextColor.WHITE))

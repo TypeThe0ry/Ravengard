@@ -40,7 +40,7 @@ public final class RavengardArrow extends EntityProjectile {
         if (!resolved && getInstance() != null) {
             Pos current = getPosition();
             for (RavengardMob mob : RavengardMob.mobs()) {
-                if (mob.getInstance() != getInstance() || mob.getHealth() <= 0) continue;
+                if (mob.getInstance() != getInstance() || mob.getHealth() <= 0 || mob.isDying()) continue;
                 Pos target = mob.getPosition().add(0, 1.1, 0);
                 if (segmentDistanceSquared(previous, current, target) <= 2.25 * 2.25
                         || current.distanceSquared(target) <= 2.25 * 2.25) {

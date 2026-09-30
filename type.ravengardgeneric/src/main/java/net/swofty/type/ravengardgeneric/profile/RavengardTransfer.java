@@ -33,6 +33,7 @@ public final class RavengardTransfer {
             if (MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(playerUuid)
                     instanceof RavengardPlayer player) {
                 ViewNavigator.remove(player);
+                RavengardProfiles.returnCursorItem(player);
                 beforeLeave.accept(player);
             }
             return preparation.apply(playerUuid, targetServer);
