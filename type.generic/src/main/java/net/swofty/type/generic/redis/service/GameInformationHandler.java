@@ -14,6 +14,12 @@ import net.swofty.commons.redis.RedisMessageContext;
 public class GameInformationHandler implements RedisMessageHandler<Request, Response> {
 
     public static Map<UUID, String> game = new ConcurrentHashMap<>();
+    public static Map<UUID, Long> assignedAt = new ConcurrentHashMap<>();
+
+    public static boolean isFresh(UUID uuid, long maxAgeMillis) {
+        Long stamp = assignedAt.get(uuid);
+        return stamp != null && System.currentTimeMillis() - stamp <= maxAgeMillis;
+    }
 
     private static final GameInformationPushProtocol PROTOCOL = new GameInformationPushProtocol();
 
@@ -25,6 +31,7 @@ public class GameInformationHandler implements RedisMessageHandler<Request, Resp
     @Override
     public Response handle(Request message, RedisMessageContext context) {
         game.put(message.uuid(), message.gameId());
+        assignedAt.put(message.uuid(), System.currentTimeMillis());
         return new Response();
     }
 }

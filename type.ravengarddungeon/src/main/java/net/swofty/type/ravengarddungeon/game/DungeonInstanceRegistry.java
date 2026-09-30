@@ -119,6 +119,7 @@ public final class DungeonInstanceRegistry {
                     : RavengardDungeonGame.SPAWN_POINTS;
             this.game = new RavengardDungeonGame(shared, TypeRavengardDungeonLoader.getGame().getConfig(),
                     spawnPoints, extractions);
+            this.game.setPendingJoins(() -> Math.max(0, players.size() - game.getPlayers().size()));
             double[] bounds = bounds(generated);
             this.game.configureDeathWall(bounds[0], bounds[1], bounds[2]);
         }
@@ -162,9 +163,12 @@ public final class DungeonInstanceRegistry {
 
         public boolean isAcceptingJoins() {
             return !retiring && mode.equals("STANDARD") && game.getState().isWaiting()
+                    && !(game.getCountdown().isActive()
+                    && game.getCountdown().getRemainingSeconds() <= LATE_JOIN_CUTOFF_SECONDS)
                     && game.getAvailableSlots() > 0
                     && players.size() < STANDARD_MAX_PLAYERS;
         }
+        private static final int LATE_JOIN_CUTOFF_SECONDS = 5;
 
         public record MapTile(double worldX, double worldZ, int roomIndex) {
         }

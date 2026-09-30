@@ -34,14 +34,14 @@ public class OrchestratorCache {
         handleHeartbeat(uuid, shortName, type, maxPlayers, onlinePlayers, games, List.of(), null);
     }
 
-    public static void handleHeartbeat(UUID uuid,
-                                       String shortName,
-                                       ServerType type,
-                                       int maxPlayers,
-                                       int onlinePlayers,
-                                       List<GameObject> games,
-                                       List<GameHeartbeatProtocol.MapAdvertisement> mapAdvertisements,
-                                       Integer remainingGameSlots) {
+    public static synchronized void handleHeartbeat(UUID uuid,
+                                                    String shortName,
+                                                    ServerType type,
+                                                    int maxPlayers,
+                                                    int onlinePlayers,
+                                                    List<GameObject> games,
+                                                    List<GameHeartbeatProtocol.MapAdvertisement> mapAdvertisements,
+                                                    Integer remainingGameSlots) {
         GameServerState state = new GameServerState(
             uuid,
             shortName,
@@ -243,16 +243,40 @@ public class OrchestratorCache {
         List<GameServerState> free = all.stream()
                 .filter(server -> server.remainingGameSlots() == null || server.remainingGameSlots() > 0)
                 .toList();
-        if (!free.isEmpty()) {
-            return free.stream()
-                    .max(Comparator.comparingInt(server ->
-                            server.remainingGameSlots() == null ? Integer.MAX_VALUE : server.remainingGameSlots()))
-                    .orElse(null);
-        }
-        return all.stream()
-                .min(Comparator.comparingLong(server -> gamesByGameId.values().stream()
-                        .filter(game -> game.serverUuid().equals(server.uuid())).count()))
+        if (free.isEmpty()) return null;
+        return free.stream()
+                .max(Comparator.comparingInt(server ->
+                        server.remainingGameSlots() == null ? Integer.MAX_VALUE : server.remainingGameSlots()))
                 .orElse(null);
+    }
+
+    public static boolean hasServer(ServerType serverType) {
+        return serversByShortName.values().stream().anyMatch(server -> server.type() == serverType);
+    }
+
+    /**
+     * A game that was just instantiated is known here before its server's next heartbeat,
+     * so the next request can share it; the host's advertised free slot count drops with it.
+     */
+    public static synchronized void registerNewGame(GameServerState server, UUID gameId, ServerType type,
+                                                    String map, String gameTypeName, int reservedSlots) {
+        GameObject game = new GameObject();
+        game.setGameId(gameId);
+        game.setType(type);
+        game.setMap(map);
+        game.setGameTypeName(gameTypeName);
+        game.setAcceptingJoins(true);
+        game.setInvolvedPlayers(new ArrayList<>());
+        game.setDisconnectedPlayers(new ArrayList<>());
+        gamesByGameId.put(gameId, new GameWithServer(game, server.uuid(), server.shortName()));
+        reserveSlots(gameId, reservedSlots);
+        GameServerState current = serversByShortName.get(server.shortName());
+        if (current != null && current.remainingGameSlots() != null) {
+            serversByShortName.put(server.shortName(), new GameServerState(
+                    current.uuid(), current.shortName(), current.type(), current.maxPlayers(),
+                    current.onlinePlayers(), current.lastHeartbeat(), current.mapAdvertisements(),
+                    Math.max(0, current.remainingGameSlots() - 1)));
+        }
     }
 
     public static Set<String> getMaps(ServerType type, String gameTypeName) {

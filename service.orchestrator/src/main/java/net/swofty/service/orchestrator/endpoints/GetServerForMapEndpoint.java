@@ -110,7 +110,19 @@ public class GetServerForMapEndpoint implements RedisMessageHandler
 		}
 	}
 
+	// a standard dungeon holds five players; requests are serialised so two players who queue
+	// in the same second share one instance instead of each creating their own
+	private static final int RAVENGARD_DUNGEON_MAX_PLAYERS = 5;
+	private static final Object RAVENGARD_ALLOCATION = new Object();
+
 	private GetServerForMapProtocol.GetServerForMapResponse handleRavengardDungeon(
+			GetServerForMapProtocol.GetServerForMapMessage body) {
+		synchronized (RAVENGARD_ALLOCATION) {
+			return allocateRavengardDungeon(body);
+		}
+	}
+
+	private GetServerForMapProtocol.GetServerForMapResponse allocateRavengardDungeon(
 			GetServerForMapProtocol.GetServerForMapMessage body) {
 		try {
 			String mode = body.mode() == null || body.mode().isEmpty() ? "STANDARD" : body.mode();
@@ -119,7 +131,7 @@ public class GetServerForMapEndpoint implements RedisMessageHandler
 			// standard queue joins share an open instance when one exists
 			if (mode.equals("STANDARD")) {
 				OrchestratorCache.GameWithServer existing = OrchestratorCache.findExisting(
-						ServerType.RAVENGARD_DUNGEON, 20, null, neededSlots, "STANDARD");
+						ServerType.RAVENGARD_DUNGEON, RAVENGARD_DUNGEON_MAX_PLAYERS, null, neededSlots, "STANDARD");
 				if (existing != null) {
 					OrchestratorCache.GameServerState hosting = OrchestratorCache.getServerByUuid(existing.serverUuid());
 					if (hosting != null) {
@@ -133,7 +145,10 @@ public class GetServerForMapEndpoint implements RedisMessageHandler
 			Logger.info("[matchmaking] RAVENGARD_DUNGEON mode='{}' -> server={}",
 					mode, server == null ? "NONE" : server.shortName());
 			if (server == null) {
-				return new GetServerForMapProtocol.GetServerForMapResponse(null, null, true, "No dungeon servers online");
+				return new GetServerForMapProtocol.GetServerForMapResponse(null, null, true,
+						OrchestratorCache.hasServer(ServerType.RAVENGARD_DUNGEON)
+								? "All dungeon instances are busy, please try again shortly"
+								: "No dungeon servers online");
 			}
 
 			CompletableFuture<InstantiateGamePushProtocol.Response> responseFuture = RedisClient.requestServerFromService(
@@ -144,6 +159,9 @@ public class GetServerForMapEndpoint implements RedisMessageHandler
 					java.util.concurrent.TimeUnit.SECONDS);
 			InstantiateGamePushProtocol.Response response = responseFuture.get(60, java.util.concurrent.TimeUnit.SECONDS);
 			if (response != null && response.success()) {
+				OrchestratorCache.registerNewGame(server, java.util.UUID.fromString(response.gameId()),
+						ServerType.RAVENGARD_DUNGEON, mode.equals("STANDARD") ? "generated" : body.map(), mode,
+						mode.equals("STANDARD") ? neededSlots : 0);
 				return new GetServerForMapProtocol.GetServerForMapResponse(
 						toProxyServer(server), response.gameId(), true, null);
 			}

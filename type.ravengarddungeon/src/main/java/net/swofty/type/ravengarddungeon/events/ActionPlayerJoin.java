@@ -13,9 +13,14 @@ import net.swofty.type.ravengarddungeon.user.RavengardDungeonPlayer;
 import org.tinylog.Logger;
 
 public class ActionPlayerJoin implements HypixelEventClass {
+    private static final long ASSIGNMENT_MAX_AGE_MILLIS = 120_000;
+
     @PhasedEvent(node = EventNodes.PLAYER, requireDataLoaded = false, phase = EventPhase.CONNECT)
     public void run(AsyncPlayerConfigurationEvent event) {
         RavengardDungeonPlayer player = (RavengardDungeonPlayer) event.getPlayer();
+        if (!GameInformationHandler.isFresh(player.getUuid(), ASSIGNMENT_MAX_AGE_MILLIS)) {
+            GameInformationHandler.game.remove(player.getUuid());
+        }
         String assignedGameId = GameInformationHandler.game.get(player.getUuid());
         if (assignedGameId != null) {
             DungeonInstanceRegistry.DungeonInstance assigned = resolve(assignedGameId);

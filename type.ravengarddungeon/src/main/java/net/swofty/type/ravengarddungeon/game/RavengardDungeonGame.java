@@ -50,6 +50,15 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             RavengardDeathWall.centeredTimeline(0, 0, wallInitialRadius);
     private long lastDeathWallDamageAt;
     private long lastHudSecond = -1;
+    private int startDeferrals;
+    private static final int START_DEFERRAL_TICKS = 20;
+    private static final int MAX_START_DEFERRALS = 10;
+    private java.util.function.IntSupplier pendingJoins = () -> 0;
+
+    /** How many players hold a reservation for this game but have not joined it yet. */
+    public void setPendingJoins(java.util.function.IntSupplier pendingJoins) {
+        this.pendingJoins = pendingJoins == null ? () -> 0 : pendingJoins;
+    }
     private long lastSpectatorSecond = -1;
     private RavengardDeathWall.Phase lastWallPhase;
     private int worldBorderStage;
@@ -117,7 +126,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         Game.JoinResult result = super.join(player);
         if (result instanceof Game.JoinResult.Success) {
             int playerIndex = players.size() - 1;
-            player.setDungeonTeam(playerIndex / TEAM_SIZE);
+            player.setDungeonTeam(openTeam(player));
             player.setDungeonDead(false);
             RavengardRunState.begin(player.getUuid(), getGameId());
             Pos spawn = spawnPoints.get(playerIndex % spawnPoints.size());
@@ -150,6 +159,18 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         return result;
     }
 
+    private int openTeam(RavengardDungeonPlayer joining) {
+        int[] sizes = new int[Math.max(1, (getMaxPlayers() + TEAM_SIZE - 1) / TEAM_SIZE)];
+        for (RavengardDungeonPlayer member : players.values()) {
+            if (member == joining || member.getDungeonTeam() < 0 || member.getDungeonTeam() >= sizes.length) continue;
+            sizes[member.getDungeonTeam()]++;
+        }
+        for (int team = 0; team < sizes.length; team++) {
+            if (sizes[team] < TEAM_SIZE) return team;
+        }
+        return 0;
+    }
+
     @Override
     public int getMaxPlayers() {
         return 21;
@@ -176,6 +197,12 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
     @Override
     public void start() {
         if (state != GameState.WAITING && state != GameState.COUNTDOWN) return;
+        if (pendingJoins.getAsInt() > 0 && startDeferrals++ < MAX_START_DEFERRALS) {
+            MinecraftServer.getSchedulerManager().buildTask(this::start)
+                    .delay(TaskSchedule.tick(START_DEFERRAL_TICKS)).schedule();
+            return;
+        }
+        startDeferrals = 0;
         super.start();
         if (state != GameState.IN_PROGRESS) return;
         startedAtNanos = 0;
