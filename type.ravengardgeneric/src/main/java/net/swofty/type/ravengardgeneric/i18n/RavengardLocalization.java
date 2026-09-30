@@ -31,6 +31,9 @@ import java.util.regex.Pattern;
 public final class RavengardLocalization {
     public static final String ENV_LOCALE = "RAVENGARD_LOCALE";
     public static final String ENV_DIRECTORY = "RAVENGARD_LOCALE_DIR";
+    public static final String ENV_REPORT = "RAVENGARD_LOCALE_REPORT";
+    private static final java.util.Set<String> REPORTED = ConcurrentHashMap.newKeySet();
+    private static volatile boolean report;
     private static final Key DEFAULT_FONT = Key.key("minecraft", "default");
     private static final Key ILLAGERALT = Key.key("minecraft", "illageralt");
     private static final int CACHE_LIMIT = 4096;
@@ -54,6 +57,8 @@ public final class RavengardLocalization {
         if (loaded == null) return;
         install(loaded, locale, true);
         registerFontOverlay(new File(directory, "resourcepack"));
+        report = Boolean.parseBoolean(System.getenv(ENV_REPORT));
+        if (report) Logger.info("Localization report enabled: untranslated text leaves are logged once each");
     }
 
     /**
@@ -132,7 +137,21 @@ public final class RavengardLocalization {
         }
         if (CACHE.size() >= CACHE_LIMIT) CACHE.clear();
         CACHE.put(component, translated);
+        if (report) reportUntranslated(translated, null);
         return translated;
+    }
+
+    /** Readable text that still carries Latin words after translation is a catalog gap; each is logged once. */
+    private static void reportUntranslated(Component component, @Nullable Key inheritedFont) {
+        Key font = component.style().font() != null ? component.style().font() : inheritedFont;
+        if (component instanceof TextComponent text && !(font != null && isSpacingFont(font))
+                && !ILLAGERALT.equals(font)) {
+            String content = normalize(text.content());
+            if (content.matches(".*[A-Za-z]{3,}.*") && REPORTED.add(content)) {
+                Logger.info("[i18n-gap] {}", content);
+            }
+        }
+        for (Component child : component.children()) reportUntranslated(child, font);
     }
 
     private static Component translate(Catalog current, Component component, @Nullable Key inheritedFont) {

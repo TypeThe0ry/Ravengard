@@ -9,6 +9,7 @@ services:
     environment:
       RAVENGARD_LOCALE: zh_CN
       RAVENGARD_LOCALE_DIR: /app/localization
+      RAVENGARD_LOCALE_REPORT: "true"
       SERVICE_CMD: java -Dminestom.grouped-packet=false -jar HypixelCore.jar RAVENGARD_LOBBY
     volumes:
       - ./localization/zh_CN:/app/localization:ro
@@ -16,6 +17,7 @@ services:
     environment:
       RAVENGARD_LOCALE: zh_CN
       RAVENGARD_LOCALE_DIR: /app/localization
+      RAVENGARD_LOCALE_REPORT: "true"
       SERVICE_CMD: java -Dminestom.grouped-packet=false -jar HypixelCore.jar RAVENGARD_DUNGEON
     volumes:
       - ./localization/zh_CN:/app/localization:ro

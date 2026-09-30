@@ -167,6 +167,18 @@ entries:
   "Transfer failed: {}": "传送失败：{}"
 
   # ---- 管理命令 ----
+  "<e>/dungeon join <7>- queue into a dungeon": "<e>/dungeon join <7>- 排队进入地牢"
+  "<e>/dungeon join \\<instance> <7>- fly over an instance": "<e>/dungeon join \\<instance> <7>- 俯瞰某个实例"
+  "<e>/dungeon list <7>- every dungeon server and its instances": "<e>/dungeon list <7>- 列出所有地牢服务器及其实例"
+  "<e>/dungeon generate [seed] [rooms] <7>- dedicated instance": "<e>/dungeon generate [seed] [rooms] <7>- 创建专用实例"
+  "<click:run:'/dungeon join {0}'><e><l>[CLICK TO JOIN] <7>or run /dungeon join {1}</click>": "<click:run:'/dungeon join {0}'><e><l>[点击加入] <7>或执行 /dungeon join {1}</click>"
+  "<e>{} <7>- <f>{}<7>/<f>{} players<7>, <f>{}<7> free instance slots": "<e>{} <7>- <f>{}<7>/<f>{} 名玩家<7>，<f>{}<7> 个空闲实例位"
+  "  <8>- <f>{} <7>{} <f>{} players ": "  <8>- <f>{} <7>{} <f>{} 名玩家 "
+  "<a>open": "<a>开放"
+  "<c>closed": "<c>关闭"
+  " <c>(dies in {}s)": " <c>（{} 秒后销毁）"
+  "  <8>- <7>no instances": "  <8>- <7>没有实例"
+  "<7>Captures: ": "<7>捕获："
   "<7>Allocating a dungeon instance...": "<7>正在分配地牢实例……"
   "no servers available": "没有可用的服务器"
   "<c>Could not allocate an instance: {}": "<c>无法分配实例：{}"
