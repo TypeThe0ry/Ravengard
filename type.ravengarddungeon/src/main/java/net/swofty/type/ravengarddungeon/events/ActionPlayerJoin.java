@@ -56,8 +56,10 @@ public class ActionPlayerJoin implements HypixelEventClass {
         if (GameInformationHandler.game.containsKey(player.getUuid())) {
             if (waitedTicks < 400) {
                 player.scheduler().scheduleNextTick(() -> joinFallbackWhenPlayReady(player, waitedTicks + 1));
+                return;
             }
-            return;
+            Logger.warn("Dungeon assignment for {} was never consumed, dropping it", player.getUsername());
+            GameInformationHandler.game.remove(player.getUuid());
         }
         for (var instance : net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry.all()) {
             if (instance.getPlayers().contains(player.getUuid())) return;

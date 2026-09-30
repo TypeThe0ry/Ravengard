@@ -5,6 +5,7 @@ import net.swofty.type.generic.event.EventNodes;
 import net.swofty.type.generic.event.HypixelEventClass;
 import net.swofty.type.generic.event.phase.EventPhase;
 import net.swofty.type.generic.event.phase.PhasedEvent;
+import net.swofty.type.generic.redis.service.GameInformationHandler;
 import net.swofty.type.ravengarddungeon.TypeRavengardDungeonLoader;
 import net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry;
 import net.swofty.type.ravengarddungeon.user.RavengardDungeonPlayer;
@@ -13,6 +14,7 @@ public class ActionPlayerDisconnect implements HypixelEventClass {
     @PhasedEvent(node = EventNodes.PLAYER, requireDataLoaded = false, phase = EventPhase.DISCONNECT)
     public void run(PlayerDisconnectEvent event) {
         RavengardDungeonPlayer player = (RavengardDungeonPlayer) event.getPlayer();
+        GameInformationHandler.game.remove(player.getUuid());
         if (DungeonInstanceRegistry.disconnectPlayer(player)) {
             return;
         }
