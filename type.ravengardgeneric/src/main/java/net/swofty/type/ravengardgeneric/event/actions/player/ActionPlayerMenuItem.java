@@ -65,7 +65,9 @@ public class ActionPlayerMenuItem implements HypixelEventClass {
                 return;
             }
         }
-        if (RavengardMenuItem.isMenuItem(event.getClickedItem()) || event.getSlot() == RavengardMenuItem.SLOT) {
+        if (RavengardMenuItem.isMenuItem(event.getClickedItem()) || event.getSlot() == RavengardMenuItem.SLOT
+                || (event.getClick() instanceof net.minestom.server.inventory.click.Click.HotbarSwap swap
+                && swap.hotbarSlot() == RavengardMenuItem.SLOT)) {
             event.setCancelled(true);
         }
     }

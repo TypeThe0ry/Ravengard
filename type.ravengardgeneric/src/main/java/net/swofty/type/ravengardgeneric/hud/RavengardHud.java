@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -63,6 +64,7 @@ public final class RavengardHud {
         }
         STATES.remove(player.getUuid());
         LAST_SENT.remove(player.getUuid());
+        TAB_HIDDEN.remove(player.getUuid());
     }
 
     private static final AtomicInteger TITLE_FRAME = new AtomicInteger();
@@ -161,8 +163,14 @@ public final class RavengardHud {
         return line == null ? header : header.append(line).append(Component.newline());
     }
 
+    private static final Map<UUID, Set<UUID>> TAB_HIDDEN = new ConcurrentHashMap<>();
+
     private static void hideTabList(HypixelPlayer player) {
+        Set<UUID> hidden = TAB_HIDDEN.computeIfAbsent(player.getUuid(), ignored -> ConcurrentHashMap.newKeySet());
         for (var online : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
+            if (!hidden.add(online.getUuid())) {
+                continue;
+            }
             player.sendPacket(new net.minestom.server.network.packet.server.play.PlayerInfoUpdatePacket(
                     net.minestom.server.network.packet.server.play.PlayerInfoUpdatePacket.Action.UPDATE_LISTED,
                     new net.minestom.server.network.packet.server.play.PlayerInfoUpdatePacket.Entry(

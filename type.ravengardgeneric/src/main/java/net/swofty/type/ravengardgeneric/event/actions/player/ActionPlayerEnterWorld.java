@@ -47,7 +47,7 @@ public class ActionPlayerEnterWorld implements HypixelEventClass {
         }
 
         Pos spawn = tutorial
-                ? new Pos(25.5, 64, 508.5, -90f, 0f)
+                ? net.swofty.type.ravengardgeneric.classes.RavengardSelection.TUTORIAL_SPAWN
                 : HypixelConst.getTypeLoader()
                 .getLoaderValues()
                 .spawnPosition()

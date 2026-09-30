@@ -1857,6 +1857,7 @@ public final class DungeonInstanceRegistry {
     }
 
     public static boolean disconnectPlayer(RavengardDungeonPlayer player) {
+        PENDING_TELEPORTS.remove(player.getUuid());
         for (DungeonInstance instance : INSTANCES.values()) {
             if (instance.getPlayers().remove(player.getUuid())) {
                 instance.getGame().disconnect(player);

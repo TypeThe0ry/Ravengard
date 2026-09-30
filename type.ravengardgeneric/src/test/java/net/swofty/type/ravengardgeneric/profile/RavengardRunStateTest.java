@@ -11,6 +11,7 @@ class RavengardRunStateTest {
     @Test
     void activeDungeonRunDisablesDefaultInventoryPersistence() {
         UUID player = UUID.randomUUID();
+        RavengardProfiles.markInventoryLoaded(player);
 
         assertTrue(RavengardProfiles.shouldPersistInventory(player));
         RavengardRunState.begin(player, "game-1");
@@ -24,10 +25,22 @@ class RavengardRunStateTest {
     @Test
     void abortedDungeonRunRestoresDefaultInventoryPersistence() {
         UUID player = UUID.randomUUID();
+        RavengardProfiles.markInventoryLoaded(player);
 
         RavengardRunState.begin(player, "game-1");
         RavengardRunState.abort(player);
 
         assertTrue(RavengardProfiles.shouldPersistInventory(player));
+    }
+
+    @Test
+    void inventoryIsNeverPersistedBeforeItWasRestoredThisSession() {
+        UUID player = UUID.randomUUID();
+
+        assertFalse(RavengardProfiles.shouldPersistInventory(player));
+        RavengardProfiles.markInventoryLoaded(player);
+        assertTrue(RavengardProfiles.shouldPersistInventory(player));
+        RavengardProfiles.forgetInventoryLoaded(player);
+        assertFalse(RavengardProfiles.shouldPersistInventory(player));
     }
 }

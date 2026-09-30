@@ -13,7 +13,12 @@ public class HubCommand extends HypixelCommand {
     public void registerUsage(MinestomCommand command) {
         command.addSyntax((sender, context) -> {
             if (!permissionCheck(sender)) return;
-            ((RavengardPlayer) sender).sendTo(ServerType.RAVENGARD_LOBBY);
+            RavengardPlayer player = (RavengardPlayer) sender;
+            if (net.swofty.type.ravengardgeneric.classes.RavengardSelection.inTutorialWorld(player)) {
+                player.teleport(net.swofty.type.ravengardgeneric.classes.RavengardSelection.TUTORIAL_SPAWN);
+                return;
+            }
+            player.sendTo(ServerType.RAVENGARD_LOBBY);
         });
     }
 }

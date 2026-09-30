@@ -48,8 +48,7 @@ public final class RavengardDomain implements PlayerDataDomain<RavengardDataHand
         RavengardDataHandler handler = PlayerDataService.find(KEY, player.getUuid()).orElse(null);
         if (handler == null) return;
         if (player instanceof RavengardPlayer ravengardPlayer) {
-            RavengardProfiles.endSessionAndSave(ravengardPlayer,
-                    !net.swofty.type.ravengardgeneric.profile.RavengardRunState.isActive(player.getUuid()));
+            RavengardProfiles.endSessionAndSave(ravengardPlayer);
         }
         handler.runOnSave(player);
         handler.saveBackedData();
@@ -57,6 +56,7 @@ public final class RavengardDomain implements PlayerDataDomain<RavengardDataHand
 
     @Override
     public void unload(UUID uuid) {
+        RavengardProfiles.forgetInventoryLoaded(uuid);
         RavengardDataHandler handler = PlayerDataService.find(KEY, uuid).orElse(null);
         PlayerDataService.evict(KEY, uuid);
         if (handler == null || handler.getCurrentProfileId() == null) return;

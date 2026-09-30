@@ -11,12 +11,9 @@ public class ActionPlayerVoid implements HypixelEventClass {
 
     @PhasedEvent(node = EventNodes.PLAYER, requireDataLoaded = false, phase = EventPhase.GAMEPLAY)
     public void run(PlayerMoveEvent event) {
-        if (event.getPlayer().getPosition().y() < 0) {
-            event.getPlayer().teleport(HypixelConst.getTypeLoader()
-                    .getLoaderValues()
-                    .spawnPosition()
-                    .apply(HypixelConst.getTypeLoader().getType())
-            );
+        if (event.getPlayer().getPosition().y() < 0
+                && event.getPlayer() instanceof net.swofty.type.ravengardgeneric.user.RavengardPlayer player) {
+            player.teleport(net.swofty.type.ravengardgeneric.classes.RavengardSelection.respawnPoint(player));
         }
     }
 }

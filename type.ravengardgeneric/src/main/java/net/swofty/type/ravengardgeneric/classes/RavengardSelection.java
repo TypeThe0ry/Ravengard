@@ -11,6 +11,17 @@ import java.util.List;
 
 public final class RavengardSelection {
     public static final Pos MAIN_WORLD_SPAWN = new Pos(47.5, 61, 121.5, 180f, 0f);
+    public static final Pos TUTORIAL_SPAWN = new Pos(25.5, 64, 508.5, -90f, 0f);
+
+    public static boolean inTutorialWorld(RavengardPlayer player) {
+        var tutorial = net.swofty.type.ravengardgeneric.RavengardGenericLoader.tutorialInstance;
+        return tutorial != null && player.getInstance() == tutorial;
+    }
+
+    public static Pos respawnPoint(RavengardPlayer player) {
+        return inTutorialWorld(player) ? TUTORIAL_SPAWN
+                : HypixelConst.getTypeLoader().getLoaderValues().spawnPosition().apply(HypixelConst.getTypeLoader().getType());
+    }
 
     private RavengardSelection() {
     }

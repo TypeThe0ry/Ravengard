@@ -96,6 +96,9 @@ public final class RavengardQueue {
                         player.sendMessage("<c>Failed to register for the dungeon: {}", reason);
                         return;
                     }
+                    if (!player.isOnline()) {
+                        return;
+                    }
                     player.sendMessage("<a>Sending you to <f>{}<a>!", server.shortName());
                     player.asProxyPlayer().transferToWithIndication(server.uuid());
                 }).exceptionally(throwable -> {

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,6 +31,8 @@ public final class RavengardProfiles {
     public static final Pos TUTORIAL_SPAWN = new Pos(25.5, 64, 508.5, -90f, 0f);
 
     private static final Map<UUID, Long> SESSION_STARTED = new ConcurrentHashMap<>();
+    // a snapshot is only trustworthy once this session has put the stored inventory into the player
+    private static final Set<UUID> INVENTORY_LOADED = ConcurrentHashMap.newKeySet();
 
     private RavengardProfiles() {
     }
@@ -185,7 +188,19 @@ public final class RavengardProfiles {
     }
 
     static boolean shouldPersistInventory(UUID playerUuid) {
-        return !RavengardRunState.isActive(playerUuid);
+        return INVENTORY_LOADED.contains(playerUuid) && !RavengardRunState.isActive(playerUuid);
+    }
+
+    public static boolean isInventoryLoaded(UUID playerUuid) {
+        return INVENTORY_LOADED.contains(playerUuid);
+    }
+
+    static void markInventoryLoaded(UUID playerUuid) {
+        INVENTORY_LOADED.add(playerUuid);
+    }
+
+    public static void forgetInventoryLoaded(UUID playerUuid) {
+        INVENTORY_LOADED.remove(playerUuid);
     }
 
     public static boolean hasIntro(RavengardPlayer player, String npc) {
@@ -246,12 +261,18 @@ public final class RavengardProfiles {
     public static void restoreInventory(RavengardPlayer player, UUID profileId) {
         Map<Integer, String> inventory = RavengardProfileStorage.readInventory(profileId);
         player.getInventory().clear();
+        INVENTORY_LOADED.add(player.getUuid());
 
         if (!inventory.isEmpty()) {
             inventory.forEach((slot, snbt) -> {
                 try {
                     ItemStack stack = ItemStack.fromItemNBT(TagStringIO.tagStringIO().asCompound(snbt));
-                    if (!RavengardMenuItem.isMenuItem(stack)) {
+                    if (RavengardMenuItem.isMenuItem(stack)) {
+                        return;
+                    }
+                    if (slot == RavengardMenuItem.SLOT) {
+                        player.getInventory().addItemStack(stack);
+                    } else {
                         player.getInventory().setItemStack(slot, stack);
                     }
                 } catch (Exception exception) {
