@@ -115,8 +115,11 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final int CASTER_COOLDOWN_TICKS = 45;
     private static final double KNOCKBACK_HORIZONTAL = 0.79 * 20;
     private static final double KNOCKBACK_VERTICAL = 0.50 * 20;
-    static final double COMBAT_HITBOX_WIDTH = 1.15;
-    static final double COMBAT_HITBOX_HEIGHT = 2.25;
+    // the invisible zombie body is the combat target: scaling it keeps right-clicks passing through
+    // to the held item, which an interaction entity would swallow
+    static final double COMBAT_SCALE = 1.15;
+    static final double COMBAT_HITBOX_WIDTH = 0.6 * COMBAT_SCALE;
+    static final double COMBAT_HITBOX_HEIGHT = 1.95 * COMBAT_SCALE;
 
     private final RavengardMobClip clip;
     private final String appearanceType;
@@ -125,7 +128,6 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private final List<Entity> parts = new ArrayList<>();
     private final List<Vec> partOffsets = new ArrayList<>();
     private final List<String> partModels = new ArrayList<>();
-    private RavengardMobHitbox combatHitbox;
     private LivingEntity healthBar;
     private Instance instance;
 
@@ -196,6 +198,8 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         setInvisible(true);
         setSilent(true);
         setAutoViewable(true);
+        getAttribute(net.minestom.server.entity.attribute.Attribute.SCALE).setBaseValue(COMBAT_SCALE);
+        setBoundingBox(COMBAT_HITBOX_WIDTH, COMBAT_HITBOX_HEIGHT, COMBAT_HITBOX_WIDTH);
         getAttribute(net.minestom.server.entity.attribute.Attribute.MOVEMENT_SPEED)
                 .setBaseValue(Math.max(0.15, clip.walkSpeed() * 2));
         getAttribute(net.minestom.server.entity.attribute.Attribute.MAX_HEALTH)
@@ -334,9 +338,6 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
 
     private void beginDeath() {
         dying = true;
-        if (combatHitbox != null && !combatHitbox.isRemoved()) {
-            combatHitbox.remove();
-        }
         RavengardSounds.play(instance, position, RavengardSounds.Cue.MOB_DEATH);
         if (!deathReported) {
             deathReported = true;
@@ -429,9 +430,6 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         if (entity instanceof RavengardMob mob) {
             return mob;
         }
-        if (entity instanceof RavengardMobHitbox hitbox) {
-            return hitbox.owner();
-        }
         if (entity != null) {
             for (RavengardMob mob : MOBS) {
                 if (mob.ownsCombatEntity(entity)) {
@@ -443,7 +441,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     }
 
     private boolean ownsCombatEntity(Entity entity) {
-        return entity == this || entity == combatHitbox || entity == healthBar || parts.contains(entity);
+        return entity == this || entity == healthBar || parts.contains(entity);
     }
 
     public static void removeInstance(Instance target) {
@@ -496,9 +494,6 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         }
         addStaticAppearanceParts(instance);
         java.util.Arrays.fill(partDuration, 1);
-
-        combatHitbox = new RavengardMobHitbox(this, COMBAT_HITBOX_WIDTH, COMBAT_HITBOX_HEIGHT);
-        combatHitbox.setInstance(instance, position);
 
         healthBar = new LivingEntity(EntityType.TEXT_DISPLAY);
         healthBar.setNoGravity(true);
@@ -578,7 +573,6 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         parts.forEach(part -> {
             if (!part.isRemoved()) part.remove();
         });
-        if (combatHitbox != null && !combatHitbox.isRemoved()) combatHitbox.remove();
         if (healthBar != null && !healthBar.isRemoved()) healthBar.remove();
         if (!isRemoved()) remove();
     }
@@ -679,9 +673,6 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         }
         if ((moved || oneShot) && !dying && isRigEntityActive(healthBar)) {
             healthBar.teleport(position.add(0, 2.25, 0));
-        }
-        if (moved && !dying && isRigEntityActive(combatHitbox)) {
-            combatHitbox.teleport(position);
         }
 
         frame++;

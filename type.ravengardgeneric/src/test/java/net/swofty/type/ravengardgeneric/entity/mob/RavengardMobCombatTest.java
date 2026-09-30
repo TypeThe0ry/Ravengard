@@ -90,7 +90,7 @@ class RavengardMobCombatTest {
     }
 
     @Test
-    void lethalDamageDisablesTheCombatHitboxBeforeDeathAnimationCompletes() throws Exception {
+    void lethalDamageRejectsFurtherHitsBeforeDeathAnimationCompletes() throws Exception {
         RavengardMobClip clip = clip();
         set(clip, "health", 3d);
         RavengardMobClip.Animation death = new RavengardMobClip.Animation();
@@ -103,16 +103,13 @@ class RavengardMobCombatTest {
         RavengardMob mob = new RavengardMob(clip,
                 new net.minestom.server.coordinate.Pos(2.5, 1, 2.5));
         mob.spawnMob(instance);
-        Entity hitbox = instance.getEntities().stream()
-                .filter(entity -> entity.getEntityType() == EntityType.INTERACTION)
-                .findFirst()
-                .orElseThrow();
 
         mob.damage(net.minestom.server.entity.damage.DamageType.PLAYER_ATTACK, 3);
 
         assertEquals(0, mob.getHealth(), 0.001);
         assertTrue(mob.isDead());
-        assertTrue(hitbox.isRemoved(), "a dead mob must not accept repeated client attacks");
+        assertFalse(mob.damage(net.minestom.server.entity.damage.DamageType.PLAYER_ATTACK, 3),
+                "a dead mob must not accept repeated client attacks");
         for (int tick = 0; tick < 3; tick++) mob.tickRig();
         assertTrue(mob.isRemoved(), "death animation must finish even if the clip is marked looping");
         mob.removeRig();
@@ -168,7 +165,7 @@ class RavengardMobCombatTest {
     }
 
     @Test
-    void spawnCreatesAPlayerAttackableHitboxAndCleansItUp() throws Exception {
+    void spawnedMobBodyIsTheScaledCombatTarget() throws Exception {
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
         instance.loadChunk(0, 0).join();
@@ -176,18 +173,15 @@ class RavengardMobCombatTest {
 
         mob.spawnMob(instance);
 
-        Entity hitbox = instance.getEntities().stream()
-                .filter(entity -> entity.getEntityType() == EntityType.INTERACTION)
-                .findFirst()
-                .orElse(null);
-        assertNotNull(hitbox);
-        assertSame(mob, RavengardMob.combatTarget(hitbox));
-        assertEquals(RavengardMob.COMBAT_HITBOX_WIDTH, hitbox.getBoundingBox().width(), 0.001);
-        assertEquals(RavengardMob.COMBAT_HITBOX_HEIGHT, hitbox.getBoundingBox().height(), 0.001);
+        assertTrue(instance.getEntities().stream().noneMatch(entity -> entity.getEntityType() == EntityType.INTERACTION));
+        assertSame(mob, RavengardMob.combatTarget(mob));
+        assertEquals(RavengardMob.COMBAT_SCALE,
+                mob.getAttributeValue(net.minestom.server.entity.attribute.Attribute.SCALE), 0.001);
+        assertEquals(RavengardMob.COMBAT_HITBOX_WIDTH, mob.getBoundingBox().width(), 0.001);
+        assertEquals(RavengardMob.COMBAT_HITBOX_HEIGHT, mob.getBoundingBox().height(), 0.001);
+        assertTrue(mob.getBoundingBox().width() < 1, "a body wider than a block cannot climb steps");
 
         mob.removeRig();
-
-        assertTrue(hitbox.isRemoved());
         MinecraftServer.getInstanceManager().unregisterInstance(instance);
     }
 
@@ -615,8 +609,7 @@ class RavengardMobCombatTest {
         player.setInstance(instance, new net.minestom.server.coordinate.Pos(4, 1, 2.5)).join();
         var mob = new RavengardMob(clip(), new net.minestom.server.coordinate.Pos(2.5, 1, 2.5));
         mob.spawnMob(instance);
-        var hitbox = instance.getEntities().stream().filter(e -> e.getEntityType() == EntityType.INTERACTION)
-                .findFirst().orElseThrow();
+        var hitbox = mob;
         hitbox.addViewer(player);
         var attacks = new AtomicInteger();
         var listener = net.minestom.server.event.EventListener.of(
