@@ -15,6 +15,7 @@ entries:
   "Castle Guard": "城堡卫兵"
   "Guard": "卫兵"
   "Ship Captain": "船长"
+  "Ship Captain Tutorial": "船长"
   "Harbor Master": "港务长"
   "Tavern Master": "酒馆老板"
   "Collector": "收藏家"
@@ -26,7 +27,7 @@ entries:
 
   # ---- 阿什温（炼金术士）----
   "Hello there, adventurer! Always good to see a new face.": "你好，冒险者！见到新面孔总是件好事。"
-  "My name's Ashwyn. I'm an alchemist here in Ravengard.": "我叫阿什温，是拉文加德的炼金术士。"
+  "My name's Ashwyn. I'm an alchemist here in Ravengard.": "我叫阿什温，是天穹余烬的炼金术士。"
   "I offer medical treatments and remedies for a fair price.": "我以公道的价格提供医疗和药剂。"
   "Things haven't been easy these last few months with so many wounded soldiers, but we do our best to help those in need.": "这几个月伤兵太多，日子不好过，但我们会尽力帮助需要帮助的人。"
   "You don't seem to be injured. Let's hope it stays that way!": "你看起来没受伤。希望能一直如此！"
@@ -41,7 +42,7 @@ entries:
   "See anything that you like?": "看到中意的了吗？"
 
   # ---- 韦兰（铁匠）----
-  "Hello there! I'm Ravengard's finest blacksmith! Call me Wayland.": "你好！我是拉文加德最好的铁匠！叫我韦兰就行。"
+  "Hello there! I'm Ravengard's finest blacksmith! Call me Wayland.": "你好！我是天穹余烬最好的铁匠！叫我韦兰就行。"
   "Now, what is it you'll be needing?": "那么，你需要点什么？"
   "Swords? Axes? Maces?": "剑？斧？钉锤？"
   "I even dabble in a few magical weapons from time to time.": "我偶尔还会捣鼓几件魔法武器。"
@@ -70,7 +71,7 @@ entries:
   "You should go chat to the §6Harbor Master§f. He's located near the docks.": "你应该去找 <6>港务长<f> 聊聊。他就在码头附近。"
   "Best of luck, adventurer!": "祝你好运，冒险者！"
   "We've almost arrived, adventurer!": "我们快到了，冒险者！"
-  "Ravengard is in dire need of brave fighters.": "拉文加德急需勇敢的战士。"
+  "Ravengard is in dire need of brave fighters.": "天穹余烬急需勇敢的战士。"
   "Tell me... What kind of fighter are you?": "告诉我……你是哪种战士？"
 
   # ---- 加布里埃尔（酒馆老板）----
@@ -84,4 +85,4 @@ entries:
   "Hello!": "你好！"
 
   # ---- 永夜号公告板（整块文字）----
-  "Welcome to Ravengard!\nStill under development. Issues may arise.\n\n> PvPvE extraction where survival means everything!\n> Enter the dungeon and escape with loot.\n> Avoid the death wall as it surrounds a random location.\n> If you die you will lose everything you are carrying.\n> Store items in your Lock Box.\n> Defeat enemies to Level Up and unlock abilities!\n\nPlay test end date: August 31st\nHave fun and good luck!\n\nCLICK HERE to read more!\n": "<6>欢迎来到 <l>拉文加德</l>！\n<8><o>仍在开发中，可能会出现问题。</o>\n\n<6><l>> </l><a>PvPvE <7>撤离玩法，<2>生存<7>就是一切！\n<6><l>> </l><7>进入<c>地牢<7>，带着<6>战利品<3>逃出<7>。\n<6><l>> </l><7>躲开<5>死亡之墙<7>，它会向随机地点收缩。\n<6><l>> </l><7>如果你<c>死亡<7>，将失去身上携带的<4>一切<7>。\n<6><l>> </l><7>把物品存进你的<d>保险箱<7>。\n<6><l>> </l><c>击败<7>敌人以<6>升级<7>并解锁技能！\n\n<7>测试结束日期：<6>8 月 31 日\n<7>玩得开心，祝你好运！\n\n<e><l><n>点击这里</n></l> 了解更多！\n"
+  "Welcome to Ravengard!\nStill under development. Issues may arise.\n\n> PvPvE extraction where survival means everything!\n> Enter the dungeon and escape with loot.\n> Avoid the death wall as it surrounds a random location.\n> If you die you will lose everything you are carrying.\n> Store items in your Lock Box.\n> Defeat enemies to Level Up and unlock abilities!\n\nPlay test end date: August 31st\nHave fun and good luck!\n\nCLICK HERE to read more!\n": "<6>欢迎来到 <l>天穹余烬</l>！\n<8><o>仍在开发中，可能会出现问题。</o>\n\n<6><l>> </l><a>PvPvE <7>撤离玩法，<2>生存<7>就是一切！\n<6><l>> </l><7>进入<c>地牢<7>，带着<6>战利品<3>逃出<7>。\n<6><l>> </l><7>躲开<5>死亡之墙<7>，它会向随机地点收缩。\n<6><l>> </l><7>如果你<c>死亡<7>，将失去身上携带的<4>一切<7>。\n<6><l>> </l><7>把物品存进你的<d>保险箱<7>。\n<6><l>> </l><c>击败<7>敌人以<6>升级<7>并解锁技能！\n\n<7>测试结束日期：<6>8 月 31 日\n<7>玩得开心，祝你好运！\n\n<e><l><n>点击这里</n></l> 了解更多！\n"

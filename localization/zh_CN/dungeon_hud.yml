@@ -1,10 +1,10 @@
 # 地牢：加入/撤离消息、死亡之墙状态、交互物标签、怪物名
 entries:
   # ---- 进入与离开 ----
-  "<c>No dungeon assignment was found. Returning to Ravengard Lobby.": "<c>未找到地牢分配，正在返回拉文加德大厅。"
-  "<c>Your dungeon assignment was invalid. Returning to Ravengard Lobby.": "<c>地牢分配无效，正在返回拉文加德大厅。"
+  "<c>No dungeon assignment was found. Returning to Ravengard Lobby.": "<c>未找到地牢分配，正在返回天穹余烬大厅。"
+  "<c>Your dungeon assignment was invalid. Returning to Ravengard Lobby.": "<c>地牢分配无效，正在返回天穹余烬大厅。"
   "<c>Your dungeon instance no longer exists.": "<c>你的地牢实例已不存在。"
-  "<c>No active dungeon assignment was found. Returning to Ravengard Lobby.": "<c>未找到有效的地牢分配，正在返回拉文加德大厅。"
+  "<c>No active dungeon assignment was found. Returning to Ravengard Lobby.": "<c>未找到有效的地牢分配，正在返回天穹余烬大厅。"
   "<7>Your dungeon is still being prepared, hold on...": "<7>你的地牢仍在准备中，请稍候……"
   "<c>This dungeon is no longer accepting players.": "<c>该地牢已不再接受玩家加入。"
   "<7>Preparing your dungeon (seed <f>{}<7>)...": "<7>正在准备你的地牢（种子 <f>{}<7>）……"
@@ -22,7 +22,7 @@ entries:
   "<c>Death Wall: return inside the safe zone": "<c>死亡之墙：请回到安全区内"
   "you are not in an active dungeon run": "你不在进行中的地牢探险里"
   "the server could not verify your active run": "服务器无法确认你的探险状态"
-  "your Ravengard profile could not be secured": "无法保存你的拉文加德存档"
+  "your Ravengard profile could not be secured": "无法保存你的天穹余烬存档"
   "your loot could not be saved": "无法保存你的战利品"
   "<a>Extraction successful! Your loot has been secured.": "<a>撤离成功！你的战利品已保存。"
   "<c>Extraction failed: {}.": "<c>撤离失败：{}。"

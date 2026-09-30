@@ -1,7 +1,7 @@
 # 通用消息：菜单、商店、保险箱、存档、队列、命令、聊天
 entries:
   # ---- 通用 ----
-  "Ravengard": "拉文加德"
+  "Ravengard": "天穹余烬"
   "Ravenport": "渡鸦港"
   "The Nevermore": "永夜号"
   "<f>{} discovered": "<f>发现 {}"
@@ -14,7 +14,7 @@ entries:
   "<a>Successfully set crowns to <e>{}<a>.": "<a>已将王冠设为 <e>{}<a>。"
   "Unable to transfer you: {}": "无法传送你：{}"
   "<7>Sending to server {}...": "<7>正在传送到服务器 {}……"
-  "<7>Sending to Ravengard Lobby...": "<7>正在传送到拉文加德大厅……"
+  "<7>Sending to Ravengard Lobby...": "<7>正在传送到天穹余烬大厅……"
   "<c>There are no Hypixel (type={}) servers available at the moment.": "<c>当前没有可用的 Hypixel（类型={}）服务器。"
   "<c>Attempted to transfer to a {} server, but there are no empty slots available. Please try again later.": "<c>尝试传送到 {} 服务器，但没有空余位置，请稍后再试。"
   "<c>This command can only be used by players.": "<c>该命令只能由玩家使用。"
@@ -39,7 +39,7 @@ entries:
 
   # ---- 主菜单 ----
   "Main Menu": "主菜单"
-  "<c>The Ravengard Menu is sealed during a dungeon run.": "<c>地牢进行中无法打开拉文加德菜单。"
+  "<c>The Ravengard Menu is sealed during a dungeon run.": "<c>地牢进行中无法打开天穹余烬菜单。"
   "<c>You must select a class to use this menu!": "<c>你必须先选择职业才能使用此菜单！"
   "<c>You must select a class to open this menu!": "<c>你必须先选择职业才能打开此菜单！"
   "Profiles<7> - <f>{}": "存档<7> - <f>{}"
@@ -144,7 +144,7 @@ entries:
   "<7>Restoring default equipment...": "<7>正在恢复默认装备……"
 
   # ---- 队列 ----
-  "Ravengard Dungeon Trios": "拉文加德地牢·三人组"
+  "Ravengard Dungeon Trios": "天穹余烬地牢·三人组"
   "<c>{} is already queued for a game!": "<c>{} 已经在排队了！"
   "<c>You are already in a dungeon!": "<c>你已经在地牢中了！"
   "<c>Choose a class before joining a fight!": "<c>加入战斗前请先选择职业！"
