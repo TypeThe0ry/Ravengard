@@ -190,6 +190,13 @@ public class AnimatedRavengardNPC extends RavengardNPC {
         dialogueSessions.put(player.getUuid(), session);
     }
 
+    public static void forget(UUID uuid) {
+        for (AnimatedRavengardNPC npc : RavengardAnimationRegistry.spawned()) {
+            DialogueSession session = npc.dialogueSessions.remove(uuid);
+            if (session != null && session.pending != null) session.pending.cancel();
+        }
+    }
+
     private static final class DialogueSession {
         private int nextLine;
         private net.minestom.server.timer.Task pending;
@@ -204,7 +211,9 @@ public class AnimatedRavengardNPC extends RavengardNPC {
             openShop(player);
             return;
         }
-        if ("select_class".equals(clip.onComplete())) {
+        if ("select_class".equals(clip.onComplete())
+                && net.swofty.type.ravengardgeneric.classes.RavengardSelection.inTutorialWorld(player)
+                && player.getRavengardClass() == null) {
             net.swofty.type.generic.gui.v2.ViewNavigator.get(player)
                     .push(new net.swofty.type.ravengardgeneric.gui.GUISelectClass());
         }

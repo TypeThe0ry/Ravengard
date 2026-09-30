@@ -64,34 +64,21 @@ public final class RavengardHud {
         }
         STATES.remove(player.getUuid());
         LAST_SENT.remove(player.getUuid());
+        LAST_TITLE.remove(player.getUuid());
         TAB_HIDDEN.remove(player.getUuid());
+        TAB_HIDDEN.values().forEach(hidden -> hidden.remove(player.getUuid()));
     }
 
     private static final AtomicInteger TITLE_FRAME = new AtomicInteger();
+    private static final Map<UUID, Component> LAST_TITLE = new ConcurrentHashMap<>();
 
     private static void tick() {
-        TITLE_FRAME.incrementAndGet();
+        Component title = RavengardSidebarTitle.frame(TITLE_FRAME.incrementAndGet());
         for (HypixelPlayer player : HypixelGenericLoader.getLoadedPlayers()) {
-            Sidebar sidebar = SIDEBARS.get(player.getUuid());
-            Map<RavengardHudLayer, Component> previous = LAST_SENT.get(player.getUuid());
-            if (sidebar == null || previous == null) {
-                continue;
-            }
-
-            RavengardHudState state = state(player);
-            refresh(player, state);
-            sidebar.setTitle(RavengardSidebarTitle.frame(TITLE_FRAME.get()));
-
-            sendTabMap(player, state);
-            hideTabList(player);
-
-            Map<RavengardHudLayer, Component> composed = RavengardHudComposer.compose(state);
-            for (Map.Entry<RavengardHudLayer, Component> entry : composed.entrySet()) {
-                if (entry.getValue().equals(previous.get(entry.getKey()))) {
-                    continue;
-                }
-                previous.put(entry.getKey(), entry.getValue());
-                sidebar.updateLineContent(entry.getKey().name(), entry.getValue());
+            try {
+                tick(player, title);
+            } catch (Exception exception) {
+                org.tinylog.Logger.error(exception, "Ravengard HUD update failed for {}", player.getUsername());
             }
         }
 
@@ -103,6 +90,34 @@ public final class RavengardHud {
                 MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(uuid) == null);
         LAST_TAB_HEADER.keySet().removeIf(uuid ->
                 MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(uuid) == null);
+        LAST_TITLE.keySet().removeIf(uuid ->
+                MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(uuid) == null);
+    }
+
+    private static void tick(HypixelPlayer player, Component title) {
+        Sidebar sidebar = SIDEBARS.get(player.getUuid());
+        Map<RavengardHudLayer, Component> previous = LAST_SENT.get(player.getUuid());
+        if (sidebar == null || previous == null) {
+            return;
+        }
+
+        RavengardHudState state = state(player);
+        refresh(player, state);
+        if (!title.equals(LAST_TITLE.put(player.getUuid(), title))) {
+            sidebar.setTitle(title);
+        }
+
+        sendTabMap(player, state);
+        hideTabList(player);
+
+        Map<RavengardHudLayer, Component> composed = RavengardHudComposer.compose(state);
+        for (Map.Entry<RavengardHudLayer, Component> entry : composed.entrySet()) {
+            if (entry.getValue().equals(previous.get(entry.getKey()))) {
+                continue;
+            }
+            previous.put(entry.getKey(), entry.getValue());
+            sidebar.updateLineContent(entry.getKey().name(), entry.getValue());
+        }
     }
 
     private static final String FULLSCREEN_TILES = "\uE120\uE121\uE122\uE123\uE124\uE125";

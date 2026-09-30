@@ -26,7 +26,7 @@ import java.util.stream.Stream;
         labels = "switch",
         description = "Switches between captured polar worlds",
         usage = "/switch <world>",
-        permission = Rank.DEFAULT,
+        permission = Rank.STAFF,
         allowsConsole = false
 )
 public class SwitchCommand extends HypixelCommand {

@@ -16,7 +16,8 @@ public class ActionPlayerOpenAdvancements implements HypixelEventClass {
     public void run(PlayerPacketEvent event) {
         if (event.getPacket() instanceof ClientAdvancementTabPacket packet) {
             if (packet.action() == AdvancementAction.OPENED_TAB) {
-                if (event.getPlayer() instanceof RavengardPlayer player) {
+                if (event.getPlayer() instanceof RavengardPlayer player
+                        && !player.isTutorial() && player.getRavengardClass() != null) {
                     player.openView(new GUIRavengardMenu());
                 }
             }

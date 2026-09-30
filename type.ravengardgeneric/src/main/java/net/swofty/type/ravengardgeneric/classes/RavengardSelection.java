@@ -27,6 +27,10 @@ public final class RavengardSelection {
     }
 
     public static void choose(RavengardPlayer player, RavengardClass value) {
+        if (!inTutorialWorld(player) || player.getRavengardClass() != null) {
+            player.closeInventory();
+            return;
+        }
         player.setRavengardClass(value);
         player.setTutorial(false);
 
@@ -36,7 +40,13 @@ public final class RavengardSelection {
         giveKit(player, value);
         net.swofty.type.ravengardgeneric.profile.RavengardProfiles.saveActive(player);
 
-        player.setInstance(HypixelConst.getInstanceContainer(), MAIN_WORLD_SPAWN);
+        leaveTutorial(player);
+    }
+
+    public static void leaveTutorial(RavengardPlayer player) {
+        net.swofty.type.ravengardgeneric.entity.animation.AnimatedRavengardNPC.forget(player.getUuid());
+        player.setInstance(HypixelConst.getInstanceContainer(), MAIN_WORLD_SPAWN)
+                .thenRun(() -> player.setRespawnPoint(respawnPoint(player)));
     }
 
     /**

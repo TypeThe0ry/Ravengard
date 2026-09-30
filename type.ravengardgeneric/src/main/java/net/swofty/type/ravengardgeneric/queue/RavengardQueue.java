@@ -84,6 +84,9 @@ public final class RavengardQueue {
                     player.sendMessage("<c>Could not start a dungeon: {}", reason);
                     return java.util.concurrent.CompletableFuture.<Void>completedFuture(null);
                 }
+                if (!player.isOnline()) {
+                    return java.util.concurrent.CompletableFuture.<Void>completedFuture(null);
+                }
                 return ORCHESTRATOR.handleRequest(new ChooseGameProtocol.ChooseGameMessage(
                         player.getUuid(), server, gameId), 90, TimeUnit.SECONDS).thenAccept(choice -> {
                     if (!(choice instanceof ChooseGameProtocol.ChooseGameResponse result)) {
@@ -116,6 +119,9 @@ public final class RavengardQueue {
     public static void leave(RavengardPlayer player) {
         Task task = QUEUED.remove(player.getUuid());
         if (task == null) {
+            if (SEARCHING.contains(player.getUuid())) {
+                player.sendMessage("<c>A dungeon is already being prepared for you!");
+            }
             return;
         }
         task.cancel();

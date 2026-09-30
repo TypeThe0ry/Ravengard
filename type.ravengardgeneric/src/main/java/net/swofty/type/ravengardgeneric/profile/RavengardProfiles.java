@@ -338,12 +338,14 @@ public final class RavengardProfiles {
         Pos spawn = tutorial || profileClass == null
                 ? TUTORIAL_SPAWN
                 : RavengardSelection.MAIN_WORLD_SPAWN;
+        net.swofty.type.ravengardgeneric.entity.animation.AnimatedRavengardNPC.forget(player.getUuid());
         if (target != null && player.getInstance() != null) {
             if (player.getInstance() == target) {
                 player.teleport(spawn);
             } else {
                 player.setInstance(target, spawn);
             }
+            player.setRespawnPoint(spawn);
         }
     }
 

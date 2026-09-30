@@ -41,10 +41,12 @@ public class ClassCommand extends HypixelCommand {
                 return;
             }
 
+            boolean fromTutorial = RavengardSelection.inTutorialWorld(player);
             player.setRavengardClass(chosen);
             player.setTutorial(false);
             RavengardSelection.giveKit(player, chosen);
             net.swofty.type.ravengardgeneric.profile.RavengardProfiles.saveActive(player);
+            if (fromTutorial) RavengardSelection.leaveTutorial(player);
             player.sendMessage("{} <f>You are now a <e>{}<f>.", chosen.getIcon(), chosen.getDisplayName());
             for (RavengardAbility ability : chosen.getAbilities()) {
                 player.sendMessage("  {} <7>{} <8>({})", ability.getIcon(), ability.getDisplayName(),

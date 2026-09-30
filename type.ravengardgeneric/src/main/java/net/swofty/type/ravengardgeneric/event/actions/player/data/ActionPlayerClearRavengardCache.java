@@ -18,6 +18,7 @@ public class ActionPlayerClearRavengardCache implements HypixelEventClass {
             net.swofty.type.ravengardgeneric.profile.RavengardProfiles.returnCursorItem(player);
         }
         net.swofty.type.ravengardgeneric.queue.RavengardQueue.forget(event.getPlayer().getUuid());
+        net.swofty.type.ravengardgeneric.entity.animation.AnimatedRavengardNPC.forget(event.getPlayer().getUuid());
         net.swofty.type.ravengardgeneric.region.RavengardRegionTracker.forget(event.getPlayer().getUuid());
         if (net.swofty.type.generic.HypixelConst.getTypeLoader().getType()
                 != net.swofty.commons.ServerType.RAVENGARD_DUNGEON) {

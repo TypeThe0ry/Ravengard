@@ -69,6 +69,7 @@ public class ActionPlayerEnterWorld implements HypixelEventClass {
                 return;
             }
             player.teleport(spawn);
+            player.setRespawnPoint(spawn);
             Logger.info("Moved {} from limbo instance into the Ravengard world", player.getUsername());
         });
     }

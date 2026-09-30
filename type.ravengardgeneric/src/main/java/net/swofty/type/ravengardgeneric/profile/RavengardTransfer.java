@@ -33,6 +33,7 @@ public final class RavengardTransfer {
             if (MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(playerUuid)
                     instanceof RavengardPlayer player) {
                 ViewNavigator.remove(player);
+                net.swofty.type.ravengardgeneric.entity.animation.AnimatedRavengardNPC.forget(player.getUuid());
                 RavengardProfiles.returnCursorItem(player);
                 beforeLeave.accept(player);
             }

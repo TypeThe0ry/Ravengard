@@ -44,7 +44,7 @@ public class ActionPlayerMenuItem implements HypixelEventClass {
             return;
         }
 
-        if (player.getRavengardClass() == null) {
+        if (player.isTutorial() || player.getRavengardClass() == null) {
             player.sendMessage("<c>You must select a class to use this menu!");
             return;
         }

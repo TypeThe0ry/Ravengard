@@ -176,7 +176,8 @@ public class GUIRavengardMenu extends RavengardView {
 
     @Override
     public void onOpen(DefaultState state, ViewContext ctx) {
-        if (((RavengardPlayer) ctx.player()).isTutorial()) {
+        RavengardPlayer player = (RavengardPlayer) ctx.player();
+        if (player.isTutorial() || player.getRavengardClass() == null) {
             ctx.player().sendMessage("<c>You must select a class to open this menu!");
             ctx.backOrClose();
             return;

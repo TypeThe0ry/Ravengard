@@ -50,6 +50,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             RavengardDeathWall.centeredTimeline(0, 0, wallInitialRadius);
     private long lastDeathWallDamageAt;
     private long lastHudSecond = -1;
+    private long lastSpectatorSecond = -1;
     private RavengardDeathWall.Phase lastWallPhase;
     private int worldBorderStage;
     private RavengardDeathWall.Phase worldBorderPhase;
@@ -121,6 +122,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             RavengardRunState.begin(player.getUuid(), getGameId());
             Pos spawn = spawnPoints.get(playerIndex % spawnPoints.size());
             player.setRespawnPoint(spawn);
+            players.values().forEach(this::updateHud);
             if (player.getInstance() == instance) {
                 player.teleport(spawn).whenComplete((ignored, error) -> {
                     if (error != null) {
@@ -599,12 +601,17 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
 
     private void enforceSpectators() {
         if (state != GameState.IN_PROGRESS) return;
+        long second = getElapsedSeconds();
+        boolean refreshCamera = second != lastSpectatorSecond;
+        lastSpectatorSecond = second;
         for (RavengardDungeonPlayer player : players.values()) {
-            updateHud(player);
             if (!player.isDungeonDead() || player.getSpectatingTeammate() == null) continue;
             RavengardDungeonPlayer target = players.get(player.getSpectatingTeammate());
-            if (target == null || target.isDungeonDead()) retargetSpectators(player.getDungeonTeam());
-            else player.spectate(target);
+            if (target == null || target.isDungeonDead()) {
+                retargetSpectators(player.getDungeonTeam());
+            } else if (refreshCamera) {
+                player.teleport(target.getPosition()).thenRun(() -> player.spectate(target));
+            }
         }
     }
 
