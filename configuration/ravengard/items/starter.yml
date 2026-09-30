@@ -47,6 +47,7 @@ items:
   - id: WEATHERED_PANTS
     rarity: COMMON
     material: leather_leggings
+    display_name: 'Weathered Pants'
     item_model: hypixel_ravengard:item/armor/starter/leggings/weathered_pants
     default_statistics:
       defense: 4.0

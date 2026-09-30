@@ -252,18 +252,6 @@ items:
         standard_item_type: SWORD
       - id: CLASS_RESTRICTED
         classes: [KNIGHT]
-  - id: WEATHERED_PANTS
-    rarity: COMMON
-    material: leather_leggings
-    display_name: 'Weathered Pants'
-    item_model: hypixel_ravengard:item/armor/starter/leggings/weathered_pants
-    default_statistics:
-      defense: 4
-    components:
-      - id: STANDARD_ITEM
-        standard_item_type: LEGGINGS
-      - id: CLASS_RESTRICTED
-        classes: [ASSASSIN, HUNTER, WARRIOR]
   - id: LEATHER_TUNIC
     rarity: COMMON
     material: leather_chestplate
