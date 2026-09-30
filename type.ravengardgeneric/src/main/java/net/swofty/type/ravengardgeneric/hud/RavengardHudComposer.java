@@ -261,7 +261,16 @@ public final class RavengardHudComposer {
                 .replace("#860794", String.format("#%06X", mapTint(state)))
                 .replace("#7FBFE0", String.format("#%06X", markerTint(state)));
 
+        Component cached = RENDERED.get(filled);
+        if (cached != null) return cached;
         JsonElement tree = GSON.fromJson(filled, JsonElement.class);
-        return GsonComponentSerializer.gson().deserializeFromTree(tree);
+        Component rendered = GsonComponentSerializer.gson().deserializeFromTree(tree);
+        if (RENDERED.size() >= RENDER_CACHE_LIMIT) RENDERED.clear();
+        RENDERED.put(filled, rendered);
+        return rendered;
     }
+
+    // most layers repeat the same filled template tick after tick; parsing is only paid on change
+    private static final int RENDER_CACHE_LIMIT = 4096;
+    private static final Map<String, Component> RENDERED = new java.util.concurrent.ConcurrentHashMap<>();
 }
