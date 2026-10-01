@@ -147,7 +147,9 @@ public enum RavengardAbility implements RavengardSprite {
         for (String line : description) {
             String localized = net.swofty.type.ravengardgeneric.i18n.RavengardLocalization.localize(line);
             if (localized != null) {
-                lines.add(Text.of("<7>" + localized));
+                for (String translatedLine : localized.split("\n")) {
+                    lines.add(Text.of("<7>" + translatedLine));
+                }
                 continue;
             }
             String highlighted = line

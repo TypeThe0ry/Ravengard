@@ -3,7 +3,7 @@ entries:
   # ---- Tab 列表 ----
   "<b>You are playing on <e><l>MC.HYPIXEL.NET": "<b>你正在游玩 <e><l>MC.HYPIXEL.NET"
   "<7>RAM USAGE: <8>{} MB": "<7>内存占用：<8>{} MB"
-  "<a>Ranks, Boosters & MORE! <c><l>STORE.HYPIXEL.NET": "<a>会员、加成等更多内容！<c><l>STORE.HYPIXEL.NET"
+  "<a>Ranks, Boosters & MORE! <c><l>STORE.HYPIXEL.NET": "<a>会员等级、加成等更多内容！<c><l>STORE.HYPIXEL.NET"
 
   # ---- 通用界面 / 命令 ----
   "<e>Select an option:": "<e>请选择一项："
@@ -17,17 +17,20 @@ entries:
   "<e>Page {}": "<e>第 {} 页"
   "<8>Running checks...": "<8>正在检查……"
   "<c>You are not allowed to use this command.": "<c>你不能使用此命令。"
-  "<a>Successfully set rank to .": "<a>已成功设置等级。"
-  "<a>Successfully set rank to \\<rank>.": "<a>已成功设置等级。"
+  "<a>Successfully set rank to .": "<a>已成功设置会员等级。"
+  "<a>Successfully set rank to \\<rank>.": "<a>已成功设置会员等级。"
   "<a>Set your gamemode to <e>{}<a>.": "<a>已将你的游戏模式设为 <e>{}<a>。"
   "<c>Couldn't find a player by the name of <e>{}<c>.": "<c>找不到名为 <e>{}<c> 的玩家。"
   "<c>You need STAFF to do this command": "<c>需要 STAFF 权限才能使用此命令"
 
   # ---- 聊天频道 ----
-  "<a>Staff chat viewing is now {}": "<a>员工聊天显示现已{}"
+  "<a>Staff chat viewing is now {}": "<a>工作人员聊天显示现已{}"
   "<a>enabled": "<a>开启"
   "<c>disabled": "<c>关闭"
   "<a>You are now in the <6>{} <a>channel": "<a>你现在位于 <6>{} <a>频道"
+  "ALL": "全体"
+  "PARTY": "队伍"
+  "STAFF": "工作人员"
 
   # ---- 组队 ----
   "<c>Couldn't find a player with that name!": "<c>找不到该名字的玩家！"
@@ -106,8 +109,8 @@ entries:
   "<a>Set nickname for <e>{} <a>to <e>{}<a>.": "<a>已将 <e>{} <a>的备注设为 <e>{}<a>。"
   "Friend requests": "好友请求"
   "Friend join/leave notifications": "好友上线/下线通知"
-  "<e>{} <7>are now <a>enabled<7>.": "<e>{} <7>现已<a>开启<7>。"
-  "<e>{} <7>are now <c>disabled<7>.": "<e>{} <7>现已<c>关闭<7>。"
+  "<e>{} <7>are now <a>enabled<7>.": "<e>{}<7>现已<a>开启<7>。"
+  "<e>{} <7>are now <c>disabled<7>.": "<e>{}<7>现已<c>关闭<7>。"
   "<a>Friend > {} <7>joined.": "<a>好友 > {} <7>上线了。"
   "<a>Friend > {} <7>left.": "<a>好友 > {} <7>下线了。"
   "<e>Your friend request to {} <e>has expired.": "<e>你发给 {} <e>的好友请求已过期。"
@@ -145,7 +148,7 @@ entries:
   "<e>/p chat <8>- <7><o>Sends a chat message to the entire party": "<e>/p chat <8>- <7><o>向全队发送聊天消息"
   "<e>/p demote {} <8>- <7><o>Demote a player from moderator": "<e>/p demote \\<玩家> <8>- <7><o>撤销玩家的管理员身份"
   "<e>/p disband <8>- <7><o>Disbands the party": "<e>/p disband <8>- <7><o>解散队伍"
-  "<e>/p hijack {} <8>- <7><o>Hijacks a party (Admin only)": "<e>/p hijack \\<玩家> <8>- <7><o>接管队伍（仅管理员）"
+  "<e>/p hijack {} <8>- <7><o>Hijacks a party (Admin only)": "<e>/p hijack \\<玩家> <8>- <7><o>接管队伍（仅限服务器管理员）"
   "<e>/p invite {} <8>- <7><o>Invite another player to your party": "<e>/p invite \\<玩家> <8>- <7><o>邀请玩家加入你的队伍"
   "<e>/p kick {} <8>- <7><o>Remove a player from your party": "<e>/p kick \\<玩家> <8>- <7><o>将玩家移出队伍"
   "<e>/p leave <8>- <7><o>Leaves your current party": "<e>/p leave <8>- <7><o>离开当前队伍"
