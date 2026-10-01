@@ -232,15 +232,19 @@ public final class RavengardLocalization {
         Key font = component.style().font() != null ? component.style().font() : inheritedFont;
         if (component instanceof TextComponent text && !(font != null && isSpacingFont(font))
                 && !ILLAGERALT.equals(font)) {
-            String content = normalize(text.content());
-            if (LATIN_WORD.matcher(content).find() && !INTERNAL_TEXT.contains(content)
-                    && !IDENTIFIER.matcher(content).matches() && !isPlayerName(content)
-                    && REPORTED.size() < REPORT_LIMIT && REPORTED.add(content)) {
-                Logger.info("[i18n-gap] {}", content);
-            }
+            reportGap(normalize(text.content()));
         }
         reportHover(component);
         for (Component child : component.children()) reportLeaves(child, font);
+    }
+
+    /** Also reached for arguments a template captured and found no entry for, such as a new mob name. */
+    private static void reportGap(String content) {
+        if (report && LATIN_WORD.matcher(content).find() && !INTERNAL_TEXT.contains(content)
+                && !IDENTIFIER.matcher(content).matches() && !isPlayerName(content)
+                && REPORTED.size() < REPORT_LIMIT && REPORTED.add(content)) {
+            Logger.info("[i18n-gap] {}", content);
+        }
     }
 
     private static void reportHover(Component component) {
@@ -583,6 +587,7 @@ public final class RavengardLocalization {
                     boolean lookUp = token == null && !template.verbatim().get(index) && hasLetters(captured)
                             && !captured.equals(flat) && !isPlayerName(captured);
                     Component nested = lookUp ? render(captured, tokens, null) : null;
+                    if (lookUp && nested == null) reportGap(captured);
                     if (token != null) {
                         arguments[index] = token;
                     } else if (source == null) {

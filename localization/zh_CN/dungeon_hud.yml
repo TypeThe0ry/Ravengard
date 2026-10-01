@@ -94,6 +94,15 @@ entries:
   "Bottle Mimic Tall Pink": "高粉瓶怪"
   "Training Dummy": "训练假人"
   "Statue Knight": "骑士雕像"
+  "Statue Warrior": "战士雕像"
+  "Statue Hunter": "猎人雕像"
+  "Statue Assassin": "刺客雕像"
+  "Statue Sorcerer": "术士雕像"
+  "Statue Default": "雕像"
+  "Wraith": "幽魂"
+  "Wraith Boss": "幽魂首领"
+  "Mini Eye": "小魔眼"
+  "Mimic": "宝箱怪"
 
   # ---- 地牢模式 ----
   "STANDARD": "标准"

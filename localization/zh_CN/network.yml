@@ -172,6 +172,8 @@ entries:
   "<c>You need someone else in the party to warp!": "<c>队伍里需要有其他人才能传送！"
   "<c>You can only warp once every 5 seconds!": "<c>每 5 秒只能传送一次！"
   "<c>Couldn't find a party service! Please try again later.": "<c>找不到组队服务！请稍后再试。"
+  "<c>Could not connect to the party service! Please try again later.": "<c>无法连接到组队服务！请稍后再试。"
+  "<c>Could not connect to the friend service! Please try again later.": "<c>无法连接到好友服务！请稍后再试。"
   "<c>Unknown command. Use /{0} for help.": "<c>未知命令。使用 /{0} 查看帮助。"
 
   # ---- 私聊 / 通用 ----
