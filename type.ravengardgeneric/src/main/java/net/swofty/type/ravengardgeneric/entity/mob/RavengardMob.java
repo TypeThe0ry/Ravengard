@@ -155,6 +155,8 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final double CHARGE_MAX_RANGE = 7.0;
     private static final double CHARGE_HIT_RANGE = 2.4;
     private static final double MELEE_STANDOFF = 1.2;
+    private static final double CROWD_SPACING = 0.9;
+    private static final double CROWD_PUSH_PER_TICK = 0.1;
     private static final double CHARGE_SPEED_MULTIPLIER = 3.0;
     private static final int CHARGE_TICKS = 8;
     private static final int CHARGE_COOLDOWN_TICKS = 100;
@@ -298,6 +300,41 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         if (position.distanceSquared(target.getPosition()) <= MELEE_STANDOFF * MELEE_STANDOFF) {
             getNavigator().setPathTo(null);
         }
+    }
+
+    // vanilla mobs push each other apart; Minestom has no entity collision, so a pack chasing one
+    // player would otherwise merge into a single tangle of parts
+    private void keepCrowdSpacing() {
+        if (dying || clip.walkSpeed() <= 0 || chargeTicksLeft > 0) return;
+        double pushX = 0, pushZ = 0;
+        for (RavengardMob other : MOBS) {
+            if (other == this || other.instance != instance || other.dying || other.rigRemoved) continue;
+            Pos at = other.getPosition();
+            if (Math.abs(at.y() - position.y()) > 1.5) continue;
+            double dx = position.x() - at.x();
+            double dz = position.z() - at.z();
+            double distance = Math.sqrt(dx * dx + dz * dz);
+            if (distance >= CROWD_SPACING) continue;
+            double strength = (CROWD_SPACING - distance) / CROWD_SPACING;
+            if (distance < 1.0e-3) {
+                // two mobs on the same spot part along a direction of their own
+                double angle = (getEntityId() * 2.399963) % (Math.PI * 2);
+                dx = Math.cos(angle);
+                dz = Math.sin(angle);
+            } else {
+                dx /= distance;
+                dz /= distance;
+            }
+            pushX += dx * strength;
+            pushZ += dz * strength;
+        }
+        double length = Math.sqrt(pushX * pushX + pushZ * pushZ);
+        if (length < 1.0e-4) return;
+        double step = Math.min(1, length) * CROWD_PUSH_PER_TICK;
+        var moved = net.minestom.server.collision.CollisionUtils.handlePhysics(this,
+                new Vec(pushX / length * step, 0, pushZ / length * step));
+        // the rig follows on the next tick, when the carrier is seen to have moved
+        refreshPosition(moved.newPosition().withView(position.yaw(), position.pitch()));
     }
 
     private void tickCharge() {
@@ -599,6 +636,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         }
         updateTarget();
         holdMeleeStandoff();
+        keepCrowdSpacing();
         tickStationaryCaster();
         tickCharge();
 

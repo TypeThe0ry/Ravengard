@@ -614,6 +614,108 @@ class RavengardMobCombatTest {
     }
 
     @Test
+    void idleMobsSpawnedOnOneSpotSpreadOutWithTheirRigs() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.11d);
+        set(clip, "parts", List.of(part("body", "hypixel_ravengard:entity/skeleton_knight/body")));
+        RavengardMobClip.Animation idle = new RavengardMobClip.Animation();
+        set(idle, "loop", true);
+        set(idle, "frames", List.of(Map.of(), Map.of()));
+        set(clip, "animations", Map.of("idle", idle));
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        List<RavengardMob> pack = new java.util.ArrayList<>();
+        for (int index = 0; index < 4; index++) {
+            RavengardMob mob = new RavengardMob(clip, new net.minestom.server.coordinate.Pos(5.5, 1, 8.5));
+            mob.spawnMob(instance);
+            pack.add(mob);
+        }
+
+        long time = System.currentTimeMillis();
+        for (int tick = 0; tick < 60; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            for (RavengardMob mob : pack) {
+                mob.tick(now);
+                mob.tickRig();
+            }
+        }
+
+        List<Entity> displays = instance.getEntities().stream()
+                .filter(entity -> entity.getEntityType() == EntityType.ITEM_DISPLAY).toList();
+        for (int first = 0; first < displays.size(); first++) {
+            for (int second = first + 1; second < displays.size(); second++) {
+                double apart = displays.get(first).getPosition().distance(displays.get(second).getPosition());
+                assertTrue(apart > 0.6, "rigs " + first + "/" + second + " apart=" + apart);
+            }
+        }
+
+        pack.forEach(RavengardMob::removeRig);
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
+    void mobsChasingTheSameTargetDoNotEndUpInsideEachOther() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.11d);
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "target"));
+        player.setInstance(instance, new net.minestom.server.coordinate.Pos(9.5, 1, 8.5)).join();
+        player.getAttribute(net.minestom.server.entity.attribute.Attribute.MAX_HEALTH).setBaseValue(100000);
+        player.setHealth(100000);
+        set(clip, "parts", List.of(part("body", "hypixel_ravengard:entity/skeleton_knight/body")));
+        RavengardMobClip.Animation idle = new RavengardMobClip.Animation();
+        set(idle, "loop", true);
+        set(idle, "frames", List.of(Map.of(), Map.of()));
+        set(clip, "animations", Map.of("idle", idle));
+        List<RavengardMob> pack = new java.util.ArrayList<>();
+        for (int index = 0; index < 3; index++) {
+            RavengardMob mob = new RavengardMob(clip, new net.minestom.server.coordinate.Pos(2.5, 1, 8.5));
+            mob.spawnMob(instance);
+            pack.add(mob);
+        }
+
+        long time = System.currentTimeMillis();
+        for (int tick = 0; tick < 200; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            for (RavengardMob mob : pack) {
+                mob.tick(now);
+                mob.tickRig();
+            }
+            player.teleport(new net.minestom.server.coordinate.Pos(9.5, 1, 8.5)).join();
+        }
+
+        for (int first = 0; first < pack.size(); first++) {
+            assertTrue(pack.get(first).getPosition().distance(player.getPosition()) < 2.5,
+                    "mob " + first + " at " + pack.get(first).getPosition());
+            for (int second = first + 1; second < pack.size(); second++) {
+                double apart = pack.get(first).getPosition().distance(pack.get(second).getPosition());
+                assertTrue(apart > 0.6, first + "/" + second + " apart=" + apart);
+            }
+        }
+
+        // the visible rig has to move with its carrier, not stay where the pack first met
+        List<Entity> displays = instance.getEntities().stream()
+                .filter(entity -> entity.getEntityType() == EntityType.ITEM_DISPLAY).toList();
+        assertEquals(pack.size(), displays.size());
+        for (Entity display : displays) {
+            assertTrue(pack.stream().anyMatch(mob -> Math.hypot(
+                            mob.getPosition().x() - display.getPosition().x(),
+                            mob.getPosition().z() - display.getPosition().z()) < 0.15),
+                    "stray rig part at " + display.getPosition());
+        }
+
+        pack.forEach(RavengardMob::removeRig);
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
     void aWokenZombieKnightDoesNotLieBackDownBetweenAttacks() throws Exception {
         RavengardMobClip clip = clip();
         set(clip, "name", "zombie_knight");
