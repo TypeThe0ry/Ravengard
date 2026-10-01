@@ -240,3 +240,10 @@ entries:
   "No response from dungeon server": "地牢服务器没有响应"
   "Interrupted while choosing game": "选择对局时被中断"
   "Failed to instantiate dungeon: {}": "创建地牢失败：{}"
+
+  # ---- 紧凑时长（{#} 只匹配数字）：技能冷却、商店补货、好友时长 ----
+  "{#}s": "{} 秒"
+  "{#}m": "{} 分钟"
+  "{#}m {#}s": "{} 分 {} 秒"
+  "{#}h {#}m": "{} 小时 {} 分"
+  "{#}d {#}h": "{} 天 {} 小时"

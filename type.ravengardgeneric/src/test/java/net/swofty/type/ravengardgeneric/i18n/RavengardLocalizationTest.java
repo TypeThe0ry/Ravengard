@@ -181,7 +181,7 @@ class RavengardLocalizationTest {
     @Test
     void everyShippedTranslationParsesAndUsesNoMoreArgumentsThanItsSource() throws Exception {
         java.io.File directory = new java.io.File("../localization/zh_CN");
-        java.util.regex.Pattern placeholder = java.util.regex.Pattern.compile("\\{(\\d*)}");
+        java.util.regex.Pattern placeholder = java.util.regex.Pattern.compile("\\{(\\d*|#)}");
         int entries = 0;
         java.util.Map<String, String> owners = new java.util.HashMap<>();
         for (java.io.File file : net.swofty.commons.YamlFileUtils.getYamlFiles(directory)) {
@@ -223,10 +223,25 @@ class RavengardLocalizationTest {
         int bare = 0;
         int highest = 0;
         while (matcher.find()) {
-            if (matcher.group(1).isEmpty()) highest = Math.max(highest, ++bare);
+            if (matcher.group(1).isEmpty() || matcher.group(1).equals("#")) highest = Math.max(highest, ++bare);
             else highest = Math.max(highest, Integer.parseInt(matcher.group(1)) + 1);
         }
         return highest;
+    }
+
+    @Test
+    void digitPlaceholdersTranslateCompactDurationsWithoutCatchingWords() {
+        RavengardLocalization.Catalog catalog = catalog();
+        catalog.put("{#}s", "{} 秒");
+        catalog.put("{#}m {#}s", "{} 分 {} 秒");
+
+        assertEquals("冷却：25 秒", RavengardLocalization.flatten(
+                translate(catalog, Text.of("<7>Cooldown: <e>{}", "25s").asComponent())));
+        assertEquals("冷却：1 分 40 秒", RavengardLocalization.flatten(
+                translate(catalog, Text.of("<7>Cooldown: <e>{}", "1m 40s").asComponent())));
+        Component word = Component.text("Friends");
+        assertSame(word, translate(catalog, word));
+        assertNull(catalog.render("Them cats"));
     }
 
     @Test

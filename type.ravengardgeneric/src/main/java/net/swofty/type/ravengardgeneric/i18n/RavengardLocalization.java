@@ -387,7 +387,8 @@ public final class RavengardLocalization {
     }
 
     public static final class Catalog {
-        private static final Pattern PLACEHOLDER = Pattern.compile("\\{(\\d*)(?::[^}]*)?}");
+        /** {@code {}} / {@code {0}} capture anything; {@code {#}} captures digits only, for compact forms such as {@code 25s}. */
+        private static final Pattern PLACEHOLDER = Pattern.compile("\\{(\\d*|#)(?::[^}]*)?}");
 
         private final Map<String, String> exact = new HashMap<>();
         private final List<Template> templates = new ArrayList<>();
@@ -434,7 +435,8 @@ public final class RavengardLocalization {
             int count = 0;
             placeholders.reset();
             while (placeholders.find()) {
-                regex.append(Pattern.quote(key.substring(last, placeholders.start()))).append("(.+?)");
+                regex.append(Pattern.quote(key.substring(last, placeholders.start())))
+                        .append("#".equals(placeholders.group(1)) ? "(\\d+)" : "(.+?)");
                 last = placeholders.end();
                 count++;
             }
