@@ -202,3 +202,15 @@ entries:
   "<7>You are already in <f>{}<7>.": "<7>你已经在 <f>{}<7> 中了。"
   "<a>Switched to <f>{}<a>.": "<a>已切换到 <f>{}<a>。"
   "<c>No captures found in {}.": "<c>在 {} 中没有找到捕获。"
+
+  # ---- 菜单物品 / 侧边栏标题 / 资源包提示 ----
+  "<9>Ravengard Menu <7>(Right Click)": "<9>天穹余烬菜单 <7>（右键）"
+  "<7>View your lock box, manage skills,": "<7>查看保险箱、管理技能、"
+  "<7>craft, and more!": "<7>合成等更多功能！"
+  "PROTOTYPE": "原型测试"
+  "<a>This resource pack is required to play on Hypixel.": "<a>在 Hypixel 游玩需要此资源包。"
+
+  # ---- 命令通用消息 ----
+  "<c>Usage: {}": "<c>用法：{}"
+  "<f>Unknown command. Type \"/help\" for help. ('{}')": "<f>未知命令。输入 \"/help\" 获取帮助。（'{}'）"
+  "<c>You do not have permission to use this command.": "<c>你没有权限使用此命令。"

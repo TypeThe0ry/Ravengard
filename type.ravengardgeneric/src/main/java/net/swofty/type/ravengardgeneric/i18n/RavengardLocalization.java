@@ -33,6 +33,7 @@ public final class RavengardLocalization {
     public static final String ENV_DIRECTORY = "RAVENGARD_LOCALE_DIR";
     public static final String ENV_REPORT = "RAVENGARD_LOCALE_REPORT";
     private static final java.util.Set<String> REPORTED = ConcurrentHashMap.newKeySet();
+    private static final java.util.Set<String> INTERNAL_TEXT = java.util.Set.of("displaynametest");
     private static volatile boolean report;
     private static final Key DEFAULT_FONT = Key.key("minecraft", "default");
     private static final Key ILLAGERALT = Key.key("minecraft", "illageralt");
@@ -137,21 +138,36 @@ public final class RavengardLocalization {
         }
         if (CACHE.size() >= CACHE_LIMIT) CACHE.clear();
         CACHE.put(component, translated);
-        if (report) reportUntranslated(translated, null);
+        if (translated != component) CACHE.put(translated, translated);
+        if (report) reportUntranslated(component, translated, null);
         return translated;
     }
 
-    /** Readable text that still carries Latin words after translation is a catalog gap; each is logged once. */
-    private static void reportUntranslated(Component component, @Nullable Key inheritedFont) {
+    /** Subtrees the catalog left untouched still carrying Latin words are gaps; each is logged once. */
+    private static void reportUntranslated(Component original, Component translated, @Nullable Key inheritedFont) {
+        Key font = original.style().font() != null ? original.style().font() : inheritedFont;
+        if (translated == original) {
+            reportLeaves(original, font);
+            return;
+        }
+        List<Component> before = original.children();
+        List<Component> after = translated.children();
+        if (before.size() != after.size()) return;
+        for (int index = 0; index < before.size(); index++) {
+            reportUntranslated(before.get(index), after.get(index), font);
+        }
+    }
+
+    private static void reportLeaves(Component component, @Nullable Key inheritedFont) {
         Key font = component.style().font() != null ? component.style().font() : inheritedFont;
         if (component instanceof TextComponent text && !(font != null && isSpacingFont(font))
                 && !ILLAGERALT.equals(font)) {
             String content = normalize(text.content());
-            if (content.matches(".*[A-Za-z]{3,}.*") && REPORTED.add(content)) {
+            if (content.matches(".*[A-Za-z]{3,}.*") && !INTERNAL_TEXT.contains(content) && REPORTED.add(content)) {
                 Logger.info("[i18n-gap] {}", content);
             }
         }
-        for (Component child : component.children()) reportUntranslated(child, font);
+        for (Component child : component.children()) reportLeaves(child, font);
     }
 
     private static Component translate(Catalog current, Component component, @Nullable Key inheritedFont) {

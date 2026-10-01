@@ -129,3 +129,7 @@ entries:
   "Earring Slot": "耳环槽"
   "Belt Slot": "腰带槽"
   "Ring Slot": "戒指槽"
+
+  # ---- 装备槽占位说明 ----
+  "Place a compatible item into this slot": "将合适的物品放入此槽位"
+  "to equip it.": "即可装备。"

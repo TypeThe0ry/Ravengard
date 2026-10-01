@@ -94,3 +94,7 @@ entries:
   "Bottle Mimic Tall Pink": "高粉瓶怪"
   "Training Dummy": "训练假人"
   "Statue Knight": "骑士雕像"
+
+  # ---- 地牢模式 ----
+  "STANDARD": "标准"
+  "ADMIN": "管理员"

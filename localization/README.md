@@ -31,8 +31,18 @@ Minestom 的 `MinestomAdventure.COMPONENT_TRANSLATOR`：每个携带文本组件
 故意不可读的符文字体（`illageralt`）不翻译。技能描述在换行前就本地化。代理（Velocity）没有数据包边界，
 改由 `Text.of` 按同一目录替换标记文本（`commons` 的 `MarkupLocalization`）。
 
-不可翻译的部分：资源包里画成贴图的按钮文字（Fight、Confirm、Cancel、Expand）、RAVENGARD 标志、
-稀有度/类型徽章，这些都是官方包的图片。
+不可翻译的部分：资源包里画成贴图的按钮文字（Fight、Confirm、Cancel、Expand）、背包界面的 Inventory 标题、
+顶部的 RAVENGARD 标志、稀有度/类型/职业徽章，这些都是官方包的图片。服务器名、地牢 ID、玩家名等标识符保持原样。
+
+## 查漏
+
+覆盖文件里设置了 `RAVENGARD_LOCALE_REPORT=true`：目录没有覆盖到的可读英文文本，每条只在日志里记录一次。
+
+```bash
+docker compose logs ravengard_lobby ravengard_dungeon | grep "i18n-gap"
+```
+
+把报告出来的原文补进 `zh_CN/*.yml`，重新生成字体覆盖包，再重启相应容器即可。
 
 ## 启用
 
