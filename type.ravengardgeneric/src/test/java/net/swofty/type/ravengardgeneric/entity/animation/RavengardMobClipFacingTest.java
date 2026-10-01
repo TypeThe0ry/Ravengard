@@ -61,6 +61,53 @@ class RavengardMobClipFacingTest {
     }
 
     @Test
+    void aPartKeyedOnlyLateInATurningLoopStaysAttachedAcrossTheLoopPoint() {
+        // the root turns 20 degrees over the loop; the head is keyed on the last frame only, so
+        // it holds that value through the next pass and must be expressed against each frame's root
+        RavengardMobClip clip = new Gson().fromJson("""
+                {"name": "late", "parts": [
+                  {"name": "body", "model": "m", "t": [0, 0, 0], "r": [0, 0, 0, 1]},
+                  {"name": "head", "model": "m", "t": [0, 1, 0.5], "r": [0, 0, 0, 1]}],
+                 "animations": {"idle": {"loop": true, "frames": [
+                  {"0": {"r": [0, 0, 0, 1]}},
+                  {"0": {"r": [0, 0.08715574, 0, 0.9961947]}},
+                  {"0": {"r": [0, 0.17364818, 0, 0.9848077]}, "1": {"t": [0.17101, 1, 0.469846], "r": [0, 0.17364818, 0, 0.9848077]}}]}}}
+                """, RavengardMobClip.class);
+
+        clip.normalizeFacing();
+
+        var frames = clip.animation("idle").frames();
+        // the last frame, where the head was captured, has it straight ahead of the body
+        assertVector(new float[]{0, 1, 0.5f}, frames.get(2).get("1").translation());
+        // and on the next pass it is still expressed against the frame it is shown in
+        assertTrue(frames.get(0).containsKey("1"), "head is not re-keyed at the loop point");
+        assertEquals(20, RavengardMobClip.yaw(frames.get(0).get("1").leftRotation()), 1.0e-2);
+        assertEquals(10, RavengardMobClip.yaw(frames.get(1).get("1").leftRotation()), 1.0e-2);
+    }
+
+    @Test
+    void aRootLyingOnTheGroundDoesNotTurnItsRollIntoFacing() {
+        // forward points almost straight down, so its heading is noise: here the mob only rolls
+        RavengardMobClip clip = new Gson().fromJson("""
+                {"name": "lying", "parts": [
+                  {"name": "body", "model": "m", "t": [0, 0, 0], "r": [0.6427876, 0, 0, 0.7660444]},
+                  {"name": "head", "model": "m", "t": [0, 0.2, 1], "r": [0.6427876, 0, 0, 0.7660444]}],
+                 "animations": {"idle": {"loop": true, "frames": [
+                  {"0": {"r": [0.6427876, 0, 0, 0.7660444]}, "1": {"t": [0, 0.2, 1]}},
+                  {"0": {"r": [0.6330222, 0.1116189, 0.1330222, 0.7544065]}}]}}}
+                """, RavengardMobClip.class);
+
+        clip.normalizeFacing();
+
+        var frames = clip.animation("idle").frames();
+        assertVector(new float[]{0, 0.2f, 1}, frames.get(0).get("1").translation());
+        assertTrue(frames.get(1).get("1") == null, "the head was re-keyed although the mob never turned");
+        float[] rolled = frames.get(1).get("0").leftRotation();
+        assertEquals(0.6330222, rolled[0], 1.0e-4);
+        assertEquals(0.1116189, rolled[1], 1.0e-4);
+    }
+
+    @Test
     void everyOfficialAnimationStartsFacingTheSameWayAsTheRestPose() throws Exception {
         for (String name : COMBAT_CLIPS) {
             RavengardMobClip clip = new Gson().fromJson(
@@ -78,6 +125,8 @@ class RavengardMobClipFacingTest {
                 for (var frame : animation.frames()) {
                     RavengardMobClip.Keyframe key = frame.get(root);
                     if (key == null || key.leftRotation() == null) continue;
+                    // a root lying on the ground has no heading to compare
+                    if (!RavengardMobClip.headingReadable(key.leftRotation())) continue;
                     last = RavengardMobClip.yaw(key.leftRotation());
                     if (first == null) first = last;
                     if (animation.loop()) assertTrue(Math.abs(last) <= 45, label + " yaw " + last);

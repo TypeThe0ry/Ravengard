@@ -716,6 +716,73 @@ class RavengardMobCombatTest {
     }
 
     @Test
+    void aRigWithoutAnimationsStillTurnsWithItsMob() throws Exception {
+        RavengardMobClip clip = clip();
+        RavengardMobClip.Part body = part("body", "hypixel_ravengard:entity/training_dummy/body");
+        set(body, "t", new float[]{0, 0, 1});
+        set(body, "r", new float[]{0, 0, 0, 1});
+        set(clip, "parts", List.of(body));
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        RavengardMob mob = new RavengardMob(clip,
+                new net.minestom.server.coordinate.Pos(2.5, 1, 2.5, 90, 0));
+        mob.spawnMob(instance);
+        mob.tickRig();
+
+        ItemDisplayMeta meta = (ItemDisplayMeta) instance.getEntities().stream()
+                .filter(entity -> entity.getEntityType() == EntityType.ITEM_DISPLAY)
+                .findFirst().orElseThrow().getEntityMeta();
+        assertEquals(-1.0, meta.getTranslation().x(), 1.0e-4);
+        assertEquals(0.0, meta.getTranslation().z(), 1.0e-4);
+
+        mob.removeRig();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
+    void aMobShovedOutOfReachWalksBackToAStationaryTarget() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.13d);
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "target"));
+        player.setInstance(instance, new net.minestom.server.coordinate.Pos(8.5, 1, 8.5)).join();
+        player.getAttribute(net.minestom.server.entity.attribute.Attribute.MAX_HEALTH).setBaseValue(100000);
+        player.setHealth(100000);
+        RavengardMob mob = new RavengardMob(clip,
+                new net.minestom.server.coordinate.Pos(4.5, 1, 8.5));
+        mob.spawnMob(instance);
+
+        long time = System.currentTimeMillis();
+        int tick = 0;
+        for (; tick < 120; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            mob.tick(now);
+            mob.tickRig();
+            player.teleport(new net.minestom.server.coordinate.Pos(8.5, 1, 8.5)).join();
+        }
+        assertTrue(mob.getPosition().distance(player.getPosition()) < 1.8, "never arrived: " + mob.getPosition());
+
+        mob.teleport(new net.minestom.server.coordinate.Pos(5.5, 1, 8.5)).join();
+        for (; tick < 260; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            mob.tick(now);
+            mob.tickRig();
+            player.teleport(new net.minestom.server.coordinate.Pos(8.5, 1, 8.5)).join();
+        }
+        assertTrue(mob.getPosition().distance(player.getPosition()) < 1.8, "stayed at " + mob.getPosition());
+
+        mob.removeRig();
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
     void aWokenZombieKnightDoesNotLieBackDownBetweenAttacks() throws Exception {
         RavengardMobClip clip = clip();
         set(clip, "name", "zombie_knight");

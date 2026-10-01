@@ -133,6 +133,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private Vec[] partLift;
     private boolean[] scaleChanged;
     private boolean restoreScales;
+    private boolean holdingStandoff;
     private double groundDrop;
     private float lastAppliedYaw = Float.NaN;
     private int attackCooldown;
@@ -155,6 +156,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final double CHARGE_MAX_RANGE = 7.0;
     private static final double CHARGE_HIT_RANGE = 2.4;
     private static final double MELEE_STANDOFF = 1.2;
+    private static final double MELEE_REACH = 1.8;
     private static final double CROWD_SPACING = 0.9;
     private static final double CROWD_PUSH_PER_TICK = 0.1;
     private static final double CHARGE_SPEED_MULTIPLIER = 3.0;
@@ -211,7 +213,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             getNavigator().setNodeFollower(() ->
                     new net.swofty.type.generic.entity.ai.vanilla.VanillaGroundNodeFollower(this));
             addAIGroup(
-                    List.of(new net.minestom.server.entity.ai.goal.MeleeAttackGoal(this, 1.8,
+                    List.of(new net.minestom.server.entity.ai.goal.MeleeAttackGoal(this, MELEE_REACH,
                             java.time.Duration.ofMillis(1500))),
                     List.of(targetable(new net.minestom.server.entity.ai.target.LastEntityDamagerTarget(this, 16)),
                              new net.minestom.server.entity.ai.target.ClosestEntityTarget(this, 14,
@@ -296,9 +298,19 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     // the melee goal keeps its path once in reach, which would walk the mob into the player
     private void holdMeleeStandoff() {
         Entity target = getTarget();
-        if (dying || target == null || getNavigator().getGoalPosition() == null) return;
-        if (position.distanceSquared(target.getPosition()) <= MELEE_STANDOFF * MELEE_STANDOFF) {
+        if (dying || target == null || clip.walkSpeed() <= 0) {
+            holdingStandoff = false;
+            return;
+        }
+        double distance = position.distance(target.getPosition());
+        if (distance <= MELEE_STANDOFF) {
             getNavigator().setPathTo(null);
+            holdingStandoff = true;
+        } else if (holdingStandoff && distance > MELEE_REACH) {
+            // the goal only looks for a new path when its target moves; a mob shoved away from a
+            // target that is standing still has to be sent back itself
+            holdingStandoff = false;
+            getNavigator().setPathTo(target.getPosition());
         }
     }
 
@@ -651,6 +663,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             }
         }
         if (animation == null || animation.frames().isEmpty()) {
+            poseRig(Map.of(), moved, yaw);
             return;
         }
         if (frame >= animation.frames().size()) {
@@ -669,13 +682,18 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             }
         }
 
+        poseRig(animation.frames().get(frame), moved, yaw);
+
+        frame++;
+    }
+
+    private void poseRig(Map<String, RavengardMobClip.Keyframe> keyframes, boolean moved, float yaw) {
         // parts only receive keyframes when the capture animated them, so a facing change
         // re-sends every part's current pose composed with the new yaw or the rig turns piecemeal
         boolean turned = Float.isNaN(lastAppliedYaw)
                 || Math.abs(wrapDegrees(yaw - lastAppliedYaw)) > 0.25f;
         lastAppliedYaw = yaw;
 
-        Map<String, RavengardMobClip.Keyframe> keyframes = animation.frames().get(frame);
         // clips face +Z, which is yaw 0; Minecraft yaw turns the other way round the Y axis
         final float turn = -yaw;
         for (int i = 0; i < parts.size() && i < partModels.size(); i++) {
@@ -723,8 +741,6 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         if ((moved || oneShot) && !dying && isRigEntityActive(healthBar)) {
             healthBar.teleport(position.add(0, barHeight(), 0));
         }
-
-        frame++;
     }
 
     private static float wrapDegrees(float degrees) {

@@ -40,6 +40,7 @@ public final class RavengardMobClip {
     private static final List<String> ROOT_PARTS = List.of("body", "bottom", "eye", "torso", "top", "chest");
     private static final double TURNING_CAPTURE_DEGREES = 60;
     private static final double UNCLOSED_LOOP_DEGREES = 10;
+    private static final double READABLE_HEADING = 0.5;
 
     /**
      * Captures store every transform in world space, so each animation carries whichever way the
@@ -97,7 +98,9 @@ public final class RavengardMobClip {
         for (int frame = 0; frame < frames.size(); frame++) {
             Keyframe key = frames.get(frame).get(String.valueOf(root));
             if (key != null && key.leftRotation() != null) {
-                last = yaw(key.r);
+                // a root lying down points its forward axis at the floor; what is left of it
+                // sideways follows the roll, not the facing, so the last readable heading stands
+                if (!keyed || headingReadable(key.r)) last = yaw(key.r);
                 if (!keyed) firstKey = frame;
                 keyed = true;
             }
@@ -125,6 +128,14 @@ public final class RavengardMobClip {
     private void followRoot(List<Map<String, Keyframe>> frames, double[] rootYaw) {
         Map<String, float[]> translation = new java.util.HashMap<>();
         Map<String, float[]> rotation = new java.util.HashMap<>();
+        // a loop starts each pass holding what the previous pass left behind
+        for (Map<String, Keyframe> keys : frames) {
+            for (Map.Entry<String, Keyframe> entry : keys.entrySet()) {
+                Keyframe key = entry.getValue();
+                if (key.translation() != null) translation.put(entry.getKey(), key.t.clone());
+                if (key.leftRotation() != null) rotation.put(entry.getKey(), key.r.clone());
+            }
+        }
         for (int frame = 0; frame < frames.size(); frame++) {
             Map<String, Keyframe> keys = frames.get(frame);
             for (Map.Entry<String, Keyframe> entry : keys.entrySet()) {
@@ -201,6 +212,13 @@ public final class RavengardMobClip {
     static double yaw(float[] rotation) {
         float x = rotation[0], y = rotation[1], z = rotation[2], w = rotation[3];
         return Math.toDegrees(Math.atan2(2 * (x * z + w * y), 1 - 2 * (x * x + y * y)));
+    }
+
+    static boolean headingReadable(float[] rotation) {
+        float x = rotation[0], y = rotation[1], z = rotation[2], w = rotation[3];
+        double forwardX = 2 * (x * z + w * y);
+        double forwardZ = 1 - 2 * (x * x + y * y);
+        return Math.hypot(forwardX, forwardZ) >= READABLE_HEADING;
     }
 
     private static double wrap(double degrees) {
