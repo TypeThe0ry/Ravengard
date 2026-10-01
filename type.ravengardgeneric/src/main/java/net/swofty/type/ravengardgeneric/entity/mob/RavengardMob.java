@@ -513,6 +513,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             meta.setScale(new Vec(0.3, 0.3, 0.3));
             meta.setBillboardRenderConstraints(AbstractDisplayMeta.BillboardConstraints.CENTER);
             meta.setBackgroundColor(0);
+            meta.setBrightness(15, 15);
             meta.setHasNoGravity(true);
         });
         healthBar.setInstance(instance, position.add(0, barHeight(), 0));
