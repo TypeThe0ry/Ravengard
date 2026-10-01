@@ -798,6 +798,7 @@ public final class DungeonDoor extends DungeonInteractable {
         try {
             return instance.getBlock(blockX, blockY, blockZ);
         } catch (RuntimeException unloaded) {
+            if (!instance.isRegistered()) return null;
             try {
                 instance.loadChunk(blockX >> 4, blockZ >> 4).join();
                 return instance.getBlock(blockX, blockY, blockZ);

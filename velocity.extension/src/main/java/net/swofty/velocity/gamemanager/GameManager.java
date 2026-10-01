@@ -27,12 +27,32 @@ public class GameManager {
     private static final Map<ServerType, List<GameServer>> servers = new ConcurrentHashMap<>();
     private static final ServerPingTracker pingTracker = new ServerPingTracker(MISSED_PINGS_BEFORE_REMOVAL);
 
-    public static synchronized GameServer addServer(ServerType type, UUID serverID, String host, int port, int maxPlayers) {
+    public static GameServer addServer(ServerType type, UUID serverID, String host, int port, int maxPlayers) {
+        host = (host == null || host.isEmpty()) ? ConfigProvider.settings().getHostName() : host; // if host is null then get from config
+        // resolved before taking the lock: a slow lookup must not hold up every other backend's registration
+        java.net.InetAddress address = resolve(host);
+        synchronized (GameManager.class) {
+            GameServer registered = getFromUUID(serverID);
+            if (registered != null) return registered;
+            return register(type, serverID, host, address, port, maxPlayers);
+        }
+    }
+
+    private static @Nullable java.net.InetAddress resolve(String host) {
+        try {
+            return java.net.InetAddress.getByName(host);
+        } catch (java.net.UnknownHostException unknown) {
+            return null;
+        }
+    }
+
+    private static GameServer register(ServerType type, UUID serverID, String host,
+                                       @Nullable java.net.InetAddress address, int port, int maxPlayers) {
         pingTracker.forget(serverID);
         port = port == -1 ? getNextAvailablePort() : port;    // if port is -1 then get next available port
-        host = (host == null || host.isEmpty()) ? ConfigProvider.settings().getHostName() : host; // if host is null then get from config
         RegisteredServer registeredServer = SkyBlockVelocity.getServer().registerServer(
-                new ServerInfo(serverID.toString(), new InetSocketAddress(host, port))
+                new ServerInfo(serverID.toString(), address == null
+                        ? InetSocketAddress.createUnresolved(host, port) : new InetSocketAddress(address, port))
         );
 
         boolean isLobby = type.name().endsWith("_LOBBY");

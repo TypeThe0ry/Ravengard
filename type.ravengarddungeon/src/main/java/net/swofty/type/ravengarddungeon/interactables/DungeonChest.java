@@ -289,8 +289,10 @@ public final class DungeonChest extends DungeonInteractable {
         if (!lid.isRemoved()) lid.remove();
         clearCapturedBarriers();
         if (!collisionCells.isEmpty()) {
-            MinecraftServer.getSchedulerManager().buildTask(this::clearCapturedBarriers)
-                    .delay(TaskSchedule.tick(1)).schedule();
+            // a chest removed with its dungeon must not reach back into the world a tick later
+            MinecraftServer.getSchedulerManager().buildTask(() -> {
+                if (instance.isRegistered()) clearCapturedBarriers();
+            }).delay(TaskSchedule.tick(1)).schedule();
         }
     }
 
@@ -320,6 +322,7 @@ public final class DungeonChest extends DungeonInteractable {
         try {
             return instance.getBlock(x, y, z);
         } catch (RuntimeException unloaded) {
+            if (!instance.isRegistered()) return net.minestom.server.instance.block.Block.AIR;
             try {
                 instance.loadChunk(x >> 4, z >> 4).join();
                 return instance.getBlock(x, y, z);

@@ -90,8 +90,8 @@ public class ResourcePackManager {
 
         if (timeoutSeconds > 0) {
             boolean completed = awaitResolution(resolved, timeoutSeconds, TimeUnit.SECONDS,
-                    () -> player.onResourcePackStatus(
-                            info.id(), net.kyori.adventure.resource.ResourcePackStatus.DISCARDED));
+                    () -> java.util.List.copyOf(pending).forEach(packId -> player.onResourcePackStatus(
+                            packId, net.kyori.adventure.resource.ResourcePackStatus.DISCARDED)));
             if (!completed) {
                 Logger.warn("Resource pack for {} did not resolve within {}s, continuing",
                         player.getUsername(), timeoutSeconds);

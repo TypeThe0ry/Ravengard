@@ -247,3 +247,9 @@ entries:
   "{#}m {#}s": "{} 分 {} 秒"
   "{#}h {#}m": "{} 小时 {} 分"
   "{#}d {#}h": "{} 天 {} 小时"
+
+  # ---- 服务器类型名（排队与转服提示里的参数）----
+  "ravengard_dungeon": "天穹余烬地牢"
+  "ravengard_lobby": "天穹余烬大厅"
+  "Ravengard Dungeon": "天穹余烬地牢"
+  "Ravengard Lobby": "天穹余烬大厅"

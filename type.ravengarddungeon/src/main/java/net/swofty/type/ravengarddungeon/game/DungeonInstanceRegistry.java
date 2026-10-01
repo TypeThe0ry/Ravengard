@@ -2029,11 +2029,12 @@ public final class DungeonInstanceRegistry {
         }
     }
 
-    private static final int[] STRAGGLER_SWEEP_SECONDS = {2, 15, 60};
+    private static final int[] STRAGGLER_SWEEP_SECONDS = {2, 15};
 
     /**
-     * Chunk loads still in flight when a dungeon is unregistered complete afterwards and put their
-     * chunks back into the dead world and the tick dispatcher, which then keeps all of it alive.
+     * Anything that loads a chunk into a dungeon after it was unregistered puts it back into the dead
+     * world and the tick dispatcher, which then keeps all of it alive. Cleanup tasks that run a tick
+     * late used to do exactly that; this sweep is the safety net for whatever else might.
      */
     private static void releaseStragglers(net.minestom.server.instance.InstanceContainer container) {
         List<net.minestom.server.instance.Chunk> chunks = List.copyOf(container.getChunks());

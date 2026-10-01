@@ -31,10 +31,7 @@ public class ListenerServerInitialized implements RedisMessageHandler<
         int maxPlayers = message.maxPlayers();
 
         UUID serverID = UUID.fromString(context.origin().id());
-        GameManager.GameServer server = GameManager.getFromUUID(serverID);
-        if (server == null) {
-            server = GameManager.addServer(type, serverID, host, port, maxPlayers);
-        }
+        GameManager.GameServer server = GameManager.addServer(type, serverID, host, port, maxPlayers);
 
         return new RegisterServerProtocol.Response(
                 server.registeredServer().getServerInfo().getAddress().getHostString(),
