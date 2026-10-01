@@ -241,7 +241,7 @@ public final class RavengardLocalization {
     /** Also reached for arguments a template captured and found no entry for, such as a new mob name. */
     private static void reportGap(String content) {
         if (report && LATIN_WORD.matcher(content).find() && !INTERNAL_TEXT.contains(content)
-                && !IDENTIFIER.matcher(content).matches() && !isPlayerName(content)
+                && !IDENTIFIER.matcher(content).matches() && !content.startsWith("/") && !isPlayerName(content)
                 && REPORTED.size() < REPORT_LIMIT && REPORTED.add(content)) {
             Logger.info("[i18n-gap] {}", content);
         }
