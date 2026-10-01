@@ -220,6 +220,18 @@ class RavengardLocalizationTest {
         return highest;
     }
 
+    @Test
+    void shaderTintOnAnArgumentSurvivesWhereverTheTreeCarriesIt() {
+        RavengardLocalization.Catalog catalog = catalog();
+        catalog.put("Opening Chest", "开启宝箱");
+        net.kyori.adventure.text.format.TextColor tint = net.kyori.adventure.text.format.TextColor.color(0xfefd02);
+
+        Component translated = translate(catalog, Text.of("<#fefd02>{}", "Opening Chest").asComponent());
+
+        assertEquals("开启宝箱", RavengardLocalization.flatten(translated));
+        assertEquals(tint, colourOf(translated, "开启宝箱", null));
+    }
+
     private static net.kyori.adventure.text.format.TextColor colourOf(
             Component component, String content, net.kyori.adventure.text.format.TextColor inherited) {
         net.kyori.adventure.text.format.TextColor colour = component.color() != null ? component.color() : inherited;

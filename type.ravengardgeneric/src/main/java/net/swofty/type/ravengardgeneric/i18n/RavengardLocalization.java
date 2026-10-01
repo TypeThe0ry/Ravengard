@@ -187,7 +187,7 @@ public final class RavengardLocalization {
         Source source = Source.of(component);
         if (hasLetters(source.text())) {
             Component whole = current.render(source);
-            if (whole != null) return localizeHover(current, source.interactive(finish(whole, component, font)));
+            if (whole != null) return localizeHover(current, source.styled(finish(whole, component, font)));
         }
         Component result = localizeHover(current, component);
         if (component instanceof TextComponent text && !text.content().isEmpty() && hasLetters(text.content())) {
@@ -270,6 +270,7 @@ public final class RavengardLocalization {
         private final List<Component> tokens = new ArrayList<>();
         private boolean space;
         private boolean mixedInteraction;
+        private boolean mixedStyle;
         private @Nullable ClickEvent click;
         private @Nullable HoverEvent<?> hover;
 
@@ -315,14 +316,21 @@ public final class RavengardLocalization {
             if (runs.isEmpty()) {
                 click = style.clickEvent();
                 hover = style.hoverEvent();
-            } else if (!Objects.equals(click, style.clickEvent()) || !Objects.equals(hover, style.hoverEvent())) {
-                mixedInteraction = true;
+            } else {
+                mixedInteraction |= !Objects.equals(click, style.clickEvent()) || !Objects.equals(hover, style.hoverEvent());
+                mixedStyle |= !runs.getFirst().style().equals(style);
             }
             runs.add(new Run(start, text.length(), style));
         }
 
-        /** A click or hover shared by all of the source text still applies to its translation. */
-        Component interactive(Component rendered) {
+        /**
+         * Text written in a single style keeps that style when translated, wherever in the tree it was set:
+         * the pack's shaders place hud text by its exact colour. Otherwise a click or hover shared by
+         * all of the source text still applies to its translation.
+         */
+        Component styled(Component rendered) {
+            if (runs.isEmpty()) return rendered;
+            if (!mixedStyle) return rendered.applyFallbackStyle(readable(runs.getFirst().style()));
             if (mixedInteraction || (click == null && hover == null)) return rendered;
             return rendered.applyFallbackStyle(Style.style().clickEvent(click).hoverEvent(hover).build());
         }
