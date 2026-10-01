@@ -39,6 +39,28 @@ class RavengardMobClipFacingTest {
     }
 
     @Test
+    void aLoopCapturedWhileTheMobWasTurningDoesNotCarryTheTurn() {
+        RavengardMobClip clip = new Gson().fromJson("""
+                {"name": "turning", "parts": [
+                  {"name": "body", "model": "m", "t": [0, 0, 0], "r": [0, 0, 0, 1]},
+                  {"name": "head", "model": "m", "t": [0, 1, 0], "r": [0, 0, 0, 1]}],
+                 "animations": {"idle": {"loop": true, "frames": [
+                  {"0": {"r": [0, 0, 0, 1]}, "1": {"t": [0, 1, 0.5], "r": [0, 0, 0, 1]}},
+                  {"0": {"r": [0, 0.08715574, 0, 0.9961947]}},
+                  {"0": {"r": [0, 0.17364818, 0, 0.9848077]}, "1": {"t": [0.17101, 1, 0.469846], "r": [0, 0.17364818, 0, 0.9848077]}}]}}}
+                """, RavengardMobClip.class);
+
+        clip.normalizeFacing();
+
+        for (var frame : clip.animation("idle").frames()) {
+            assertEquals(0, RavengardMobClip.yaw(frame.get("0").leftRotation()), 1.0e-3);
+        }
+        var last = clip.animation("idle").frames().getLast();
+        assertVector(new float[]{0, 1, 0.5f}, last.get("1").translation());
+        assertEquals(0, RavengardMobClip.yaw(last.get("1").leftRotation()), 1.0e-3);
+    }
+
+    @Test
     void everyOfficialAnimationStartsFacingTheSameWayAsTheRestPose() throws Exception {
         for (String name : COMBAT_CLIPS) {
             RavengardMobClip clip = new Gson().fromJson(
@@ -50,18 +72,21 @@ class RavengardMobClipFacingTest {
             if (rest != null) assertEquals(0, RavengardMobClip.yaw(rest), 0.5, name);
             for (var entry : clip.animations().entrySet()) {
                 RavengardMobClip.Animation animation = entry.getValue();
-                boolean first = true;
+                String label = name + "/" + entry.getKey();
+                Double first = null;
+                Double last = null;
                 for (var frame : animation.frames()) {
                     RavengardMobClip.Keyframe key = frame.get(root);
                     if (key == null || key.leftRotation() == null) continue;
-                    double yaw = RavengardMobClip.yaw(key.leftRotation());
-                    String label = name + "/" + entry.getKey();
-                    if (animation.loop()) {
-                        assertTrue(Math.abs(yaw) <= 60, label + " yaw " + yaw);
-                    } else if (first) {
-                        assertEquals(0, yaw, 0.5, label);
-                    }
-                    first = false;
+                    last = RavengardMobClip.yaw(key.leftRotation());
+                    if (first == null) first = last;
+                    if (animation.loop()) assertTrue(Math.abs(last) <= 45, label + " yaw " + last);
+                }
+                if (first == null) continue;
+                if (animation.loop()) {
+                    assertEquals(first, last, 10.0, label + " does not close");
+                } else {
+                    assertEquals(0, first, 0.5, label);
                 }
             }
         }

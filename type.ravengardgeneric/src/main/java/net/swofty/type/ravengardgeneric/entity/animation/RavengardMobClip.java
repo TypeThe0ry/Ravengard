@@ -39,6 +39,7 @@ public final class RavengardMobClip {
 
     private static final List<String> ROOT_PARTS = List.of("body", "bottom", "eye", "torso", "top", "chest");
     private static final double TURNING_CAPTURE_DEGREES = 60;
+    private static final double UNCLOSED_LOOP_DEGREES = 10;
 
     /**
      * Captures store every transform in world space, so each animation carries whichever way the
@@ -46,8 +47,9 @@ public final class RavengardMobClip {
      * here so that a clip always faces +Z; the rig then only has to add its own yaw.
      *
      * The facing of an animation is the yaw of its root part. A one-shot keeps the yaw it started
-     * with, so wind-ups and spins survive; a loop uses its average, or follows the root frame by
-     * frame when the captured mob was plainly turning while it was recorded.
+     * with, so wind-ups and spins survive; a loop uses its average, which keeps its sway. A loop
+     * that swings widely or does not end facing the way it began was recorded while the mob was
+     * turning, and follows the root frame by frame instead.
      */
     void normalizeFacing() {
         List<Part> rig = parts();
@@ -110,7 +112,8 @@ public final class RavengardMobClip {
         }
         for (int frame = 0; frame < firstKey; frame++) rootYaw[frame] = rootYaw[firstKey];
 
-        if (animation.loop() && spread(rootYaw) > TURNING_CAPTURE_DEGREES) {
+        double unclosed = Math.abs(wrap(rootYaw[rootYaw.length - 1] - rootYaw[0]));
+        if (animation.loop() && (spread(rootYaw) > TURNING_CAPTURE_DEGREES || unclosed > UNCLOSED_LOOP_DEGREES)) {
             followRoot(frames, rootYaw);
             return;
         }
