@@ -154,6 +154,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final double CHARGE_MIN_RANGE = 3.0;
     private static final double CHARGE_MAX_RANGE = 7.0;
     private static final double CHARGE_HIT_RANGE = 2.4;
+    private static final double MELEE_STANDOFF = 1.2;
     private static final double CHARGE_SPEED_MULTIPLIER = 3.0;
     private static final int CHARGE_TICKS = 8;
     private static final int CHARGE_COOLDOWN_TICKS = 100;
@@ -282,6 +283,15 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
                 living.setVelocity(new Vec(away.x() * KNOCKBACK_HORIZONTAL, KNOCKBACK_VERTICAL,
                         away.z() * KNOCKBACK_HORIZONTAL));
             }
+        }
+    }
+
+    // the melee goal keeps its path once in reach, which would walk the mob into the player
+    private void holdMeleeStandoff() {
+        Entity target = getTarget();
+        if (dying || target == null || getNavigator().getGoalPosition() == null) return;
+        if (position.distanceSquared(target.getPosition()) <= MELEE_STANDOFF * MELEE_STANDOFF) {
+            getNavigator().setPathTo(null);
         }
     }
 
@@ -582,6 +592,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             retint(BASE_COLOR);
         }
         updateTarget();
+        holdMeleeStandoff();
         tickStationaryCaster();
         tickCharge();
 

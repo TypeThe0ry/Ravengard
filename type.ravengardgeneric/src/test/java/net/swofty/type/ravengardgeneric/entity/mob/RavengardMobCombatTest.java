@@ -543,6 +543,40 @@ class RavengardMobCombatTest {
     }
 
     @Test
+    void meleeMobStopsInFrontOfItsTargetInsteadOfWalkingIntoIt() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.13d);
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "target"));
+        player.setInstance(instance, new net.minestom.server.coordinate.Pos(8.5, 1, 8.5)).join();
+        player.getAttribute(net.minestom.server.entity.attribute.Attribute.MAX_HEALTH).setBaseValue(1000);
+        player.setHealth(1000);
+        RavengardMob mob = new RavengardMob(clip,
+                new net.minestom.server.coordinate.Pos(2.5, 1, 8.5));
+        mob.spawnMob(instance);
+
+        double closest = Double.MAX_VALUE;
+        long time = System.currentTimeMillis();
+        for (int tick = 0; tick < 200; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            instance.getEntities().forEach(entity -> entity.update(now));
+            mob.tickRig();
+            closest = Math.min(closest, mob.getPosition().distance(player.getPosition()));
+        }
+
+        assertTrue(closest < 1.8, "closest=" + closest);
+        assertTrue(closest > 0.8, "closest=" + closest);
+
+        mob.removeRig();
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
     void aWokenZombieKnightDoesNotLieBackDownBetweenAttacks() throws Exception {
         RavengardMobClip clip = clip();
         set(clip, "name", "zombie_knight");
