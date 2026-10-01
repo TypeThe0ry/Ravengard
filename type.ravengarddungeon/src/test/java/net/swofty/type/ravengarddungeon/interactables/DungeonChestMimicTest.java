@@ -26,53 +26,41 @@ class DungeonChestMimicTest {
 
         assertTrue(normal >= 400 && normal <= 600, "normal=" + normal);
         assertTrue(silver >= 900 && silver <= 1_100, "silver=" + silver);
-        assertTrue(gold >= 1_100 && gold <= 1_300, "gold=" + gold);
+        assertEquals(0, gold);
     }
 
     @Test
-    void chestTiersOnlySelectCapturedCombatReadyMimics() {
-        Set<String> normal = typesFor("normal");
-        Set<String> silver = typesFor("silver");
-        Set<String> gold = typesFor("gold");
-        Set<String> bottles = bottleTypes();
-        Set<String> goldExpected = new HashSet<>(bottles);
-        goldExpected.add("silver_mimic");
-
-        assertEquals(bottles, normal);
-        assertEquals(Set.of("silver_mimic"), silver);
-        assertEquals(goldExpected, gold);
+    void aMimicIsTheChestItWasHidingAs() {
+        assertEquals(Set.of("normal_mimic"), typesFor("normal"));
+        assertEquals(Set.of("silver_mimic"), typesFor("silver"));
+        assertEquals(Set.of(), typesFor("gold"));
     }
 
     @Test
-    void selectedMimicsHaveCapturedMovementDeathAndPackModels() throws Exception {
+    void bothMimicsRideTheCapturedSilverMimicRig() throws Exception {
         Path configuration = Path.of("..", "configuration");
         Path mobs = configuration.resolve(Path.of("ravengard", "mobs"));
         Path pack = configuration.resolve(Path.of("resourcepacks", "ravengard"));
 
-        for (String type : Set.of("silver_mimic", "bottle_mimic_short_yellow")) {
-            var json = JsonParser.parseString(Files.readString(mobs.resolve(type + ".json"))).getAsJsonObject();
-            assertTrue(json.get("health").getAsDouble() > 0);
-            assertTrue(json.get("walkSpeed").getAsDouble() > 0);
-            assertTrue(json.getAsJsonObject("animations").has("walk"));
-            assertTrue(json.getAsJsonObject("animations").has("death"));
-            for (var partElement : json.getAsJsonArray("parts")) {
-                String model = partElement.getAsJsonObject().get("model").getAsString();
-                String relative = model.replace("hypixel_ravengard:",
-                        "assets/hypixel_ravengard/items/") + ".json";
-                assertTrue(Files.isRegularFile(pack.resolve(relative)), relative);
-            }
+        var json = JsonParser.parseString(Files.readString(mobs.resolve("silver_mimic.json"))).getAsJsonObject();
+        assertTrue(json.get("health").getAsDouble() > 0);
+        assertTrue(json.get("walkSpeed").getAsDouble() > 0);
+        assertTrue(json.getAsJsonObject("animations").has("walk"));
+        assertTrue(json.getAsJsonObject("animations").has("death"));
+        Set<String> rig = new HashSet<>();
+        for (var partElement : json.getAsJsonArray("parts")) {
+            rig.add(partElement.getAsJsonObject().get("name").getAsString());
+            String model = partElement.getAsJsonObject().get("model").getAsString();
+            String relative = model.replace("hypixel_ravengard:",
+                    "assets/hypixel_ravengard/items/") + ".json";
+            assertTrue(Files.isRegularFile(pack.resolve(relative)), relative);
         }
-        for (String type : bottleTypes()) {
-            for (String part : Set.of("bottom", "eye", "tongue", "top", "topcap")) {
-                assertTrue(Files.isRegularFile(pack.resolve(Path.of(
-                        "assets", "hypixel_ravengard", "items", "entity", type, part + ".json"))),
-                        type + "/" + part);
-            }
+        for (String part : Set.of("bottom", "tongue", "top")) {
+            assertTrue(rig.contains(part), part);
+            assertTrue(Files.isRegularFile(pack.resolve(Path.of(
+                    "assets", "hypixel_ravengard", "items", "entity", "normal_mimic", part + ".json"))), part);
         }
-        assertFalse(Files.isRegularFile(mobs.resolve("bottle_mimic_short_green.json")));
-        assertFalse(Files.isRegularFile(mobs.resolve("bottle_mimic_short_red.json")));
-        assertFalse(Files.isRegularFile(mobs.resolve("bottle_mimic_tall_aqua.json")));
-        assertFalse(Files.isRegularFile(mobs.resolve("bottle_mimic_tall_pink.json")));
+        assertFalse(Files.isRegularFile(mobs.resolve("normal_mimic.json")));
     }
 
     private static int countMimics(long seed, String tier, int count) {
@@ -92,12 +80,6 @@ class DungeonChestMimicTest {
             if (type != null) types.add(type);
         }
         return types;
-    }
-
-    private static Set<String> bottleTypes() {
-        return Set.of("bottle_mimic_short_yellow", "bottle_mimic_short_green",
-                "bottle_mimic_short_red", "bottle_mimic_tall_aqua",
-                "bottle_mimic_tall_green", "bottle_mimic_tall_pink");
     }
 
     private static String sequence(long seed, String tier) {

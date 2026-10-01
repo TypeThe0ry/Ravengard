@@ -520,23 +520,11 @@ public final class DungeonInstanceRegistry {
             "zombie_knight", "demon_grunt", "demon_imp", "oculus",
             "skeleton_archer_elite", "skeleton_knight_elite", "skeleton_warrior_elite",
             "zombie_knight_elite",
-            "demon_grunt_elite", "demon_imp_elite", "oculus_elite",
-            "demon_archer", "demon_archer_elite",
-            "silver_mimic", "bottle_mimic_short_yellow", "bottle_mimic_short_green",
-            "bottle_mimic_short_red", "bottle_mimic_tall_aqua", "bottle_mimic_tall_green",
-            "bottle_mimic_tall_pink", "normal_mimic", "mini_mimic", "dire_wolf",
-            "cursed_knight", "guardian", "iron_core", "wraith", "warden", "wraith_boss");
-    private static final List<String> RARE_MOB_POOL = List.of(
-            "silver_mimic", "bottle_mimic_short_yellow", "bottle_mimic_short_green",
-            "bottle_mimic_short_red", "bottle_mimic_tall_aqua", "bottle_mimic_tall_green",
-            "bottle_mimic_tall_pink", "normal_mimic", "mini_mimic", "wraith_boss");
-    private static final int RARE_MOB_ROLL = 18;
+            "demon_grunt_elite", "demon_imp_elite", "oculus_elite");
     private static final List<String> SPLINTER_MOB_POOL = List.of(
             "skeleton_archer", "skeleton_knight", "skeleton_warrior", "zombie_knight", "demon_grunt",
             "skeleton_archer_elite", "skeleton_knight_elite", "skeleton_warrior_elite",
-            "zombie_knight_elite", "demon_grunt_elite",
-            "demon_archer", "demon_archer_elite", "dire_wolf", "cursed_knight",
-            "guardian", "iron_core", "wraith", "warden");
+            "zombie_knight_elite", "demon_grunt_elite");
     private static final List<String> EYE_MOB_POOL = List.of(
             "oculus", "oculus_elite", "skeleton_archer", "skeleton_archer_elite");
     private static final List<String> FIRE_MOB_POOL = List.of(
@@ -554,10 +542,9 @@ public final class DungeonInstanceRegistry {
         var markers = new ArrayList<RavengardDungeonConfig.DungeonObject>();
         var availableClips = new java.util.HashSet<>(
                 net.swofty.type.ravengardgeneric.entity.animation.RavengardMobClip.available());
-        var available = runtimeCombatAppearances(availableClips);
+        var available = combatAppearances(availableClips);
         for (var object : objects) {
             if (!"entity_spawn".equals(object.category())) continue;
-            if (isChestMimicType(object.type())) continue;
             if (availableClips.contains(object.type()) && COMBAT_MOB_TYPES.contains(object.type())) {
                 direct.add(object);
             } else {
@@ -1082,31 +1069,7 @@ public final class DungeonInstanceRegistry {
         return Set.copyOf(appearances);
     }
 
-    static Set<String> runtimeCombatAppearances(Set<String> availableClips) {
-        var appearances = new java.util.HashSet<>(combatAppearances(availableClips));
-        appearances.removeIf(DungeonInstanceRegistry::isChestMimicType);
-        return Set.copyOf(appearances);
-    }
-
-    static boolean isChestMimicType(String type) {
-        return type != null && (type.equals("silver_mimic")
-                || type.equals("normal_mimic")
-                || type.equals("mini_mimic")
-                || type.startsWith("bottle_mimic_"));
-    }
-
     private static String animationClipType(String type) {
-        if (type.equals("demon_archer") || type.equals("demon_archer_elite")) {
-            return "skeleton_archer";
-        }
-        if (type.equals("normal_mimic") || type.equals("mini_mimic")) return "silver_mimic";
-        if (type.equals("dire_wolf")) return "zombie_knight";
-        if (type.equals("cursed_knight") || type.equals("guardian") || type.equals("wraith_boss")) {
-            return "skeleton_knight";
-        }
-        if (type.equals("iron_core") || type.equals("warden")) return "demon_grunt";
-        if (type.equals("wraith")) return "skeleton_warrior";
-        if (type.startsWith("bottle_mimic_")) return "bottle_mimic_short_yellow";
         return type.endsWith("_elite") ? type.substring(0, type.length() - "_elite".length()) : type;
     }
 
@@ -1169,13 +1132,6 @@ public final class DungeonInstanceRegistry {
             selected.add(ordered.isEmpty()
                     ? signatureType
                     : ordered.get(index % ordered.size()));
-        }
-        var rare = RARE_MOB_POOL.stream().filter(available::contains).toList();
-        int rareStart = signatureType == null ? 0 : 1;
-        for (int index = rareStart; index < selected.size() && !rare.isEmpty(); index++) {
-            if (random.nextInt(RARE_MOB_ROLL) == 0) {
-                selected.set(index, rare.get(random.nextInt(rare.size())));
-            }
         }
         return List.copyOf(selected);
     }

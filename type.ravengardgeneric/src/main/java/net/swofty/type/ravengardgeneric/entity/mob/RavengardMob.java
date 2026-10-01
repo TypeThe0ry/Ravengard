@@ -43,14 +43,9 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final int FLASH_COLOR = 0xFF6666;
     private static final int BASE_COLOR = 0xFFFFFF;
     private static final double VISUAL_GROUND_LIFT = 0.125;
-    private static final double STATIC_APPEARANCE_PIVOT_Y = 1.71875;
     private static final Set<String> BOTTLE_MIMIC_PARTS =
             Set.of("bottom", "eye", "tongue", "top", "topcap");
     private static final Map<String, Set<String>> APPEARANCE_PARTS = Map.ofEntries(
-            Map.entry("demon_archer", Set.of("arrow", "arrowtip", "arrowtip2", "body", "head", "leftarm",
-                    "leftleg", "quiver", "rightarm", "rightleg")),
-            Map.entry("demon_archer_elite", Set.of("arrow", "arrowtip", "arrowtip2", "body", "head",
-                    "leftarm", "leftleg", "quiver", "rightarm", "rightleg")),
             Map.entry("skeleton_archer_elite", Set.of("arrow", "arrowtip", "arrowtip2", "body", "head",
                     "leftarm", "leftleg", "quiver", "rightarm", "rightleg")),
             Map.entry("skeleton_knight_elite", Set.of("body", "head", "leftarm", "leftleg", "rightarm",
@@ -71,45 +66,39 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             Map.entry("bottle_mimic_tall_aqua", BOTTLE_MIMIC_PARTS),
             Map.entry("bottle_mimic_tall_green", BOTTLE_MIMIC_PARTS),
             Map.entry("bottle_mimic_tall_pink", BOTTLE_MIMIC_PARTS),
-            Map.entry("normal_mimic", Set.of("bottom", "tongue", "top")),
-            Map.entry("mini_mimic", Set.of("bottom", "tongue", "top")),
-            Map.entry("dire_wolf", Set.of("lowerbody", "head", "leg_fl", "leg_fr", "leg_bl", "leg_br",
-                    "tail", "snout_top", "snout_bottom")),
-            Map.entry("cursed_knight", Set.of("body", "head", "armleft", "armright", "legleft", "legright",
-                    "sword", "cape", "shoulderarmorleft", "shoulderarmorright", "eyes")),
-            Map.entry("guardian", Set.of("chest", "head", "l_arm", "r_arm", "l_leg", "r_leg", "sword",
-                    "cape", "shoulderl", "shoulderl2", "browl", "browr")),
-            Map.entry("iron_core", Set.of("body", "head", "arm_left", "arm_right", "leg_left", "leg_right",
-                    "chimney", "smoke_left", "smoke_right")),
-            Map.entry("wraith", Set.of("body", "head", "armleft", "armright", "forearmleft", "forearmright",
-                    "torso", "spinebottom", "sword", "cape1", "cape2", "cape3")),
-            Map.entry("warden", Set.of("chest", "head", "l_arm", "r_arm", "l_leg", "r_leg", "weapon",
-                    "cape", "l_shoulderpad", "r_shoulderpad")),
-            Map.entry("wraith_boss", Set.of("torso", "head", "armleft", "armright", "forearmleft",
-                    "forearmright", "mace", "cape1", "cape2", "cape3", "shoulderpad")));
+            Map.entry("normal_mimic", Set.of("bottom", "tongue", "top")));
     private static final Map<String, Map<String, String>> APPEARANCE_PART_ALIASES = Map.of(
             "skeleton_warrior_elite", Map.of(
                     "armleft", "leftarm",
                     "armright", "rightarm",
                     "legleft", "leftleg",
                     "legright", "rightleg"));
-    private static final Map<String, List<String>> APPEARANCE_SOURCE_PARTS = Map.ofEntries(
-            Map.entry("normal_mimic", List.of("bottom", "tongue", "top")),
-            Map.entry("mini_mimic", List.of("bottom", "tongue", "top")),
-            Map.entry("dire_wolf", List.of("lowerbody", "head", "leg_fl", "leg_fr", "leg_bl", "leg_br",
-                    "tail", "snout_top", "snout_bottom")),
-            Map.entry("cursed_knight", List.of("body", "head", "armleft", "armright", "legleft", "legright",
-                    "sword", "cape", "shoulderarmorleft", "shoulderarmorright", "eyes")),
-            Map.entry("guardian", List.of("chest", "head", "l_arm", "r_arm", "l_leg", "r_leg", "sword",
-                    "cape", "shoulderl", "shoulderl2", "browl", "browr")),
-            Map.entry("iron_core", List.of("body", "head", "arm_left", "arm_right", "leg_left", "leg_right",
-                    "chimney", "smoke_left", "smoke_right")),
-            Map.entry("wraith", List.of("body", "head", "armleft", "armright", "forearmleft", "forearmright",
-                    "torso", "spinebottom", "sword", "cape1", "cape2", "cape3")),
-            Map.entry("warden", List.of("chest", "head", "l_arm", "r_arm", "l_leg", "r_leg", "weapon",
-                    "cape", "l_shoulderpad", "r_shoulderpad")),
-            Map.entry("wraith_boss", List.of("torso", "head", "armleft", "armright", "forearmleft",
-                    "forearmright", "mace", "cape1", "cape2", "cape3", "shoulderpad")));
+    // a wooden mimic has no eyes: those two bones of the silver mimic's rig carry nothing
+    private static final Map<String, Set<String>> APPEARANCE_HIDDEN_PARTS = Map.of(
+            "normal_mimic", Set.of("eye_purple", "eyesocket"));
+    /**
+     * Model-space lift in pixels for parts whose model is drawn around a different pivot than the
+     * one the clip was captured with. Each value is the vertical distance between the two models'
+     * otherwise identical boxes in the pack.
+     */
+    private static final Map<String, Map<String, Float>> APPEARANCE_PART_LIFT = Map.of(
+            "skeleton_archer", Map.of("body", -9f),
+            "skeleton_knight_elite", Map.of("body", 9f, "rightarm", -1f),
+            "skeleton_warrior_elite", Map.of("body", 11f),
+            "zombie_knight_elite", Map.of("body", 4f));
+    /**
+     * Mimics were captured with the same carrier offset as the humanoids but are not a humanoid tall:
+     * this is how far their resting pose sits above the floor with that offset.
+     */
+    private static final Map<String, Double> CLIP_GROUND_DROP = Map.of(
+            "silver_mimic", 1.28125,
+            "bottle_mimic_short_yellow", 1.75,
+            "bottle_mimic_tall_green", 1.75);
+    // the pack turns the demons' ears outwards in the model's head display transform, which an
+    // item display in the NONE context does not apply
+    private static final Map<String, Float> DEMON_EAR_YAW = Map.of("ear", -47.5f, "ear2", 47.5f);
+    // captured lying dormant on the ground; once woken they stay on their feet
+    private static final Set<String> DORMANT_IDLE_CLIPS = Set.of("zombie_knight");
     private static final float CASTER_DAMAGE_PER_HIT = 1.5f;
     private static final double CASTER_RANGE = 11.0;
     private static final int CASTER_COOLDOWN_TICKS = 45;
@@ -141,7 +130,10 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private float[][] localRotation;
     private float[][] localTranslation;
     private int[] partDuration;
-    private int animatedPartCount;
+    private Vec[] partLift;
+    private boolean[] scaleChanged;
+    private boolean restoreScales;
+    private double groundDrop;
     private float lastAppliedYaw = Float.NaN;
     private int attackCooldown;
     private int flashTicksLeft;
@@ -371,6 +363,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         currentAnimation = animation;
         oneShot = true;
         frame = 0;
+        restoreScales = true;
     }
 
     private void flash() {
@@ -400,6 +393,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
 
     static String appearanceModel(String appearanceType, String baseType, String partName,
                                   String baseModel) {
+        if (APPEARANCE_HIDDEN_PARTS.getOrDefault(appearanceType, Set.of()).contains(partName)) return null;
         Set<String> parts = APPEARANCE_PARTS.get(appearanceType);
         if (parts == null || !parts.contains(partName)) return baseModel;
         String basePath = ":entity/" + baseType + "/";
@@ -417,16 +411,6 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
 
     public String appearanceType() {
         return appearanceType;
-    }
-
-    static List<String> supplementalAppearanceModels(String appearanceType,
-                                                     List<String> existingModels) {
-        List<String> models = APPEARANCE_SOURCE_PARTS.get(appearanceType);
-        if (models == null) return List.of();
-        return models.stream()
-                .map(name -> "hypixel_ravengard:entity/" + appearanceType + "/" + name)
-                .filter(model -> !existingModels.contains(model))
-                .toList();
     }
 
     public static List<RavengardMob> mobs() {
@@ -461,9 +445,11 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
 
     public void spawnMob(Instance instance) {
         this.instance = instance;
-        int partCount = APPEARANCE_SOURCE_PARTS.containsKey(appearanceType) ? 0 : clip.parts().size();
-        animatedPartCount = partCount;
+        int partCount = clip.parts().size();
+        this.groundDrop = CLIP_GROUND_DROP.getOrDefault(clip.name(), 0.0);
         this.lastSentRotation = new float[partCount][];
+        this.partLift = new Vec[partCount];
+        this.scaleChanged = new boolean[partCount];
         this.partDuration = new int[partCount];
         this.localRotation = new float[partCount][];
         this.localTranslation = new float[partCount][];
@@ -486,20 +472,22 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
                 if (part.translation() != null) meta.setTranslation(vec(part.translation()));
                 meta.setScale(vec(part.scale()));
                 if (part.leftRotation() != null) meta.setLeftRotation(part.leftRotation());
-                meta.setRightRotation(part.rightRotation());
+                Float earYaw = clip.name().startsWith("demon_") ? DEMON_EAR_YAW.get(part.name()) : null;
+                meta.setRightRotation(earYaw == null ? part.rightRotation() : yawRotation(earYaw));
                 meta.setTransformationInterpolationDuration(1);
                 meta.setPosRotInterpolationDuration(2);
                 meta.setViewRange(part.viewRange());
                 meta.setBrightness(15, 15);
             });
             double[] off = part.offset();
-            Vec offset = new Vec(off[0], off[1] + VISUAL_GROUND_LIFT, off[2]);
-            display.setInstance(instance, position.add(offset));
+            Vec offset = new Vec(off[0], off[1] + VISUAL_GROUND_LIFT - groundDrop, off[2]);
+            display.setInstance(instance, position.add(offset).withView(0, 0));
             parts.add(display);
             partOffsets.add(offset);
             partModels.add(appearanceModel(appearanceType, clip.name(), part.name(), part.model()));
+            Float lift = APPEARANCE_PART_LIFT.getOrDefault(appearanceType, Map.of()).get(part.name());
+            partLift[partIndex] = lift == null ? null : new Vec(0, lift / 16.0 * part.scale()[1], 0);
         }
-        addStaticAppearanceParts(instance);
         java.util.Arrays.fill(partDuration, 1);
 
         healthBar = new LivingEntity(EntityType.TEXT_DISPLAY);
@@ -512,7 +500,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             meta.setBackgroundColor(0);
             meta.setHasNoGravity(true);
         });
-        healthBar.setInstance(instance, position.add(0, 2.25, 0));
+        healthBar.setInstance(instance, position.add(0, barHeight(), 0));
 
         MOBS.add(this);
         int variantModelParts = (int) partModels.stream().filter(java.util.Objects::nonNull)
@@ -524,26 +512,18 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
                 appearanceType, clip.name(), appearanceType, position, parts.size(), variantModelParts);
     }
 
-    private void addStaticAppearanceParts(Instance instance) {
-        for (String model : supplementalAppearanceModels(appearanceType, partModels)) {
-            Entity display = new Entity(EntityType.ITEM_DISPLAY);
-            display.setNoGravity(true);
-            display.setAutoViewable(true);
-            display.editEntityMeta(ItemDisplayMeta.class, meta -> {
-                meta.setItemStack(partItem(model, BASE_COLOR));
-                meta.setDisplayContext(ItemDisplayMeta.DisplayContext.NONE);
-                meta.setTransformationInterpolationStartDelta(0);
-                meta.setTransformationInterpolationDuration(1);
-                meta.setPosRotInterpolationDuration(2);
-                meta.setViewRange(4096f);
-                meta.setBrightness(15, 15);
-            });
-            double baseY = STATIC_APPEARANCE_PIVOT_Y + VISUAL_GROUND_LIFT;
-            display.setInstance(instance, position.add(0, baseY, 0));
-            parts.add(display);
-            partOffsets.add(new Vec(0, baseY, 0));
-            partModels.add(model);
-        }
+    private String restingAnimation(boolean moved) {
+        boolean awake = getTarget() != null && DORMANT_IDLE_CLIPS.contains(clip.name());
+        return (moved || awake) && clip.animation("walk") != null ? "walk" : "idle";
+    }
+
+    private double barHeight() {
+        return 2.25 - groundDrop * 0.6;
+    }
+
+    private static float[] yawRotation(float degrees) {
+        double half = Math.toRadians(degrees) / 2;
+        return new float[]{0, (float) Math.sin(half), 0, (float) Math.cos(half)};
     }
 
     private static ItemDisplayMeta.DisplayContext displayContext(int contextOrdinal) {
@@ -607,10 +587,11 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
 
         RavengardMobClip.Animation animation = clip.animation(currentAnimation);
         if (!oneShot) {
-            String desired = moved && clip.animation("walk") != null ? "walk" : "idle";
+            String desired = restingAnimation(moved);
             if (!desired.equals(currentAnimation)) {
                 currentAnimation = desired;
                 frame = 0;
+                restoreScales = true;
                 animation = clip.animation(desired);
             }
         }
@@ -625,8 +606,9 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
                 frame = 0;
             } else {
                 oneShot = false;
-                currentAnimation = moved && clip.animation("walk") != null ? "walk" : "idle";
+                currentAnimation = restingAnimation(moved);
                 frame = 0;
+                restoreScales = true;
                 animation = clip.animation(currentAnimation);
                 if (animation == null || animation.frames().isEmpty()) return;
             }
@@ -639,12 +621,14 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         lastAppliedYaw = yaw;
 
         Map<String, RavengardMobClip.Keyframe> keyframes = animation.frames().get(frame);
-        for (int i = 0; i < parts.size() && i < partModels.size()
-                && i < animatedPartCount; i++) {
+        // clips face +Z, which is yaw 0; Minecraft yaw turns the other way round the Y axis
+        final float turn = -yaw;
+        for (int i = 0; i < parts.size() && i < partModels.size(); i++) {
             Entity part = parts.get(i);
             if (!isRigEntityActive(part)) continue;
             if ((moved || oneShot) && !dying) {
-                part.teleport(position.add(rotateOffset(partOffsets.get(i), yaw)));
+                // the display's own yaw would turn the model a second time
+                part.teleport(position.add(partOffsets.get(i)).withView(0, 0));
             }
             RavengardMobClip.Keyframe keyframe = keyframes.get(String.valueOf(i));
             if (keyframe != null) {
@@ -653,9 +637,11 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
                 if (translation != null && translation.length >= 3) localTranslation[i] = translation;
                 if (rotation != null && rotation.length >= 4) localRotation[i] = rotation;
             }
-            if (keyframe == null && !turned) continue;
+            boolean keyedScale = keyframe != null && keyframe.scale() != null && keyframe.scale().length >= 3;
+            // an effect left enlarged by the animation that just ended goes back to its resting size
+            boolean restoreScale = restoreScales && scaleChanged[i] && !keyedScale;
+            if (keyframe == null && !turned && !restoreScale) continue;
             final int index = i;
-            final float finalYaw = yaw;
             final RavengardMobClip.Keyframe finalKeyframe = keyframe;
             part.editEntityMeta(ItemDisplayMeta.class, meta -> {
                 Integer duration = finalKeyframe == null ? null : finalKeyframe.duration();
@@ -664,22 +650,23 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
                     meta.setTransformationInterpolationDuration(duration);
                 }
                 meta.setTransformationInterpolationStartDelta(0);
-                meta.setTranslation(rotateOffset(safeVec(localTranslation[index], Vec.ZERO), finalYaw));
-                meta.setLeftRotation(rotateRig(index, safeRotation(localRotation[index]), finalYaw));
-                if (finalKeyframe != null && finalKeyframe.scale() != null
-                        && finalKeyframe.scale().length >= 3) {
+                float[] rotation = rotateRig(index, safeRotation(localRotation[index]), turn);
+                Vec translation = rotateOffset(safeVec(localTranslation[index], Vec.ZERO), turn);
+                if (partLift[index] != null) translation = translation.add(rotate(rotation, partLift[index]));
+                meta.setTranslation(translation);
+                meta.setLeftRotation(rotation);
+                if (keyedScale) {
                     meta.setScale(vec(finalKeyframe.scale()));
+                    scaleChanged[index] = true;
+                } else if (restoreScale) {
+                    meta.setScale(vec(clip.parts().get(index).scale()));
+                    scaleChanged[index] = false;
                 }
             });
         }
-        for (int i = animatedPartCount; i < parts.size(); i++) {
-            Entity part = parts.get(i);
-            if (isRigEntityActive(part) && (moved || oneShot)) {
-                part.teleport(position.add(rotateOffset(partOffsets.get(i), yaw)).withYaw(yaw));
-            }
-        }
+        restoreScales = false;
         if ((moved || oneShot) && !dying && isRigEntityActive(healthBar)) {
-            healthBar.teleport(position.add(0, 2.25, 0));
+            healthBar.teleport(position.add(0, barHeight(), 0));
         }
 
         frame++;
@@ -769,9 +756,6 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         if (appearanceType.endsWith("_elite")) {
             damage *= 1.25f;
         }
-        if (appearanceType.contains("boss")) {
-            damage *= 1.5f;
-        }
         return damage;
     }
 
@@ -840,6 +824,18 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         double sin = Math.sin(theta), cos = Math.cos(theta);
         return new Vec(offset.x() * cos + offset.z() * sin, offset.y(),
                 -offset.x() * sin + offset.z() * cos);
+    }
+
+    private static Vec rotate(float[] rotation, Vec vector) {
+        double x = rotation[0], y = rotation[1], z = rotation[2], w = rotation[3];
+        double cx = y * vector.z() - z * vector.y();
+        double cy = z * vector.x() - x * vector.z();
+        double cz = x * vector.y() - y * vector.x();
+        double dx = y * cz - z * cy;
+        double dy = z * cx - x * cz;
+        double dz = x * cy - y * cx;
+        return new Vec(vector.x() + 2 * (w * cx + dx), vector.y() + 2 * (w * cy + dy),
+                vector.z() + 2 * (w * cz + dz));
     }
 
     private boolean isRigEntityActive(Entity entity) {

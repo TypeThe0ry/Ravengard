@@ -32,10 +32,7 @@ public final class DungeonChest extends DungeonInteractable {
     private static final int MIMIC_ROLL_BOUND = 1_000;
     private static final int NORMAL_MIMIC_CHANCE = 50;
     private static final int SILVER_MIMIC_CHANCE = 100;
-    private static final int GOLD_MIMIC_CHANCE = 120;
-    private static final List<String> BOTTLE_MIMIC_POOL = List.of(
-            "bottle_mimic_short_yellow", "bottle_mimic_short_green", "bottle_mimic_short_red",
-            "bottle_mimic_tall_aqua", "bottle_mimic_tall_green", "bottle_mimic_tall_pink");
+    private static final String MIMIC_CLIP = "silver_mimic";
     private static final int[] LOOT_SLOTS = {10, 11, 12, 13, 14, 15, 16, 20, 22, 24};
 
     private final Entity bottom;
@@ -176,22 +173,21 @@ public final class DungeonChest extends DungeonInteractable {
     }
 
     static String rollMimic(Random random, String tier) {
-        int chance = switch (tier) {
-            case "silver" -> SILVER_MIMIC_CHANCE;
-            case "gold" -> GOLD_MIMIC_CHANCE;
-            default -> NORMAL_MIMIC_CHANCE;
+        // a mimic is the chest it was hiding as; the pack has no golden one
+        String mimicType = switch (tier) {
+            case "normal" -> "normal_mimic";
+            case "silver" -> "silver_mimic";
+            default -> null;
         };
-        if (random.nextInt(MIMIC_ROLL_BOUND) >= chance) return null;
-        if ("silver".equals(tier)) return "silver_mimic";
-        if ("gold".equals(tier) && random.nextBoolean()) return "silver_mimic";
-        return BOTTLE_MIMIC_POOL.get(random.nextInt(BOTTLE_MIMIC_POOL.size()));
+        if (mimicType == null) return null;
+        int chance = "silver".equals(tier) ? SILVER_MIMIC_CHANCE : NORMAL_MIMIC_CHANCE;
+        return random.nextInt(MIMIC_ROLL_BOUND) < chance ? mimicType : null;
     }
 
     private void revealMimic(Player player, String mimicType) {
         RavengardMobClip clip;
         try {
-            clip = RavengardMobClip.load(mimicType.startsWith("bottle_mimic_")
-                    ? "bottle_mimic_short_yellow" : mimicType);
+            clip = RavengardMobClip.load(MIMIC_CLIP);
         } catch (RuntimeException exception) {
             org.tinylog.Logger.warn("Mimic clip {} could not be loaded; opening chest normally: {}",
                     mimicType, exception.getMessage());

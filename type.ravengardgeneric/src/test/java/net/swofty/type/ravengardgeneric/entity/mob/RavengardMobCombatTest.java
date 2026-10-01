@@ -467,9 +467,6 @@ class RavengardMobCombatTest {
         assertEquals("hypixel_ravengard:entity/skeleton_warrior/eyes",
                 RavengardMob.appearanceModel("skeleton_warrior_elite", "skeleton_warrior", "eyes",
                         "hypixel_ravengard:entity/skeleton_warrior/eyes"));
-        assertEquals("hypixel_ravengard:entity/demon_archer/quiver",
-                RavengardMob.appearanceModel("demon_archer", "skeleton_archer", "quiver",
-                        "hypixel_ravengard:entity/skeleton_archer/quiver"));
         assertEquals("hypixel_ravengard:entity/demon_grunt/body",
                 RavengardMob.appearanceModel("demon_grunt", "demon_grunt", "body",
                         "hypixel_ravengard:entity/demon_grunt/body"));
@@ -493,20 +490,127 @@ class RavengardMobCombatTest {
     }
 
     @Test
-    void officialEnemyAppearancesAddTheirPackModelsWithoutDroppingCombatRigParts() {
-        assertEquals(Set.of(
-                        "hypixel_ravengard:entity/normal_mimic/bottom",
-                        "hypixel_ravengard:entity/normal_mimic/tongue",
-                        "hypixel_ravengard:entity/normal_mimic/top"),
-                Set.copyOf(RavengardMob.supplementalAppearanceModels("normal_mimic", List.of())));
-        assertTrue(RavengardMob.supplementalAppearanceModels("dire_wolf", List.of()).size() >= 9);
-        assertTrue(RavengardMob.supplementalAppearanceModels("cursed_knight", List.of()).size() >= 10);
-        assertTrue(RavengardMob.supplementalAppearanceModels("wraith", List.of()).size() >= 10);
-        assertTrue(RavengardMob.supplementalAppearanceModels("warden", List.of()).size() >= 8);
-        assertTrue(RavengardMob.supplementalAppearanceModels("skeleton_archer", List.of()).isEmpty());
-        assertTrue(RavengardMob.supplementalAppearanceModels("normal_mimic", List.of(
-                "hypixel_ravengard:entity/normal_mimic/top")).stream()
-                .noneMatch(model -> model.endsWith("/top")));
+    void woodenMimicRidesTheSilverMimicRigWithoutItsEyes() {
+        for (String part : List.of("bottom", "tongue", "top")) {
+            assertEquals("hypixel_ravengard:entity/normal_mimic/" + part,
+                    RavengardMob.appearanceModel("normal_mimic", "silver_mimic", part,
+                            "hypixel_ravengard:entity/silver_mimic/" + part));
+        }
+        for (String part : List.of("eye_purple", "eyesocket")) {
+            assertNull(RavengardMob.appearanceModel("normal_mimic", "silver_mimic", part,
+                    "hypixel_ravengard:entity/silver_mimic/" + part));
+            assertEquals("hypixel_ravengard:entity/silver_mimic/" + part,
+                    RavengardMob.appearanceModel("silver_mimic", "silver_mimic", part,
+                            "hypixel_ravengard:entity/silver_mimic/" + part));
+        }
+    }
+
+    @Test
+    void rigTurnsWithTheMobWhileItsDisplaysStayUnrotated() throws Exception {
+        RavengardMobClip clip = clip();
+        RavengardMobClip.Part body = part("body", "hypixel_ravengard:entity/skeleton_knight/body");
+        set(body, "t", new float[]{0, 0, 1});
+        set(body, "r", new float[]{0, 0, 0, 1});
+        set(clip, "parts", List.of(body));
+        RavengardMobClip.Animation idle = new RavengardMobClip.Animation();
+        set(idle, "loop", true);
+        set(idle, "frames", List.of(Map.of(), Map.of()));
+        set(clip, "animations", Map.of("idle", idle));
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        // yaw 90 looks down -X
+        RavengardMob mob = new RavengardMob(clip,
+                new net.minestom.server.coordinate.Pos(2.5, 1, 2.5, 90, 0));
+        mob.spawnMob(instance);
+        mob.tickRig();
+
+        Entity display = instance.getEntities().stream()
+                .filter(entity -> entity.getEntityType() == EntityType.ITEM_DISPLAY)
+                .findFirst().orElseThrow();
+        ItemDisplayMeta meta = (ItemDisplayMeta) display.getEntityMeta();
+        assertEquals(0f, display.getPosition().yaw(), 1.0e-4);
+        assertEquals(-1.0, meta.getTranslation().x(), 1.0e-4);
+        assertEquals(0.0, meta.getTranslation().z(), 1.0e-4);
+        float[] rotation = meta.getLeftRotation();
+        double forwardX = 2 * (rotation[0] * rotation[2] + rotation[3] * rotation[1]);
+        double forwardZ = 1 - 2 * (rotation[0] * rotation[0] + rotation[1] * rotation[1]);
+        assertEquals(-1.0, forwardX, 1.0e-4);
+        assertEquals(0.0, forwardZ, 1.0e-4);
+
+        mob.removeRig();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
+    void aWokenZombieKnightDoesNotLieBackDownBetweenAttacks() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "name", "zombie_knight");
+        set(clip, "parts", List.of(part("body", "hypixel_ravengard:entity/zombie_knight/body")));
+        RavengardMobClip.Animation idle = new RavengardMobClip.Animation();
+        set(idle, "loop", true);
+        set(idle, "frames", List.of(Map.of(), Map.of()));
+        RavengardMobClip.Animation walk = new RavengardMobClip.Animation();
+        set(walk, "loop", true);
+        set(walk, "frames", List.of(Map.of(), Map.of()));
+        set(clip, "animations", Map.of("idle", idle, "walk", walk));
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        RavengardMob mob = new RavengardMob(clip, new net.minestom.server.coordinate.Pos(2.5, 1, 2.5));
+        mob.spawnMob(instance);
+        Field current = RavengardMob.class.getDeclaredField("currentAnimation");
+        current.setAccessible(true);
+
+        mob.tickRig();
+        assertEquals("idle", current.get(mob));
+
+        Entity prey = new Entity(EntityType.ZOMBIE);
+        prey.setInstance(instance, new net.minestom.server.coordinate.Pos(4.5, 1, 2.5)).join();
+        mob.setTarget(prey);
+        mob.tickRig();
+        assertEquals("walk", current.get(mob));
+
+        prey.remove();
+        mob.removeRig();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
+    void anEffectEnlargedByAnAttackReturnsToItsRestingSize() throws Exception {
+        RavengardMobClip clip = clip();
+        RavengardMobClip.Part slash = part("slash", "hypixel_ravengard:entity/skeleton_warrior/slash");
+        set(slash, "s", new float[]{0, 0, 0});
+        set(clip, "parts", List.of(slash));
+        RavengardMobClip.Keyframe grown = emptyKeyframe();
+        set(grown, "s", new float[]{2, 2, 2});
+        RavengardMobClip.Animation attack = new RavengardMobClip.Animation();
+        set(attack, "loop", false);
+        set(attack, "frames", List.of(Map.of("0", grown)));
+        RavengardMobClip.Animation idle = new RavengardMobClip.Animation();
+        set(idle, "loop", true);
+        set(idle, "frames", List.of(Map.of(), Map.of()));
+        set(clip, "animations", Map.of("idle", idle, "attack", attack));
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        RavengardMob mob = new RavengardMob(clip, new net.minestom.server.coordinate.Pos(2.5, 1, 2.5));
+        mob.spawnMob(instance);
+        mob.tickRig();
+        Entity display = instance.getEntities().stream()
+                .filter(entity -> entity.getEntityType() == EntityType.ITEM_DISPLAY)
+                .findFirst().orElseThrow();
+
+        var startOneShot = RavengardMob.class.getDeclaredMethod("startOneShot", String.class);
+        startOneShot.setAccessible(true);
+        startOneShot.invoke(mob, "attack");
+        mob.tickRig();
+        assertEquals(2.0, ((ItemDisplayMeta) display.getEntityMeta()).getScale().x(), 1.0e-6);
+        for (int tick = 0; tick < 3; tick++) mob.tickRig();
+        assertEquals(0.0, ((ItemDisplayMeta) display.getEntityMeta()).getScale().x(), 1.0e-6);
+
+        mob.removeRig();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
     }
 
     @Test

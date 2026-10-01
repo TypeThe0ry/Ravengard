@@ -204,50 +204,35 @@ class DungeonEncounterSpawnTest {
 
         assertTrue(appearances.contains("skeleton_archer"));
         assertTrue(appearances.contains("skeleton_archer_elite"));
-        assertTrue(appearances.contains("demon_archer"));
-        assertTrue(appearances.contains("demon_archer_elite"));
         assertTrue(appearances.contains("skeleton_knight_elite"));
         assertTrue(appearances.contains("skeleton_warrior_elite"));
         assertTrue(appearances.contains("demon_imp_elite"));
-        assertTrue(appearances.contains("silver_mimic"));
-        assertTrue(appearances.contains("bottle_mimic_short_yellow"));
+        assertTrue(appearances.stream().noneMatch(type -> type.contains("mimic")));
         assertTrue(appearances.stream().noneMatch(type -> type.contains("training_dummy")));
         assertTrue(appearances.stream().noneMatch(type -> type.startsWith("oculus")));
     }
 
     @Test
-    void runtimeCombatPoolLeavesMimicsForChestReveal() {
-        Set<String> runtime = DungeonInstanceRegistry.runtimeCombatAppearances(Set.of(
-                "skeleton_archer", "silver_mimic", "bottle_mimic_short_yellow"));
-
-        assertTrue(runtime.contains("skeleton_archer"));
-        assertTrue(runtime.stream().noneMatch(DungeonInstanceRegistry::isChestMimicType));
-    }
-
-    @Test
-    void capturedMimicsAreRareRatherThanReplacingTheMainCombatPopulation() {
-        Set<String> available = Set.of(
+    void encountersOnlyUseMobsWithAnOfficialCapture() {
+        Set<String> available = DungeonInstanceRegistry.combatAppearances(Set.of(
                 "skeleton_archer", "skeleton_knight", "skeleton_warrior", "zombie_knight",
-                "demon_grunt", "silver_mimic", "bottle_mimic_short_yellow");
-        int rare = 0;
-        int total = 0;
-        Set<String> rareTypes = new HashSet<>();
+                "demon_grunt", "demon_imp", "oculus", "silver_mimic", "bottle_mimic_short_yellow"));
+        Set<String> captured = Set.of(
+                "skeleton_archer", "skeleton_knight", "skeleton_warrior", "zombie_knight",
+                "demon_grunt", "demon_imp", "oculus");
+        Set<String> used = new HashSet<>();
 
-        for (long seed = 0; seed < 1_000; seed++) {
-            var selected = DungeonInstanceRegistry.encounterMobTypes(
-                    List.of(marker("splinter", seed, 0)), available, new Random(seed), 5);
-            total += selected.size();
-            for (String type : selected) {
-                if (Set.of("silver_mimic", "bottle_mimic_short_yellow").contains(type)) {
-                    rare++;
-                    rareTypes.add(type);
-                }
+        for (String marker : List.of("splinter", "mini_eye", "fire_spit", "dark_tornado")) {
+            for (long seed = 0; seed < 500; seed++) {
+                used.addAll(DungeonInstanceRegistry.encounterMobTypes(
+                        List.of(marker(marker, seed, 0)), available, new Random(seed), 5));
             }
         }
 
-        assertEquals(Set.of("silver_mimic", "bottle_mimic_short_yellow"), rareTypes);
-        assertTrue(rare > total * 0.03, rare + "/" + total);
-        assertTrue(rare < total * 0.09, rare + "/" + total);
+        assertEquals(available, used);
+        for (String type : used) {
+            assertTrue(captured.contains(type.replaceFirst("_elite$", "")), type);
+        }
     }
 
     @Test
@@ -288,27 +273,16 @@ class DungeonEncounterSpawnTest {
 
         for (long seed = 0; seed < 12; seed++) {
             var plans = DungeonInstanceRegistry.planEncounterMobs(clusters, appearances, seed);
-            assertTrue(plans.stream().map(DungeonInstanceRegistry.MobSpawnPlan::mobType).distinct().count() >= 12);
+            assertTrue(plans.stream().map(DungeonInstanceRegistry.MobSpawnPlan::mobType).distinct().count() >= 10);
             used.addAll(plans.stream().map(DungeonInstanceRegistry.MobSpawnPlan::mobType).toList());
         }
 
-        assertEquals(32, appearances.size());
+        assertEquals(14, appearances.size());
         assertEquals(appearances, used);
         assertTrue(used.containsAll(Set.of("oculus", "oculus_elite", "demon_imp", "demon_grunt",
-                "demon_archer", "demon_archer_elite", "skeleton_archer", "skeleton_knight",
-                "skeleton_warrior", "skeleton_warrior_elite", "zombie_knight",
-                "silver_mimic", "bottle_mimic_short_yellow")));
+                "skeleton_archer", "skeleton_knight",
+                "skeleton_warrior", "skeleton_warrior_elite", "zombie_knight")));
         assertTrue(appearances.containsAll(used));
-    }
-
-    @Test
-    void bottleMimicAppearancesReuseTheCapturedShortYellowAnimation() {
-        Set<String> variants = Set.of(
-                "bottle_mimic_short_yellow", "bottle_mimic_short_green", "bottle_mimic_short_red",
-                "bottle_mimic_tall_aqua", "bottle_mimic_tall_green", "bottle_mimic_tall_pink");
-
-        assertEquals(variants, DungeonInstanceRegistry.combatAppearances(
-                Set.of("bottle_mimic_short_yellow")));
     }
 
     @Test
@@ -662,12 +636,12 @@ class DungeonEncounterSpawnTest {
     void activationDiagnosticsReportActualSpawnedTypesAndRegions() {
         var plans = List.of(
                 new DungeonInstanceRegistry.MobSpawnPlan("skeleton_archer", marker("splinter", -210, -210)),
-                new DungeonInstanceRegistry.MobSpawnPlan("silver_mimic", marker("splinter", 215, 205)),
-                new DungeonInstanceRegistry.MobSpawnPlan("bottle_mimic_short_yellow", marker("splinter", 8, -12)));
+                new DungeonInstanceRegistry.MobSpawnPlan("zombie_knight", marker("splinter", 215, 205)),
+                new DungeonInstanceRegistry.MobSpawnPlan("demon_imp", marker("splinter", 8, -12)));
 
         assertEquals(Map.of(
-                        "bottle_mimic_short_yellow", 1,
-                        "silver_mimic", 1,
+                        "demon_imp", 1,
+                        "zombie_knight", 1,
                         "skeleton_archer", 1),
                 DungeonInstanceRegistry.encounterTypeDistribution(plans));
         var regions = DungeonInstanceRegistry.encounterDistribution(plans);
@@ -703,7 +677,7 @@ class DungeonEncounterSpawnTest {
 
         assertEquals(appearances, typeDistribution.keySet(), typeDistribution.toString());
         assertEquals(plans.size(), typeDistribution.values().stream().mapToInt(Integer::intValue).sum());
-        assertEquals(32, typeDistribution.size(), typeDistribution.toString());
+        assertEquals(14, typeDistribution.size(), typeDistribution.toString());
     }
 
     @Test
@@ -716,10 +690,9 @@ class DungeonEncounterSpawnTest {
         }
         Set<String> available = Set.of(
                 "skeleton_archer", "skeleton_knight", "skeleton_warrior", "zombie_knight",
-                "demon_grunt", "demon_imp", "oculus", "demon_archer",
+                "demon_grunt", "demon_imp", "oculus",
                 "skeleton_archer_elite", "skeleton_knight_elite", "skeleton_warrior_elite",
-                "zombie_knight_elite", "demon_grunt_elite", "demon_imp_elite", "oculus_elite",
-                "demon_archer_elite", "silver_mimic", "bottle_mimic_short_yellow");
+                "zombie_knight_elite", "demon_grunt_elite", "demon_imp_elite", "oculus_elite");
 
         var balanced = DungeonInstanceRegistry.ensureAppearanceCoverage(plans, available, 81173L);
 
@@ -851,7 +824,7 @@ class DungeonEncounterSpawnTest {
     void firstPlayerObservationImmediatelySelectsNearbyEncounterMobsAcrossTheLocalArea() {
         var plans = java.util.stream.IntStream.range(0, 40)
                 .mapToObj(index -> new DungeonInstanceRegistry.MobSpawnPlan(
-                        index % 2 == 0 ? "skeleton_knight" : "dire_wolf",
+                        index % 2 == 0 ? "skeleton_knight" : "zombie_knight",
                         marker("splinter", index * 2, index % 3)))
                 .toList();
         var selected = DungeonInstanceRegistry.nearestUnactivatedPlans(
@@ -862,7 +835,7 @@ class DungeonEncounterSpawnTest {
         assertTrue(selected.stream().map(plans::get)
                 .map(DungeonInstanceRegistry.MobSpawnPlan::mobType)
                 .collect(java.util.stream.Collectors.toSet())
-                .containsAll(Set.of("skeleton_knight", "dire_wolf")));
+                .containsAll(Set.of("skeleton_knight", "zombie_knight")));
     }
 
     @Test
@@ -880,11 +853,11 @@ class DungeonEncounterSpawnTest {
                 "demon_grunt", "demon_imp", "oculus", "silver_mimic",
                 "bottle_mimic_short_yellow")));
         var appearances = DungeonInstanceRegistry.combatAppearances(officialClips);
-        assertEquals(32, appearances.size());
-        assertTrue(appearances.containsAll(Set.of(
-                "normal_mimic", "mini_mimic", "dire_wolf", "cursed_knight", "guardian",
-                "iron_core", "wraith", "warden", "wraith_boss")));
+        assertEquals(14, appearances.size());
         assertTrue(appearances.stream().noneMatch(Set.of(
+                "normal_mimic", "mini_mimic", "silver_mimic", "bottle_mimic_short_yellow",
+                "demon_archer", "dire_wolf", "cursed_knight", "guardian",
+                "iron_core", "wraith", "warden", "wraith_boss",
                 "commander", "guard_archer", "guard_spear", "guard_warrior",
                 "training_dummy")::contains));
     }
@@ -910,7 +883,7 @@ class DungeonEncounterSpawnTest {
 
         assertEquals(300, merged.mergedMarkers());
         assertEquals(130, plans.size());
-        assertEquals(32, DungeonInstanceRegistry.encounterTypeDistribution(plans).size());
+        assertEquals(14, DungeonInstanceRegistry.encounterTypeDistribution(plans).size());
     }
 
     private static RavengardDungeonConfig.DungeonObject marker(String type, double x, double z) {

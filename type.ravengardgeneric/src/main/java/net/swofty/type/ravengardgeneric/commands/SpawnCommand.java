@@ -37,5 +37,26 @@ public class SpawnCommand extends HypixelCommand {
             mob.spawnMob(player.getInstance());
             player.sendMessage("<a>Spawned <f>{}<a>.", name);
         }, mobArg);
+
+        var appearanceArg = ArgumentType.Word("appearance");
+        command.addSyntax((sender, context) -> {
+            if (!permissionCheck(sender)) return;
+            RavengardPlayer player = (RavengardPlayer) sender;
+            String name = context.get(mobArg);
+            List<String> available = RavengardMobClip.available();
+            if (!available.contains(name)) {
+                player.sendMessage("<c>Unknown mob. Options: {}", String.join(", ", available));
+                return;
+            }
+            String appearance = context.get(appearanceArg);
+            // inspection aid: the mob appears a few blocks ahead, turned to face the admin
+            var view = player.getPosition();
+            double radians = Math.toRadians(view.yaw());
+            var ahead = view.add(-Math.sin(radians) * 4, 0, Math.cos(radians) * 4)
+                    .withView(view.yaw() + 180, 0);
+            new RavengardMob(RavengardMobClip.load(name), ahead, appearance)
+                    .spawnMob(player.getInstance());
+            player.sendMessage("<a>Spawned <f>{}<a>.", appearance);
+        }, mobArg, appearanceArg);
     }
 }
