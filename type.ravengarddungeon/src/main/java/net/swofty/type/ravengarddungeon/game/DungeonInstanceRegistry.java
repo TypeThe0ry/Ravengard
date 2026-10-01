@@ -2019,6 +2019,31 @@ public final class DungeonInstanceRegistry {
         }
     }
 
+    /**
+     * Unregistering an instance leaves its entities with the server's tick dispatcher, and each of
+     * them keeps the whole world reachable: thousands of display entities per dungeon, about 200 MB.
+     */
+    private static void removeEntities(net.minestom.server.instance.Instance world) {
+        for (net.minestom.server.entity.Entity entity : List.copyOf(world.getEntities())) {
+            if (!(entity instanceof net.minestom.server.entity.Player)) entity.remove();
+        }
+    }
+
+    private static final int[] STRAGGLER_SWEEP_SECONDS = {2, 15, 60};
+
+    /**
+     * Chunk loads still in flight when a dungeon is unregistered complete afterwards and put their
+     * chunks back into the dead world and the tick dispatcher, which then keeps all of it alive.
+     */
+    private static void releaseStragglers(net.minestom.server.instance.InstanceContainer container) {
+        List<net.minestom.server.instance.Chunk> chunks = List.copyOf(container.getChunks());
+        if (chunks.isEmpty()) return;
+        removeEntities(container);
+        chunks.forEach(container::unloadChunk);
+        org.tinylog.Logger.info("Released {} chunks loaded into retired dungeon world {}",
+                chunks.size(), container.getUuid());
+    }
+
     private static void unregisterDrainedInstance(DungeonInstance instance) {
         synchronized (DungeonInstanceRegistry.class) {
             if (!instance.getInstance().getPlayers().isEmpty()) return;
@@ -2030,9 +2055,16 @@ public final class DungeonInstanceRegistry {
                     .removeInstance(instance.getInstance());
             net.swofty.type.ravengarddungeon.interactables.InteractableRegistry
                     .removeInstance(instance.getInstance());
+            removeEntities(instance.getInstance());
+            removeEntities(instance.getContainer());
             MinecraftServer.getInstanceManager().unregisterInstance(instance.getInstance());
             MinecraftServer.getInstanceManager().unregisterInstance(instance.getContainer());
             INSTANCES.remove(instance.getGameId(), instance);
+            net.minestom.server.instance.InstanceContainer container = instance.getContainer();
+            for (int seconds : STRAGGLER_SWEEP_SECONDS) {
+                MinecraftServer.getSchedulerManager().buildTask(() -> releaseStragglers(container))
+                        .delay(net.minestom.server.timer.TaskSchedule.seconds(seconds)).schedule();
+            }
         }
     }
 }
