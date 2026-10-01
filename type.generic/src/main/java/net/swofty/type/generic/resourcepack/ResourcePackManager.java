@@ -21,7 +21,7 @@ public class ResourcePackManager {
     private final HypixelResourcePack activePack;
     private static final java.util.List<ResourcePackInfo> EXTRA_PACKS = new java.util.concurrent.CopyOnWriteArrayList<>();
 
-    /** Registers a pack sent underneath the active pack, for overlays such as localization fonts. */
+    /** Registers a pack applied on top of the active pack, for overlays such as localization fonts and client strings. */
     public static void addExtraPack(ResourcePackInfo pack) {
         EXTRA_PACKS.add(pack);
     }
@@ -61,23 +61,26 @@ public class ResourcePackManager {
         );
 
         CompletableFuture<Void> resolved = new CompletableFuture<>();
-        java.util.List<ResourcePackInfo> packs = new java.util.ArrayList<>(EXTRA_PACKS);
+        java.util.List<ResourcePackInfo> packs = new java.util.ArrayList<>();
         packs.add(info);
+        packs.addAll(EXTRA_PACKS);
+        java.util.Set<UUID> pending = java.util.concurrent.ConcurrentHashMap.newKeySet();
+        packs.forEach(pack -> pending.add(pack.id()));
         ResourcePackRequest request = ResourcePackRequest.resourcePackRequest()
                 .packs(packs)
                 .replace(true)
                 .required(activePack.isRequired())
                 .prompt(Text.of("<a>This resource pack is required to play on Hypixel.").asComponent())
                 .callback((packId, status, audience) -> {
-                    if (status.intermediate() || !packId.equals(info.id())) return;
-                    if (status == net.kyori.adventure.resource.ResourcePackStatus.SUCCESSFULLY_LOADED) {
+                    if (status.intermediate() || !pending.remove(packId)) return;
+                    if (status != net.kyori.adventure.resource.ResourcePackStatus.SUCCESSFULLY_LOADED) {
+                        Logger.warn("Resource pack {} for {} finished with status {}",
+                                packId, player.getUsername(), status);
+                    } else if (packId.equals(info.id())) {
                         player.getPlayerConnection().storeCookie("hypixel:applied_pack",
                                 packHash.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                    } else {
-                        Logger.warn("Resource pack {} for {} finished with status {}",
-                                packHash.substring(0, 8), player.getUsername(), status);
                     }
-                    resolved.complete(null);
+                    if (pending.isEmpty()) resolved.complete(null);
                 })
                 .build();
 

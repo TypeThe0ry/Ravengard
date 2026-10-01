@@ -14,13 +14,16 @@
   ```
 
   键是源码里的英文标记文本（或配置里的英文原文，可带 `§` 颜色码），值是同一标记语法的译文；`{}`/`{0}` 占位符按位置对应。多个文件在加载时合并。
-- `zh_CN/resourcepack/` —— 字体覆盖资源包（由 `tools/build_font_overlay.py` 从译文生成）。官方包用两个
-  不可见的“间距字体”（`hypixel_ravengard:-half` / `-full`）给 HUD 文字居中、右对齐，它们只登记了 ASCII 字符；
-  覆盖包为译文用到的每个字符补上进距。它作为独立的第二个资源包发送，排在官方包下面，官方包本身不改动。
+- `zh_CN/resourcepack/` —— 覆盖资源包（由 `tools/build_font_overlay.py` 生成），作为独立的第二个资源包叠在官方包之上发送，
+  官方包本身不改动。它包含两部分：
+  - 字体进距：官方包用两个不可见的“间距字体”（`hypixel_ravengard:-half` / `-full`）给 HUD 文字居中、右对齐，
+    它们只登记了 ASCII 字符；覆盖包为译文用到的每个非 ASCII 字符补上进距。
+  - 客户端文字：官方包在每个语言文件里改写了几条原版界面文字（暂停菜单的 Ravengard Menu 按钮、声音滑块名）。
+    `zh_CN/client_lang.json` 给出译文，生成脚本把它写进官方包覆盖过的每一个语言文件。
 - `docker-compose.zh_CN.yml` —— 可选的 compose 覆盖文件：把目录挂进两个游戏服、代理与 pack server，设置
   `RAVENGARD_LOCALE=zh_CN`、`RAVENGARD_LOCALE_DIR=/app/localization`，并关闭 Minestom 的分组数据包
   （分组包对所有观众只序列化一次，绕过逐玩家翻译）。
-- `tools/build_font_overlay.py` —— 改动译文后重新生成字体覆盖包。
+- `tools/build_font_overlay.py` —— 改动译文或 `client_lang.json` 后重新生成覆盖包。
 
 ## 机制
 
