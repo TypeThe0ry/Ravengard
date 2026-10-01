@@ -183,7 +183,16 @@ class RavengardLocalizationTest {
         java.io.File directory = new java.io.File("../localization/zh_CN");
         java.util.regex.Pattern placeholder = java.util.regex.Pattern.compile("\\{(\\d*)}");
         int entries = 0;
+        java.util.Map<String, String> owners = new java.util.HashMap<>();
         for (java.io.File file : net.swofty.commons.YamlFileUtils.getYamlFiles(directory)) {
+            for (String line : java.nio.file.Files.readAllLines(file.toPath())) {
+                if (!line.startsWith("  \"")) continue;
+                String quoted = line.substring(3, line.indexOf("\": \""));
+                String key = RavengardLocalization.normalize(RavengardLocalization.plain(quoted
+                        .replace("\\n", "\n").replace("\\\"", "\"").replace("\\\\", "\\")));
+                String previous = owners.put(key, file.getName());
+                assertNull(previous, "duplicate key '" + key + "' in " + file.getName() + " and " + previous);
+            }
             Object loaded = net.swofty.commons.YamlFileUtils.loadYaml(file).get("entries");
             for (java.util.Map.Entry<?, ?> entry : ((java.util.Map<?, ?>) loaded).entrySet()) {
                 String key = RavengardLocalization.plain(String.valueOf(entry.getKey()));

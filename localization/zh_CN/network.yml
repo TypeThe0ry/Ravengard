@@ -14,7 +14,6 @@ entries:
   "<c>You can't switch items while in an inventory!": "<c>打开界面时不能切换物品！"
   "<a>Search": "<a>搜索"
   "<7>Query: <e>{}": "<7>关键词：<e>{}"
-  "None": "无"
   "<e>Page {}": "<e>第 {} 页"
   "<8>Running checks...": "<8>正在检查……"
   "<c>You are not allowed to use this command.": "<c>你不能使用此命令。"

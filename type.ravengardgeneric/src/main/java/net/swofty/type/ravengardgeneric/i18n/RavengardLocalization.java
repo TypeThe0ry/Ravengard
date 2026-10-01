@@ -37,6 +37,7 @@ public final class RavengardLocalization {
     public static final String ENV_REPORT = "RAVENGARD_LOCALE_REPORT";
     private static final java.util.Set<String> REPORTED = ConcurrentHashMap.newKeySet();
     private static final java.util.Set<String> INTERNAL_TEXT = java.util.Set.of("displaynametest");
+    private static final Pattern IDENTIFIER = Pattern.compile("\\S*[\\d_]\\S*");
     private static volatile boolean report;
     private static final Key DEFAULT_FONT = Key.key("minecraft", "default");
     private static final Key ILLAGERALT = Key.key("minecraft", "illageralt");
@@ -167,7 +168,8 @@ public final class RavengardLocalization {
         if (component instanceof TextComponent text && !(font != null && isSpacingFont(font))
                 && !ILLAGERALT.equals(font)) {
             String content = normalize(text.content());
-            if (content.matches(".*[A-Za-z]{3,}.*") && !INTERNAL_TEXT.contains(content) && REPORTED.add(content)) {
+            if (content.matches(".*[A-Za-z]{3,}.*") && !INTERNAL_TEXT.contains(content)
+                    && !IDENTIFIER.matcher(content).matches() && REPORTED.add(content)) {
                 Logger.info("[i18n-gap] {}", content);
             }
         }

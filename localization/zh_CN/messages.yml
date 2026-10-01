@@ -232,7 +232,6 @@ entries:
   "The destination server could not be located on the network": "无法在网络中找到目标服务器"
   "The destination server is full": "目标服务器已满"
   "The destination server did not acknowledge your data": "目标服务器未确认你的数据"
-  "Transfer failed: {}": "传送失败：{}"
   "Could not connect to {}": "无法连接到 {}"
   "<c>No capture named <f>{}<c>. Available: {}": "<c>没有名为 <f>{}<c> 的捕获。可用：{}"
 
