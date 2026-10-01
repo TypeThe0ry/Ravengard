@@ -347,7 +347,7 @@ public class OrchestratorCache {
         return null;
     }
 
-    public static void cleanup() {
+    public static synchronized void cleanup() {
         long now = Instant.now().toEpochMilli();
         cleanupReservations(now);
 

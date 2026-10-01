@@ -27,7 +27,7 @@ public class GameManager {
     private static final Map<ServerType, List<GameServer>> servers = new ConcurrentHashMap<>();
     private static final ServerPingTracker pingTracker = new ServerPingTracker(MISSED_PINGS_BEFORE_REMOVAL);
 
-    public static GameServer addServer(ServerType type, UUID serverID, String host, int port, int maxPlayers) {
+    public static synchronized GameServer addServer(ServerType type, UUID serverID, String host, int port, int maxPlayers) {
         pingTracker.forget(serverID);
         port = port == -1 ? getNextAvailablePort() : port;    // if port is -1 then get next available port
         host = (host == null || host.isEmpty()) ? ConfigProvider.settings().getHostName() : host; // if host is null then get from config
@@ -52,7 +52,7 @@ public class GameManager {
     }
 
     public static boolean isAnyEmpty(ServerType type) {
-        return servers.get(type).stream().anyMatch(gameServer -> gameServer.maxPlayers() > gameServer.registeredServer().getPlayersConnected().size());
+        return getFromType(type).stream().anyMatch(gameServer -> gameServer.maxPlayers() > gameServer.registeredServer().getPlayersConnected().size());
     }
 
     public static @Nullable GameServer getFromRegisteredServer(RegisteredServer registeredServer) {
@@ -88,8 +88,14 @@ public class GameManager {
         return servers.containsKey(type) && !servers.get(type).isEmpty();
     }
 
+    /**
+     * A snapshot of the registered servers of a type. Callers narrow it down while balancing, and
+     * that must never reach the registry: a full server filtered out here used to be unregistered
+     * for good, since backends only register once at startup.
+     */
     public static List<GameServer> getFromType(ServerType type) {
-        return servers.get(type);
+        List<GameServer> registered = servers.get(type);
+        return registered == null ? new ArrayList<>() : new ArrayList<>(registered);
     }
 
     public static GameServer getFromUUID(UUID uuid) {

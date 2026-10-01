@@ -80,8 +80,15 @@ public final class DungeonInstanceRegistry {
         }
 
         public boolean isExpired() {
-            return ready.isDone() && players.isEmpty() && emptySince > 0
-                    && System.currentTimeMillis() - emptySince > EMPTY_LIFETIME_MILLIS;
+            if (!ready.isDone() || !players.isEmpty()) return false;
+            long since = emptySince;
+            if (since == 0) {
+                // a leave that raced a reservation can empty the instance after its timestamp was
+                // cleared; without one it would hold an instance slot forever, so the countdown starts now
+                emptySince = System.currentTimeMillis();
+                return false;
+            }
+            return System.currentTimeMillis() - since > EMPTY_LIFETIME_MILLIS;
         }
 
         private boolean beginRetirementIfExpired() {

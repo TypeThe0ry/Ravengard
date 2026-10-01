@@ -28,6 +28,7 @@ repositories {
 
 dependencies {
     compileOnly(libs.velocity.api)
+    testImplementation(libs.velocity.api)
     annotationProcessor(libs.velocity.api)
     compileOnly(files("velocity-4.1.0-SNAPSHOT-9.jar"))
 
