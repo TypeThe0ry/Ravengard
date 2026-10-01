@@ -62,6 +62,7 @@ public class ActionPlayerChat implements HypixelEventClass {
         }
 
         Text line = format(player, rank, finalMessage);
+        net.swofty.type.ravengardgeneric.i18n.RavengardLocalization.verbatim(line.asComponent());
         List<HypixelPlayer> receivers = HypixelGenericLoader.getLoadedPlayers();
         receivers.forEach(onlinePlayer -> onlinePlayer.sendMessage(line));
     }

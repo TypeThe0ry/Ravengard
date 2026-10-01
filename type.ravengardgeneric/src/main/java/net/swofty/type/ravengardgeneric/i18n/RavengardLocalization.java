@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,9 @@ public final class RavengardLocalization {
     private static final java.util.Set<String> REPORTED = ConcurrentHashMap.newKeySet();
     private static final java.util.Set<String> INTERNAL_TEXT = java.util.Set.of("displaynametest");
     private static final Pattern IDENTIFIER = Pattern.compile("\\S*[\\d_]\\S*");
+    private static final Pattern LATIN_WORD = Pattern.compile("[A-Za-z]{3,}");
+    private static final int REPORT_LIMIT = 2048;
+    private static final int VERBATIM_LIMIT = 256;
     private static volatile boolean report;
     private static final Key DEFAULT_FONT = Key.key("minecraft", "default");
     private static final Key ILLAGERALT = Key.key("minecraft", "illageralt");
@@ -46,7 +50,10 @@ public final class RavengardLocalization {
     private static volatile Catalog catalog;
     private static volatile boolean everyone;
     private static volatile String language;
-    private static final Map<Component, Component> CACHE = new ConcurrentHashMap<>();
+    private static volatile Map<Component, Component> cache = new ConcurrentHashMap<>();
+    private static volatile Map<Component, Component> agedCache = Map.of();
+    private static final java.util.Set<Component> VERBATIM = ConcurrentHashMap.newKeySet();
+    private static volatile Predicate<String> playerNames = _ -> false;
 
     private RavengardLocalization() {
     }
@@ -61,6 +68,8 @@ public final class RavengardLocalization {
         Catalog loaded = Catalog.load(new File(directory));
         if (loaded == null) return;
         install(loaded, locale, true);
+        playerNames = name -> net.minestom.server.MinecraftServer.getConnectionManager()
+                .getOnlinePlayerByUsername(name) != null;
         registerFontOverlay(new File(directory, "resourcepack"));
         report = Boolean.parseBoolean(System.getenv(ENV_REPORT));
         if (report) Logger.info("Localization report enabled: untranslated text leaves are logged once each");
@@ -96,11 +105,13 @@ public final class RavengardLocalization {
         catalog = loaded;
         language = locale.replace('-', '_').toLowerCase(Locale.ROOT);
         everyone = forEveryone;
-        CACHE.clear();
+        cache = new ConcurrentHashMap<>();
+        agedCache = Map.of();
         BiFunction<Component, Locale, Component> previous = MinestomAdventure.COMPONENT_TRANSLATOR;
         MinestomAdventure.COMPONENT_TRANSLATOR = (component, viewerLocale) -> {
             Component rendered = previous.apply(component, viewerLocale);
-            return serves(viewerLocale) ? translate(rendered) : rendered;
+            if (!serves(viewerLocale) || VERBATIM.contains(component)) return rendered;
+            return translate(rendered);
         };
         Logger.info("Ravengard localization {} installed: {} exact entries, {} templates, for {}",
                 language, loaded.exact.size(), loaded.templates.size(), forEveryone ? "everyone" : "matching locales");
@@ -128,23 +139,77 @@ public final class RavengardLocalization {
         return net.swofty.commons.text.MarkupLocalization.normalize(text);
     }
 
+    /**
+     * What a player typed is sent as written: a chat line registered here is never matched against
+     * the catalog, however much it looks like one of its entries.
+     */
+    public static void verbatim(Component line) {
+        if (catalog == null || line == null) return;
+        if (VERBATIM.size() >= VERBATIM_LIMIT) VERBATIM.clear();
+        VERBATIM.add(line);
+    }
+
+    /** Names of players are never translated, even when one spells a catalog entry such as a class name. */
+    static void playerNames(Predicate<String> names) {
+        playerNames = names;
+    }
+
+    private static boolean isPlayerName(String text) {
+        return text.indexOf(' ') < 0 && playerNames.test(text);
+    }
+
     public static Component translate(Component component) {
         Catalog current = catalog;
         if (current == null || component == null) return component;
-        Component cached = CACHE.get(component);
+        // glyph-only lines (minimap, bars) change every tick; they have nothing to translate and would flush the cache
+        if (!hasLetters(component)) return component;
+        Component cached = cached(component);
         if (cached != null) return cached;
         Component translated;
         try {
             translated = translate(current, component, null);
-        } catch (RuntimeException exception) {
-            Logger.warn(exception, "Ravengard localization failed for a component; sending it untranslated");
+        } catch (RuntimeException | StackOverflowError failure) {
+            String text = flatten(component);
+            Logger.warn(failure, "Ravengard localization failed for '{}'; sending it untranslated",
+                    text.length() > 120 ? text.substring(0, 120) : text);
             translated = component;
         }
-        if (CACHE.size() >= CACHE_LIMIT) CACHE.clear();
-        CACHE.put(component, translated);
-        if (translated != component) CACHE.put(translated, translated);
+        remember(component, translated);
         if (report) reportUntranslated(component, translated, null);
         return translated;
+    }
+
+    private static @Nullable Component cached(Component component) {
+        Component hit = cache.get(component);
+        if (hit != null) return hit;
+        hit = agedCache.get(component);
+        if (hit != null) remember(component, hit);
+        return hit;
+    }
+
+    /** Two generations: a full cache is aged instead of dropped, so entries still in use are carried over. */
+    private static void remember(Component component, Component translated) {
+        Map<Component, Component> current = cache;
+        if (current.size() >= CACHE_LIMIT) {
+            synchronized (RavengardLocalization.class) {
+                if (cache == current) {
+                    agedCache = current;
+                    cache = new ConcurrentHashMap<>();
+                }
+            }
+            current = cache;
+        }
+        current.put(component, translated);
+    }
+
+    private static boolean hasLetters(Component component) {
+        if (component instanceof TextComponent text && hasLetters(text.content())) return true;
+        HoverEvent<?> hover = component.hoverEvent();
+        if (hover != null && hover.value() instanceof Component text && hasLetters(text)) return true;
+        for (Component child : component.children()) {
+            if (hasLetters(child)) return true;
+        }
+        return false;
     }
 
     /** Subtrees the catalog left untouched still carrying Latin words are gaps; each is logged once. */
@@ -168,8 +233,9 @@ public final class RavengardLocalization {
         if (component instanceof TextComponent text && !(font != null && isSpacingFont(font))
                 && !ILLAGERALT.equals(font)) {
             String content = normalize(text.content());
-            if (content.matches(".*[A-Za-z]{3,}.*") && !INTERNAL_TEXT.contains(content)
-                    && !IDENTIFIER.matcher(content).matches() && REPORTED.add(content)) {
+            if (LATIN_WORD.matcher(content).find() && !INTERNAL_TEXT.contains(content)
+                    && !IDENTIFIER.matcher(content).matches() && !isPlayerName(content)
+                    && REPORTED.size() < REPORT_LIMIT && REPORTED.add(content)) {
                 Logger.info("[i18n-gap] {}", content);
             }
         }
@@ -187,17 +253,19 @@ public final class RavengardLocalization {
         // the rune font is used on purpose for text that must stay unreadable
         if (ILLAGERALT.equals(font)) return component;
         Source source = Source.of(component);
-        if (hasLetters(source.text())) {
+        if (source.matchable() && hasLetters(source.text()) && !isPlayerName(source.text())) {
             Component whole = current.render(source);
-            if (whole != null) return localizeHover(current, source.styled(finish(whole, component, font)));
+            if (whole != null) {
+                Style uniform = source.uniformStyle();
+                Component styled = uniform == null ? whole : whole.applyFallbackStyle(uniform);
+                return localizeHover(current, source.interactive(finish(styled, component.style(), font)));
+            }
         }
         Component result = localizeHover(current, component);
         if (component instanceof TextComponent text && !text.content().isEmpty() && hasLetters(text.content())) {
-            Component leaf = current.render(normalize(text.content()));
-            if (leaf != null) {
-                result = finish(leaf, Component.text(text.content()).style(result.style()), font)
-                        .children(text.children());
-            }
+            String content = normalize(text.content());
+            Component leaf = isPlayerName(content) ? null : current.render(content);
+            if (leaf != null) result = withChildren(finish(leaf, result.style(), font), text.children(), font);
         }
         List<Component> children = result.children();
         if (children.isEmpty()) return result;
@@ -216,24 +284,30 @@ public final class RavengardLocalization {
      * default font, except the pack's spacing fonts: those carry no visible text and the overlay pack
      * gives them advances for every translated character.
      */
-    private static Component finish(Component rendered, Component original, @Nullable Key effectiveFont) {
-        Component styled = rendered.applyFallbackStyle(original.style());
-        if (effectiveFont == null || effectiveFont.equals(DEFAULT_FONT) || isSpacingFont(effectiveFont)) return styled;
-        return withDefaultFont(styled);
+    private static Component finish(Component rendered, Style original, @Nullable Key effectiveFont) {
+        return rendered.applyFallbackStyle(isBitmapFont(effectiveFont) ? original.font(DEFAULT_FONT) : original);
     }
 
     private static boolean isSpacingFont(Key font) {
         return "hypixel_ravengard".equals(font.namespace()) && font.value().startsWith("-");
     }
 
-    private static Component withDefaultFont(Component component) {
-        Component result = component.style().font() == null
-                || !"minecraft".equals(component.style().font().namespace())
-                ? component.font(DEFAULT_FONT) : component;
-        if (result.children().isEmpty()) return result;
-        List<Component> children = new ArrayList<>(result.children().size());
-        for (Component child : result.children()) children.add(withDefaultFont(child));
-        return result.children(children);
+    private static boolean isBitmapFont(@Nullable Key font) {
+        return font != null && !font.equals(DEFAULT_FONT) && !isSpacingFont(font);
+    }
+
+    /**
+     * A translated node keeps the children of the node it replaces, after its own. Where the node's
+     * bitmap font was swapped for the default one, children that inherited it keep it explicitly:
+     * they are usually the pack's icon glyphs.
+     */
+    private static Component withChildren(Component translated, List<Component> children, @Nullable Key font) {
+        if (children.isEmpty()) return translated;
+        List<Component> all = new ArrayList<>(translated.children());
+        for (Component child : children) {
+            all.add(isBitmapFont(font) && child.style().font() == null ? child.font(font) : child);
+        }
+        return translated.children(all);
     }
 
     private static Component localizeHover(Catalog current, Component component) {
@@ -273,6 +347,7 @@ public final class RavengardLocalization {
         private boolean space;
         private boolean mixedInteraction;
         private boolean mixedStyle;
+        private boolean unmatchable;
         private @Nullable ClickEvent click;
         private @Nullable HoverEvent<?> hover;
 
@@ -290,13 +365,21 @@ public final class RavengardLocalization {
             return tokens;
         }
 
+        /** Rune text must stay unreadable and dropped tokens must not vanish, so such trees are only translated leaf by leaf. */
+        boolean matchable() {
+            return !unmatchable;
+        }
+
         private void read(Component component, Style inherited) {
             Style style = component.style().merge(inherited, Style.Merge.Strategy.IF_ABSENT_ON_TARGET);
             if (component instanceof TextComponent content) {
+                if (ILLAGERALT.equals(style.font()) && !content.content().isBlank()) unmatchable = true;
                 append(content.content(), style);
             } else if (tokens.size() < TOKEN_LIMIT) {
                 tokens.add(component.children(List.of()));
                 append(String.valueOf((char) (TOKEN_BASE + tokens.size() - 1)), style);
+            } else {
+                unmatchable = true;
             }
             for (Component child : component.children()) read(child, style);
         }
@@ -326,14 +409,16 @@ public final class RavengardLocalization {
         }
 
         /**
-         * Text written in a single style keeps that style when translated, wherever in the tree it was set:
-         * the pack's shaders place hud text by its exact colour. Otherwise a click or hover shared by
-         * all of the source text still applies to its translation.
+         * Text written in a single style keeps that style when translated, wherever in the tree it was
+         * set and whatever the root says: the pack's shaders place hud text by its exact colour and font.
          */
-        Component styled(Component rendered) {
-            if (runs.isEmpty()) return rendered;
-            if (!mixedStyle) return rendered.applyFallbackStyle(readable(runs.getFirst().style()));
-            if (mixedInteraction || (click == null && hover == null)) return rendered;
+        @Nullable Style uniformStyle() {
+            return runs.isEmpty() || mixedStyle ? null : readable(runs.getFirst().style());
+        }
+
+        /** A click or hover shared by all of the source text still applies to its translation. */
+        Component interactive(Component rendered) {
+            if (runs.isEmpty() || mixedInteraction || (click == null && hover == null)) return rendered;
             return rendered.applyFallbackStyle(Style.style().clickEvent(click).hoverEvent(hover).build());
         }
 
@@ -344,7 +429,8 @@ public final class RavengardLocalization {
             for (Run run : runs) {
                 if (run.end() <= cursor || run.start() >= end) continue;
                 int stop = Math.min(run.end(), end);
-                parts.add(Component.text(text.substring(cursor, stop)).style(run.style()));
+                String part = text.substring(cursor, stop);
+                parts.add(Component.text(part).style(isGlyph(part) ? run.style() : readable(run.style())));
                 cursor = stop;
             }
             if (parts.isEmpty()) return Component.text(text.substring(start, end));
@@ -358,6 +444,14 @@ public final class RavengardLocalization {
                 if (run.start() <= start && end <= run.end()) return readable(run.style());
             }
             return null;
+        }
+
+        /** Icon glyphs live in private-use code points of the pack's bitmap font and only exist there. */
+        private static boolean isGlyph(String part) {
+            return part.codePoints().anyMatch(point -> {
+                int type = Character.getType(point);
+                return type == Character.PRIVATE_USE || type == Character.UNASSIGNED;
+            });
         }
 
         private static Style readable(Style style) {
@@ -387,8 +481,12 @@ public final class RavengardLocalization {
     }
 
     public static final class Catalog {
-        /** {@code {}} / {@code {0}} capture anything; {@code {#}} captures digits only, for compact forms such as {@code 25s}. */
-        private static final Pattern PLACEHOLDER = Pattern.compile("\\{(\\d*|#)(?::[^}]*)?}");
+        /**
+         * {@code {}} / {@code {0}} capture anything and the capture is looked up in the catalog again;
+         * {@code {#}} captures digits only, for compact forms such as {@code 25s}; {@code {=}} captures
+         * text that is passed through untouched, for what players typed.
+         */
+        private static final Pattern PLACEHOLDER = Pattern.compile("\\{(\\d*|#|=)(?::[^}]*)?}");
 
         private final Map<String, String> exact = new HashMap<>();
         private final List<Template> templates = new ArrayList<>();
@@ -430,20 +528,24 @@ public final class RavengardLocalization {
                 exact.put(key, translated);
                 return;
             }
+            int literalLength = PLACEHOLDER.matcher(key).replaceAll("").strip().length();
+            if (literalLength == 0) {
+                Logger.warn("Localization key '{}' has no literal text and would match everything; ignored", english);
+                return;
+            }
             StringBuilder regex = new StringBuilder("^");
+            List<Boolean> verbatim = new ArrayList<>();
             int last = 0;
-            int count = 0;
             placeholders.reset();
             while (placeholders.find()) {
                 regex.append(Pattern.quote(key.substring(last, placeholders.start())))
                         .append("#".equals(placeholders.group(1)) ? "(\\d+)" : "(.+?)");
+                verbatim.add("=".equals(placeholders.group(1)));
                 last = placeholders.end();
-                count++;
             }
             regex.append(Pattern.quote(key.substring(last))).append('$');
-            templates.add(new Template(Pattern.compile(regex.toString(), Pattern.DOTALL), translated, count,
-                    key.substring(0, Math.min(key.length(), firstPlaceholder(key))),
-                    PLACEHOLDER.matcher(key).replaceAll("").length()));
+            templates.add(new Template(Pattern.compile(regex.toString(), Pattern.DOTALL), translated, verbatim,
+                    key.substring(0, Math.min(key.length(), firstPlaceholder(key))), literalLength));
         }
 
         private static int firstPlaceholder(String key) {
@@ -470,7 +572,7 @@ public final class RavengardLocalization {
                 if (!flat.startsWith(template.prefix())) continue;
                 Matcher matcher = template.pattern().matcher(flat);
                 if (!matcher.matches()) continue;
-                Object[] arguments = new Object[template.arguments()];
+                Object[] arguments = new Object[template.verbatim().size()];
                 for (int index = 0; index < arguments.length; index++) {
                     int start = matcher.start(index + 1);
                     int end = matcher.end(index + 1);
@@ -478,7 +580,9 @@ public final class RavengardLocalization {
                     while (end > start && flat.charAt(end - 1) == ' ') end--;
                     String captured = flat.substring(start, end);
                     Component token = token(captured, tokens);
-                    Component nested = token == null && hasLetters(captured) ? render(captured, tokens, null) : null;
+                    boolean lookUp = token == null && !template.verbatim().get(index) && hasLetters(captured)
+                            && !captured.equals(flat) && !isPlayerName(captured);
+                    Component nested = lookUp ? render(captured, tokens, null) : null;
                     if (token != null) {
                         arguments[index] = token;
                     } else if (source == null) {
@@ -495,7 +599,8 @@ public final class RavengardLocalization {
             return null;
         }
 
-        private record Template(Pattern pattern, String translated, int arguments, String prefix, int literalLength) {
+        private record Template(Pattern pattern, String translated, List<Boolean> verbatim, String prefix,
+                                int literalLength) {
         }
     }
 }

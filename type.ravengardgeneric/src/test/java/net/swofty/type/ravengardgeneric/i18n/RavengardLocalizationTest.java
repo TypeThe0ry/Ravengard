@@ -181,7 +181,7 @@ class RavengardLocalizationTest {
     @Test
     void everyShippedTranslationParsesAndUsesNoMoreArgumentsThanItsSource() throws Exception {
         java.io.File directory = new java.io.File("../localization/zh_CN");
-        java.util.regex.Pattern placeholder = java.util.regex.Pattern.compile("\\{(\\d*|#)}");
+        java.util.regex.Pattern placeholder = java.util.regex.Pattern.compile("\\{(\\d*|#|=)}");
         int entries = 0;
         java.util.Map<String, String> owners = new java.util.HashMap<>();
         for (java.io.File file : net.swofty.commons.YamlFileUtils.getYamlFiles(directory)) {
@@ -223,7 +223,7 @@ class RavengardLocalizationTest {
         int bare = 0;
         int highest = 0;
         while (matcher.find()) {
-            if (matcher.group(1).isEmpty() || matcher.group(1).equals("#")) highest = Math.max(highest, ++bare);
+            if (!matcher.group(1).matches("\\d+")) highest = Math.max(highest, ++bare);
             else highest = Math.max(highest, Integer.parseInt(matcher.group(1)) + 1);
         }
         return highest;
@@ -242,6 +242,78 @@ class RavengardLocalizationTest {
         Component word = Component.text("Friends");
         assertSame(word, translate(catalog, word));
         assertNull(catalog.render("Them cats"));
+    }
+
+    @Test
+    void aChatLineRegisteredAsVerbatimIsSentAsTyped() {
+        RavengardLocalization.Catalog catalog = catalog();
+        catalog.put("{} discovered", "发现 {}");
+        RavengardLocalization.install(catalog, "zh_CN", false);
+        Component line = Component.text("Alice: ").append(Component.text("Fight"));
+        Component other = Component.text("Bob: ").append(Component.text("Fight"));
+
+        RavengardLocalization.verbatim(line);
+
+        var translator = net.minestom.server.adventure.MinestomAdventure.COMPONENT_TRANSLATOR;
+        assertEquals("Alice: Fight", RavengardLocalization.flatten(translator.apply(line, java.util.Locale.CHINA)));
+        assertEquals("Bob: 战斗", RavengardLocalization.flatten(translator.apply(other, java.util.Locale.CHINA)));
+    }
+
+    @Test
+    void playerNamesThatSpellACatalogEntryAreLeftAlone() {
+        RavengardLocalization.Catalog catalog = catalog();
+        catalog.put("Hunter", "猎人");
+        RavengardLocalization.playerNames("Hunter"::equals);
+        try {
+            Component kill = Text.of("{} <7>was defeated by <f>{}<7>!", "Hunter", "Zombie Knight").asComponent();
+            Component tabEntry = Component.text("Hunter", NamedTextColor.GRAY);
+
+            assertEquals("Hunter 被 僵尸骑士 击败！", RavengardLocalization.flatten(translate(catalog, kill)));
+            assertSame(tabEntry, translate(catalog, tabEntry));
+        } finally {
+            RavengardLocalization.playerNames(_ -> false);
+        }
+        assertEquals("猎人", RavengardLocalization.flatten(translate(catalog, Component.text("Hunter", NamedTextColor.RED))));
+    }
+
+    @Test
+    void verbatimPlaceholdersPassTypedTextThroughUntranslated() {
+        RavengardLocalization.Catalog catalog = catalog();
+        catalog.put("<9>Party <8>> {}<f>: {=}", "<9>队伍 <8>> {}<f>: {}");
+
+        Component chat = Text.of("<9>Party <8>> {}<f>: {}", "Alice", "Fight").asComponent();
+
+        assertEquals("队伍 > Alice: Fight", RavengardLocalization.flatten(translate(catalog, chat)));
+    }
+
+    @Test
+    void aTranslatedNodeKeepsItsOwnPiecesAndTheChildrenItReplaced() {
+        RavengardLocalization.Catalog catalog = catalog();
+        Key bitmap = Key.key("hypixel_ravengard", "ravengard");
+        Component icon = Component.text("\uE012");
+        Component node = Component.text("You used Med Kit!").font(bitmap).append(icon);
+
+        Component translated = translate(catalog, node);
+
+        assertEquals("你使用了 医疗包！\uE012", RavengardLocalization.flatten(translated));
+        assertEquals(Key.key("minecraft", "default"), translated.style().font());
+        assertEquals(bitmap, translated.children().getLast().style().font());
+    }
+
+    @Test
+    void aKeyWithoutLiteralTextIsRejectedInsteadOfMatchingEverything() {
+        RavengardLocalization.Catalog catalog = new RavengardLocalization.Catalog();
+        catalog.put("<e>{}", "<6>{}");
+
+        assertEquals(0, catalog.size());
+    }
+
+    @Test
+    void glyphOnlyLinesAreNeitherTranslatedNorCached() {
+        RavengardLocalization.Catalog catalog = catalog();
+        Component bar = Component.text("\uE100\uE101 160/160").font(Key.key("hypixel_ravengard", "ravengard"));
+
+        assertSame(bar, translate(catalog, bar));
     }
 
     @Test

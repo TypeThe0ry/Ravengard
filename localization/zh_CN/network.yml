@@ -65,7 +65,7 @@ entries:
   "MODERATOR": "管理员"
   "LEADER": "队长"
   "{} <e>has disbanded the party!": "{} <e>解散了队伍！"
-  "<9>Party <8>> {}<f>: {}": "<9>队伍 <8>> {}<f>: {}"
+  "<9>Party <8>> {}<f>: {=}": "<9>队伍 <8>> {}<f>: {}"
   "<7>Warping party...": "<7>正在传送队伍……"
   "<e>Party {}, {}<e>, summoned you to their server.": "<e>队伍{} {}<e> 把你召唤到了其所在服务器。"
   "<c>Couldn't find a proxy for {}!": "<c>找不到 {} 所在的代理！"
@@ -175,7 +175,7 @@ entries:
   "<c>Unknown command. Use /{0} for help.": "<c>未知命令。使用 /{0} 查看帮助。"
 
   # ---- 私聊 / 通用 ----
-  "<d>From {0}<7>: {1}": "<d>来自 {0}<7>: {1}"
+  "<d>From {}<7>: {=}": "<d>来自 {}<7>: {}"
   "<c>Can't find a player by the name of '{0}'": "<c>找不到名为“{0}”的玩家"
   "<c>The player you tried to message, {0}, is not online.": "<c>你想私聊的玩家 {0} 不在线。"
   "<c>Could not find player: {0}": "<c>找不到玩家：{0}"
