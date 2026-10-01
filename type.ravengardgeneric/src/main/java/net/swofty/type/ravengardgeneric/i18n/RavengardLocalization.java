@@ -247,6 +247,11 @@ public final class RavengardLocalization {
         }
     }
 
+    /** Captured arguments are often command names, paths or ids; only capitalised words and phrases are worth reporting. */
+    private static boolean looksLikeProse(String captured) {
+        return Character.isUpperCase(captured.charAt(0)) && captured.indexOf('/') < 0;
+    }
+
     private static void reportHover(Component component) {
         HoverEvent<?> hover = component.hoverEvent();
         if (hover != null && hover.value() instanceof Component text) reportLeaves(text, null);
@@ -587,7 +592,7 @@ public final class RavengardLocalization {
                     boolean lookUp = token == null && !template.verbatim().get(index) && hasLetters(captured)
                             && !captured.equals(flat) && !isPlayerName(captured);
                     Component nested = lookUp ? render(captured, tokens, null) : null;
-                    if (lookUp && nested == null) reportGap(captured);
+                    if (lookUp && nested == null && looksLikeProse(captured)) reportGap(captured);
                     if (token != null) {
                         arguments[index] = token;
                     } else if (source == null) {

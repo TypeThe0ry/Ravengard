@@ -48,7 +48,11 @@ public class MessageCommand extends HypixelCommand {
 
             String joinedMessage = String.join(" ", message);
             player.sendMessage(Text.key("commands.message.outgoing", targetName, joinedMessage));
-            target.sendMessage(Text.key("commands.message.incoming", ourName, joinedMessage));
+            // the proxy relays this line and has no i18n bundles, so the key is resolved here
+            java.util.Locale locale = player.getLocale() != null ? player.getLocale()
+                    : net.minestom.server.adventure.MinestomAdventure.getDefaultLocale();
+            target.sendMessage(net.minestom.server.adventure.MinestomAdventure.COMPONENT_TRANSLATOR.apply(
+                    Text.key("commands.message.incoming", ourName, joinedMessage).asComponent(), locale));
         }, playerArgument, messageArgument);
     }
 }

@@ -178,6 +178,7 @@ entries:
 
   # ---- 私聊 / 通用 ----
   "<d>From {}<7>: {=}": "<d>来自 {}<7>: {}"
+  "<d>To {}<7>: {=}": "<d>发给 {}<7>: {}"
   "<c>Can't find a player by the name of '{0}'": "<c>找不到名为“{0}”的玩家"
   "<c>The player you tried to message, {0}, is not online.": "<c>你想私聊的玩家 {0} 不在线。"
   "<c>Could not find player: {0}": "<c>找不到玩家：{0}"
