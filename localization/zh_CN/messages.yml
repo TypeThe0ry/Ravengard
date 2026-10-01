@@ -69,9 +69,7 @@ entries:
   "Items": "物品"
   "<a>Gave you <f>{}<a>.": "<a>已给你 <f>{}<a>。"
   "<a>Previous Page": "<a>上一页"
-  "Previous Page": "上一页"
   "<a>Next Page": "<a>下一页"
-  "Next Page": "下一页"
   "<e>Page {} of {}": "<e>第 {} 页，共 {} 页"
   "<7>Browse the previous page of items.": "<7>浏览上一页物品。"
   "<e>Click to go back to the previous page!": "<e>点击返回上一页！"
@@ -237,3 +235,9 @@ entries:
   "Transfer failed: {}": "传送失败：{}"
   "Could not connect to {}": "无法连接到 {}"
   "<c>No capture named <f>{}<c>. Available: {}": "<c>没有名为 <f>{}<c> 的捕获。可用：{}"
+
+  # ---- 排队失败原因（编排器 / 地牢服返回）----
+  "Dungeon server returned no response": "地牢服务器没有响应"
+  "No response from dungeon server": "地牢服务器没有响应"
+  "Interrupted while choosing game": "选择对局时被中断"
+  "Failed to instantiate dungeon: {}": "创建地牢失败：{}"
