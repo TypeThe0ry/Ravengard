@@ -20,6 +20,10 @@ entries:
   "<a>Successfully set rank to .": "<a>已成功设置会员等级。"
   "<a>Successfully set rank to \\<rank>.": "<a>已成功设置会员等级。"
   "<a>Set your gamemode to <e>{}<a>.": "<a>已将你的游戏模式设为 <e>{}<a>。"
+  "SURVIVAL": "生存"
+  "CREATIVE": "创造"
+  "ADVENTURE": "冒险"
+  "SPECTATOR": "旁观"
   "<c>Couldn't find a player by the name of <e>{}<c>.": "<c>找不到名为 <e>{}<c> 的玩家。"
   "<c>You need STAFF to do this command": "<c>需要 STAFF 权限才能使用此命令"
 
