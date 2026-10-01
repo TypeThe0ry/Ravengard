@@ -57,8 +57,8 @@ entries:
   "I'm doing my part!": "我在尽我的一份力！"
 
   # ---- 鲍德温（港务长）----
-  "Welcome to §5Ravenport§f! It's always nice to see a new adventurer.": "欢迎来到 <5>渡鸦港<f>！很高兴见到新的冒险者。"
-  "Go ahead and visit the §9Raven's Nest§f. It's located §bnorth §fof here. You can't miss it!": "去 <9>渡鸦巢<f> 看看吧。就在这里的<b>北边<f>，不会错过的！"
+  "Welcome to §5Ravenport§f! It's always nice to see a new adventurer.": "欢迎来到<5>渡鸦港<f>！很高兴见到新的冒险者。"
+  "Go ahead and visit the §9Raven's Nest§f. It's located §bnorth §fof here. You can't miss it!": "去<9>渡鸦巢<f>看看吧。就在这里的<b>北边<f>，不会错过的！"
   "Best of luck!": "祝你好运！"
 
   # ---- 渡鸦港卫兵 ----
@@ -67,8 +67,8 @@ entries:
   "Most of the time.": "大多数时候是这样。"
 
   # ---- 迪亚戈（船长）----
-  "We've arrived at the coastal city of §eRavenport§f!": "我们到达海滨城市 <e>渡鸦港<f> 了！"
-  "You should go chat to the §6Harbor Master§f. He's located near the docks.": "你应该去找 <6>港务长<f> 聊聊。他就在码头附近。"
+  "We've arrived at the coastal city of §eRavenport§f!": "我们到达海滨城市<e>渡鸦港<f>了！"
+  "You should go chat to the §6Harbor Master§f. He's located near the docks.": "你应该去找<6>港务长<f>聊聊。他就在码头附近。"
   "Best of luck, adventurer!": "祝你好运，冒险者！"
   "We've almost arrived, adventurer!": "我们快到了，冒险者！"
   "Ravengard is in dire need of brave fighters.": "天穹余烬急需勇敢的战士。"
@@ -85,4 +85,4 @@ entries:
   "Hello!": "你好！"
 
   # ---- 永夜号公告板（整块文字）----
-  "Welcome to Ravengard!\nStill under development. Issues may arise.\n\n> PvPvE extraction where survival means everything!\n> Enter the dungeon and escape with loot.\n> Avoid the death wall as it surrounds a random location.\n> If you die you will lose everything you are carrying.\n> Store items in your Lock Box.\n> Defeat enemies to Level Up and unlock abilities!\n\nPlay test end date: August 31st\nHave fun and good luck!\n\nCLICK HERE to read more!\n": "<6>欢迎来到 <l>天穹余烬</l>！\n<8><o>仍在开发中，可能会出现问题。</o>\n\n<6><l>> </l><a>PvPvE <7>撤离玩法，<2>生存<7>就是一切！\n<6><l>> </l><7>进入<c>地牢<7>，带着<6>战利品<3>撤离<7>。\n<6><l>> </l><7>躲开<5>死亡之墙<7>，它会向随机地点收缩。\n<6><l>> </l><7>如果你<c>死亡<7>，将失去身上携带的<4>一切<7>。\n<6><l>> </l><7>把物品存进你的<d>保险箱<7>。\n<6><l>> </l><c>击败<7>敌人以<6>升级<7>并解锁技能！\n\n<7>测试结束日期：<6>8 月 31 日\n<7>玩得开心，祝你好运！\n\n<e><l><n>点击这里</n></l> 了解更多！\n"
+  "Welcome to Ravengard!\nStill under development. Issues may arise.\n\n> PvPvE extraction where survival means everything!\n> Enter the dungeon and escape with loot.\n> Avoid the death wall as it surrounds a random location.\n> If you die you will lose everything you are carrying.\n> Store items in your Lock Box.\n> Defeat enemies to Level Up and unlock abilities!\n\nPlay test end date: August 31st\nHave fun and good luck!\n\nCLICK HERE to read more!\n": "<6>欢迎来到<l>天穹余烬</l>！\n<8><o>仍在开发中，可能会出现问题。</o>\n\n<6><l>> </l><a>PvPvE <7>撤离玩法，<2>生存<7>就是一切！\n<6><l>> </l><7>进入<c>地牢<7>，带着<6>战利品<3>撤离<7>。\n<6><l>> </l><7>躲开<5>死亡之墙<7>，它会向随机地点收缩。\n<6><l>> </l><7>如果你<c>死亡<7>，将失去身上携带的<4>一切<7>。\n<6><l>> </l><7>把物品存进你的<d>保险箱<7>。\n<6><l>> </l><c>击败<7>敌人以<6>升级<7>并解锁技能！\n\n<7>测试结束日期：<6>8 月 31 日\n<7>玩得开心，祝你好运！\n\n<e><l><n>点击这里</n></l>了解更多！\n"

@@ -202,7 +202,7 @@ entries:
   "<c>No captures found in {}.": "<c>在 {} 中没有找到录制片段。"
 
   # ---- 菜单物品 / 侧边栏标题 / 资源包提示 ----
-  "<9>Ravengard Menu <7>(Right Click)": "<9>天穹余烬菜单 <7>（右键）"
+  "<9>Ravengard Menu <7>(Right Click)": "<9>天穹余烬菜单<7>（右键）"
   "<7>View your lock box, manage skills,": "<7>查看保险箱、管理技能、"
   "<7>craft, and more!": "<7>合成等更多功能！"
   "PROTOTYPE": "原型测试"
