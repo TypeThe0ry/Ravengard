@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameManager {
@@ -22,7 +24,7 @@ public class GameManager {
     private static final int PING_DEADLINE_MILLIS = 3000;
     public static final int MISSED_PINGS_BEFORE_REMOVAL = 5;
     @Getter
-    private static Map<ServerType, ArrayList<GameServer>> servers = new HashMap<>();
+    private static final Map<ServerType, List<GameServer>> servers = new ConcurrentHashMap<>();
     private static final ServerPingTracker pingTracker = new ServerPingTracker(MISSED_PINGS_BEFORE_REMOVAL);
 
     public static GameServer addServer(ServerType type, UUID serverID, String host, int port, int maxPlayers) {
@@ -44,8 +46,7 @@ public class GameManager {
                 rootName + displayName, shortenedRootName + displayName,
                 serverID, registeredServer, maxPlayers
         );
-        if (!servers.containsKey(type)) servers.put(type, new ArrayList<>(List.of(server)));
-        else servers.get(type).add(server);
+        servers.computeIfAbsent(type, _ -> new CopyOnWriteArrayList<>()).add(server);
 
         return server;
     }
@@ -55,7 +56,7 @@ public class GameManager {
     }
 
     public static @Nullable GameServer getFromRegisteredServer(RegisteredServer registeredServer) {
-        for (ArrayList<GameServer> gameServers : servers.values()) {
+        for (List<GameServer> gameServers : servers.values()) {
             for (GameServer gameServer : gameServers) {
                 if (gameServer.registeredServer().equals(registeredServer)) {
                     return gameServer;
@@ -92,7 +93,7 @@ public class GameManager {
     }
 
     public static GameServer getFromUUID(UUID uuid) {
-        for (ArrayList<GameServer> gameServers : servers.values()) {
+        for (List<GameServer> gameServers : servers.values()) {
             for (GameServer gameServer : gameServers) {
                 if (gameServer.internalID().equals(uuid)) return gameServer;
             }
@@ -137,7 +138,7 @@ public class GameManager {
                             startTime,
                             System.currentTimeMillis() - startTime
                         );
-                        ArrayList<GameServer> currentServers = servers.get(serverType);
+                        List<GameServer> currentServers = servers.get(serverType);
                         if (currentServers == null || !currentServers.remove(registeredServer)) return;
 
                         TestFlowManager.handleServerDisconnect(registeredServer.internalID);
@@ -149,7 +150,7 @@ public class GameManager {
 
     private static int getNextAvailableDisplayName() {
         Set<Integer> used = new HashSet<>();
-        for (ArrayList<GameServer> list : servers.values()) {
+        for (List<GameServer> list : servers.values()) {
             for (GameServer gs : list) {
                 String digits = gs.displayName().replaceAll("[^0-9]", "");
                 if (!digits.isEmpty()) {
@@ -168,7 +169,7 @@ public class GameManager {
 
     private static int getNextAvailablePort() {
         if (servers.isEmpty()) return 20000;
-        if (servers.values().stream().allMatch(ArrayList::isEmpty)) return 20000;
+        if (servers.values().stream().allMatch(List::isEmpty)) return 20000;
 
         ArrayList<GameServer> gameServers = new ArrayList<>();
         servers.values().forEach(gameServers::addAll);

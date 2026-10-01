@@ -42,7 +42,7 @@ public class IslandCheck extends BalanceConfiguration {
     private static GameManager.GameServer findServerWithIsland(UUID islandUUID) {
         Map<GameManager.GameServer, CompletableFuture<DoesServerHaveIslandProtocol.Response>> responses = new LinkedHashMap<>();
 
-        for (Map.Entry<ServerType, ArrayList<GameManager.GameServer>> entry : GameManager.getServers().entrySet()) {
+        for (Map.Entry<ServerType, List<GameManager.GameServer>> entry : GameManager.getServers().entrySet()) {
             if (entry.getKey() != ServerType.SKYBLOCK_ISLAND) continue;
 
             for (GameManager.GameServer gameServer : new ArrayList<>(entry.getValue())) {

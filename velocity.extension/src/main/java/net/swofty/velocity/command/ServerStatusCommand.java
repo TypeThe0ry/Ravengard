@@ -15,13 +15,13 @@ public class ServerStatusCommand implements SimpleCommand {
     public void execute(Invocation invocation) {
         invocation.source().sendMessage(Text.of("***** Server Status *****"));
 
-        Map<ServerType, ArrayList<GameServer>> serverMap = GameManager.getServers();
+        Map<ServerType, List<GameServer>> serverMap = GameManager.getServers();
         if (serverMap.isEmpty()) {
             invocation.source().sendMessage(Text.of("No servers are currently registered."));
             return;
         }
 
-        for (Map.Entry<ServerType, ArrayList<GameServer>> entry : serverMap.entrySet()) {
+        for (Map.Entry<ServerType, List<GameServer>> entry : serverMap.entrySet()) {
             ServerType type = entry.getKey();
             List<GameServer> gameServers = entry.getValue();
 
