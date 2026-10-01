@@ -3,6 +3,8 @@ package net.swofty.type.ravengardgeneric.i18n;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.Style;
 import net.minestom.server.adventure.MinestomAdventure;
 import net.swofty.commons.YamlFileUtils;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.regex.Matcher;
@@ -150,6 +153,7 @@ public final class RavengardLocalization {
             reportLeaves(original, font);
             return;
         }
+        if (original.hoverEvent() == translated.hoverEvent()) reportHover(original);
         List<Component> before = original.children();
         List<Component> after = translated.children();
         if (before.size() != after.size()) return;
@@ -167,24 +171,29 @@ public final class RavengardLocalization {
                 Logger.info("[i18n-gap] {}", content);
             }
         }
+        reportHover(component);
         for (Component child : component.children()) reportLeaves(child, font);
+    }
+
+    private static void reportHover(Component component) {
+        HoverEvent<?> hover = component.hoverEvent();
+        if (hover != null && hover.value() instanceof Component text) reportLeaves(text, null);
     }
 
     private static Component translate(Catalog current, Component component, @Nullable Key inheritedFont) {
         Key font = component.style().font() != null ? component.style().font() : inheritedFont;
         // the rune font is used on purpose for text that must stay unreadable
         if (ILLAGERALT.equals(font)) return component;
-        List<Component> tokens = new ArrayList<>();
-        String flat = normalize(flatten(component, tokens));
-        if (hasLetters(flat)) {
-            Component whole = current.render(flat, tokens);
-            if (whole != null) return finish(whole, component, font);
+        Source source = Source.of(component);
+        if (hasLetters(source.text())) {
+            Component whole = current.render(source);
+            if (whole != null) return localizeHover(current, source.interactive(finish(whole, component, font)));
         }
-        Component result = component;
+        Component result = localizeHover(current, component);
         if (component instanceof TextComponent text && !text.content().isEmpty() && hasLetters(text.content())) {
             Component leaf = current.render(normalize(text.content()));
             if (leaf != null) {
-                result = finish(leaf, Component.text(text.content()).style(text.style()), font)
+                result = finish(leaf, Component.text(text.content()).style(result.style()), font)
                         .children(text.children());
             }
         }
@@ -225,27 +234,129 @@ public final class RavengardLocalization {
         return result.children(children);
     }
 
-    static String flatten(Component component) {
-        return flatten(component, new ArrayList<>());
+    private static Component localizeHover(Catalog current, Component component) {
+        HoverEvent<?> hover = component.hoverEvent();
+        if (hover == null || !(hover.value() instanceof Component text)) return component;
+        Component translated = translate(current, text, null);
+        return translated == text ? component : component.hoverEvent(HoverEvent.showText(translated));
     }
 
-    /** Leaves that are not plain text (keybinds, translatables) become private-use tokens so a template can capture them whole. */
-    static String flatten(Component component, List<Component> tokens) {
+    static String flatten(Component component) {
         StringBuilder builder = new StringBuilder();
-        flatten(component, builder, tokens);
+        flatten(component, builder);
         return builder.toString();
     }
 
-    private static final char TOKEN_BASE = '';
+    private static final char TOKEN_BASE = '\uF8F0';
+    private static final int TOKEN_LIMIT = 16;
 
-    private static void flatten(Component component, StringBuilder builder, List<Component> tokens) {
+    private static void flatten(Component component, StringBuilder builder) {
         if (component instanceof TextComponent text) {
             builder.append(text.content());
-        } else if (tokens.size() < 16) {
-            tokens.add(component.children(List.of()));
-            builder.append((char) (TOKEN_BASE + tokens.size() - 1));
+        } else {
+            builder.append(TOKEN_BASE);
         }
-        for (Component child : component.children()) flatten(child, builder, tokens);
+        for (Component child : component.children()) flatten(child, builder);
+    }
+
+    /**
+     * The visible text of a component tree, whitespace-normalized like a catalog key, together with
+     * the style each stretch of it was written in. Leaves that are not plain text (keybinds,
+     * translatables) become private-use tokens so a template can capture them whole.
+     */
+    static final class Source {
+        private final StringBuilder text = new StringBuilder();
+        private final List<Run> runs = new ArrayList<>();
+        private final List<Component> tokens = new ArrayList<>();
+        private boolean space;
+        private boolean mixedInteraction;
+        private @Nullable ClickEvent click;
+        private @Nullable HoverEvent<?> hover;
+
+        static Source of(Component component) {
+            Source source = new Source();
+            source.read(component, Style.empty());
+            return source;
+        }
+
+        String text() {
+            return text.toString();
+        }
+
+        List<Component> tokens() {
+            return tokens;
+        }
+
+        private void read(Component component, Style inherited) {
+            Style style = component.style().merge(inherited, Style.Merge.Strategy.IF_ABSENT_ON_TARGET);
+            if (component instanceof TextComponent content) {
+                append(content.content(), style);
+            } else if (tokens.size() < TOKEN_LIMIT) {
+                tokens.add(component.children(List.of()));
+                append(String.valueOf((char) (TOKEN_BASE + tokens.size() - 1)), style);
+            }
+            for (Component child : component.children()) read(child, style);
+        }
+
+        private void append(String content, Style style) {
+            int start = -1;
+            for (int index = 0; index < content.length(); index++) {
+                char current = content.charAt(index);
+                if (Character.isWhitespace(current)) {
+                    space = true;
+                    continue;
+                }
+                if (space && !text.isEmpty()) text.append(' ');
+                space = false;
+                if (start < 0) start = text.length();
+                text.append(current);
+            }
+            if (start < 0) return;
+            if (runs.isEmpty()) {
+                click = style.clickEvent();
+                hover = style.hoverEvent();
+            } else if (!Objects.equals(click, style.clickEvent()) || !Objects.equals(hover, style.hoverEvent())) {
+                mixedInteraction = true;
+            }
+            runs.add(new Run(start, text.length(), style));
+        }
+
+        /** A click or hover shared by all of the source text still applies to its translation. */
+        Component interactive(Component rendered) {
+            if (mixedInteraction || (click == null && hover == null)) return rendered;
+            return rendered.applyFallbackStyle(Style.style().clickEvent(click).hoverEvent(hover).build());
+        }
+
+        /** The captured stretch as it was styled in the source, so names keep their colours inside a translated sentence. */
+        Component slice(int start, int end) {
+            List<Component> parts = new ArrayList<>();
+            int cursor = start;
+            for (Run run : runs) {
+                if (run.end() <= cursor || run.start() >= end) continue;
+                int stop = Math.min(run.end(), end);
+                parts.add(Component.text(text.substring(cursor, stop)).style(run.style()));
+                cursor = stop;
+            }
+            if (parts.isEmpty()) return Component.text(text.substring(start, end));
+            if (cursor < end) parts.add(Component.text(text.substring(cursor, end)));
+            return parts.size() == 1 ? parts.getFirst() : Component.textOfChildren(parts.toArray(Component[]::new));
+        }
+
+        /** The style a translated argument falls back to when the whole capture was written in one style. */
+        @Nullable Style styleOf(int start, int end) {
+            for (Run run : runs) {
+                if (run.start() <= start && end <= run.end()) return readable(run.style());
+            }
+            return null;
+        }
+
+        private static Style readable(Style style) {
+            Key font = style.font();
+            return font == null || font.equals(DEFAULT_FONT) || isSpacingFont(font) ? style : style.font(DEFAULT_FONT);
+        }
+
+        private record Run(int start, int end, Style style) {
+        }
     }
 
     static @Nullable Component token(String captured, List<Component> tokens) {
@@ -333,10 +444,14 @@ public final class RavengardLocalization {
         }
 
         @Nullable Component render(String flat) {
-            return render(flat, List.of());
+            return render(flat, List.of(), null);
         }
 
-        @Nullable Component render(String flat, List<Component> tokens) {
+        @Nullable Component render(Source source) {
+            return render(source.text(), source.tokens(), source);
+        }
+
+        private @Nullable Component render(String flat, List<Component> tokens, @Nullable Source source) {
             String direct = exact.get(flat);
             if (direct != null) return TextParser.parseLenient(direct);
             for (Template template : templates) {
@@ -345,10 +460,23 @@ public final class RavengardLocalization {
                 if (!matcher.matches()) continue;
                 Object[] arguments = new Object[template.arguments()];
                 for (int index = 0; index < arguments.length; index++) {
-                    String captured = matcher.group(index + 1).trim();
+                    int start = matcher.start(index + 1);
+                    int end = matcher.end(index + 1);
+                    while (start < end && flat.charAt(start) == ' ') start++;
+                    while (end > start && flat.charAt(end - 1) == ' ') end--;
+                    String captured = flat.substring(start, end);
                     Component token = token(captured, tokens);
-                    Component nested = token == null && hasLetters(captured) ? render(captured, tokens) : null;
-                    arguments[index] = token != null ? token : nested != null ? nested : captured;
+                    Component nested = token == null && hasLetters(captured) ? render(captured, tokens, null) : null;
+                    if (token != null) {
+                        arguments[index] = token;
+                    } else if (source == null) {
+                        arguments[index] = nested != null ? nested : captured;
+                    } else if (nested != null) {
+                        Style style = source.styleOf(start, end);
+                        arguments[index] = style == null ? nested : nested.applyFallbackStyle(style);
+                    } else {
+                        arguments[index] = source.slice(start, end);
+                    }
                 }
                 return TextParser.parseLenient(template.translated(), arguments);
             }

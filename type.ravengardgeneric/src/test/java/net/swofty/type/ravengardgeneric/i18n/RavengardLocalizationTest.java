@@ -117,6 +117,122 @@ class RavengardLocalizationTest {
         assertEquals(1, countKeybinds(translated));
     }
 
+    @Test
+    void capturedNamesKeepTheColourTheyWereSentIn() {
+        RavengardLocalization.Catalog catalog = catalog();
+        catalog.put("{} <e>has left the party.", "{} <e>离开了队伍。");
+        Component name = Component.text("[MVP] Alice", NamedTextColor.AQUA);
+        Component message = Text.of("{} <e>has left the party.", name).asComponent();
+
+        Component translated = translate(catalog, message);
+
+        assertEquals("[MVP] Alice 离开了队伍。", RavengardLocalization.flatten(translated));
+        assertEquals(NamedTextColor.AQUA, colourOf(translated, "[MVP] Alice", null));
+    }
+
+    @Test
+    void aClickSharedByTheWholeSentenceSurvivesTranslation() {
+        RavengardLocalization.Catalog catalog = catalog();
+        catalog.put("<e>You have <c>60 <e>seconds to accept. <6>Click here to join!",
+                "<e>你有 <c>60 <e>秒时间接受。<6>点击这里加入！");
+        catalog.put("<e>Click here to join!", "<e>点击这里加入！");
+        Component message = Text.of("""
+                <hover:'<e>Click here to join!'><click:run:'/p accept {}'>\
+                <e>You have <c>60 <e>seconds to accept. <6>Click here to join!</click></hover>""", "Alice").asComponent();
+
+        Component translated = translate(catalog, message);
+
+        assertEquals("你有 60 秒时间接受。点击这里加入！", RavengardLocalization.flatten(translated));
+        assertEquals(net.kyori.adventure.text.event.ClickEvent.runCommand("/p accept Alice"), translated.clickEvent());
+        assertEquals("点击这里加入！",
+                RavengardLocalization.flatten((Component) translated.hoverEvent().value()));
+    }
+
+    @Test
+    void differentClicksInOneLineAreTranslatedPieceByPiece() {
+        RavengardLocalization.Catalog catalog = catalog();
+        catalog.put("[ACCEPT]", "[接受]");
+        catalog.put("[DENY]", "[拒绝]");
+        Component accept = Component.text(" [ACCEPT]", NamedTextColor.GREEN)
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/f accept Alice"));
+        Component deny = Component.text(" [DENY]", NamedTextColor.RED)
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/f deny Alice"));
+
+        Component translated = translate(catalog, Component.empty().append(accept).append(deny));
+
+        assertEquals("[接受][拒绝]", RavengardLocalization.flatten(translated));
+        assertEquals(accept.clickEvent(), translated.children().get(0).clickEvent());
+        assertEquals(deny.clickEvent(), translated.children().get(1).clickEvent());
+    }
+
+    @Test
+    void unresolvedContextPlaceholdersAreCapturedSoHelpLinesStillTranslate() {
+        RavengardLocalization.Catalog catalog = catalog();
+        catalog.put("<e>/p invite {} <8>- <7>Invite another player to your party",
+                "<e>/p invite \\<玩家> <8>- <7>邀请玩家加入你的队伍");
+        Component line = Component.text("/p invite ", NamedTextColor.YELLOW)
+                .append(Component.translatable("hsb.ctx.player"))
+                .append(Component.text(" - ", NamedTextColor.DARK_GRAY))
+                .append(Component.text("Invite another player to your party", NamedTextColor.GRAY));
+
+        assertEquals("/p invite <玩家> - 邀请玩家加入你的队伍", RavengardLocalization.flatten(translate(catalog, line)));
+    }
+
+    @Test
+    void everyShippedTranslationParsesAndUsesNoMoreArgumentsThanItsSource() throws Exception {
+        java.io.File directory = new java.io.File("../localization/zh_CN");
+        java.util.regex.Pattern placeholder = java.util.regex.Pattern.compile("\\{(\\d*)}");
+        int entries = 0;
+        for (java.io.File file : net.swofty.commons.YamlFileUtils.getYamlFiles(directory)) {
+            Object loaded = net.swofty.commons.YamlFileUtils.loadYaml(file).get("entries");
+            for (java.util.Map.Entry<?, ?> entry : ((java.util.Map<?, ?>) loaded).entrySet()) {
+                String key = RavengardLocalization.plain(String.valueOf(entry.getKey()));
+                String value = String.valueOf(entry.getValue());
+                int available = count(placeholder, key);
+                int needed = highest(placeholder, RavengardLocalization.plain(value));
+                assertTrue(needed <= available, file.getName() + ": " + entry.getKey());
+                Object[] arguments = new Object[available];
+                java.util.Arrays.fill(arguments, "x");
+                net.swofty.commons.text.TextParser.parseLenient(value, arguments);
+                entries++;
+            }
+        }
+        assertTrue(entries > 500, "catalog entries: " + entries);
+        assertTrue(RavengardLocalization.Catalog.load(directory).size() > 500);
+    }
+
+    private static int count(java.util.regex.Pattern placeholder, String text) {
+        java.util.regex.Matcher matcher = placeholder.matcher(text);
+        int count = 0;
+        while (matcher.find()) count++;
+        return count;
+    }
+
+    /** Positional placeholders name an index; bare ones are consumed in order. */
+    private static int highest(java.util.regex.Pattern placeholder, String text) {
+        java.util.regex.Matcher matcher = placeholder.matcher(text);
+        int bare = 0;
+        int highest = 0;
+        while (matcher.find()) {
+            if (matcher.group(1).isEmpty()) highest = Math.max(highest, ++bare);
+            else highest = Math.max(highest, Integer.parseInt(matcher.group(1)) + 1);
+        }
+        return highest;
+    }
+
+    private static net.kyori.adventure.text.format.TextColor colourOf(
+            Component component, String content, net.kyori.adventure.text.format.TextColor inherited) {
+        net.kyori.adventure.text.format.TextColor colour = component.color() != null ? component.color() : inherited;
+        if (component instanceof net.kyori.adventure.text.TextComponent text && text.content().equals(content)) {
+            return colour;
+        }
+        for (Component child : component.children()) {
+            net.kyori.adventure.text.format.TextColor found = colourOf(child, content, colour);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
     private static int countKeybinds(Component component) {
         int count = component instanceof net.kyori.adventure.text.KeybindComponent ? 1 : 0;
         for (Component child : component.children()) count += countKeybinds(child);
