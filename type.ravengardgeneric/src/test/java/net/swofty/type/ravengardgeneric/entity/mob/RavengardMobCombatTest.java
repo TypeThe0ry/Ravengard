@@ -577,6 +577,43 @@ class RavengardMobCombatTest {
     }
 
     @Test
+    void mobReachesATargetAcrossPlantsAndSlabs() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.0856d);
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        for (int z = 7; z <= 9; z++) {
+            instance.setBlock(5, 1, z, Block.DEAD_TUBE_CORAL_FAN);
+            for (int x = 6; x <= 11; x++) instance.setBlock(x, 1, z, Block.POLISHED_ANDESITE_SLAB);
+        }
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "target"));
+        player.setInstance(instance, new net.minestom.server.coordinate.Pos(9.5, 1.5, 8.5)).join();
+        player.getAttribute(net.minestom.server.entity.attribute.Attribute.MAX_HEALTH).setBaseValue(1000);
+        player.setHealth(1000);
+        RavengardMob mob = new RavengardMob(clip,
+                new net.minestom.server.coordinate.Pos(1.5, 1, 8.5));
+        mob.spawnMob(instance);
+
+        double closest = Double.MAX_VALUE;
+        long time = System.currentTimeMillis();
+        for (int tick = 0; tick < 300; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            mob.tick(now);
+            mob.tickRig();
+            closest = Math.min(closest, mob.getPosition().distance(player.getPosition()));
+        }
+
+        assertTrue(closest < 1.8, "closest=" + closest + " mob=" + mob.getPosition());
+
+        mob.removeRig();
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
     void aWokenZombieKnightDoesNotLieBackDownBetweenAttacks() throws Exception {
         RavengardMobClip clip = clip();
         set(clip, "name", "zombie_knight");

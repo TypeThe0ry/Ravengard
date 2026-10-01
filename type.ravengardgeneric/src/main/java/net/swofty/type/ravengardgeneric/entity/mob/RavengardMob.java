@@ -203,6 +203,11 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             setRemovalAnimationDelay(Math.max(getRemovalAnimationDelay(), death.frames().size() * 50 + 100));
         }
         if (clip.walkSpeed() > 0) {
+            // Minestom's follower only counts a node as reached at the node's own height and cannot
+            // step onto a slab without a jump node; path nodes sit a block above the slabs and plants
+            // a mob really stands in, which left it pacing in front of them
+            getNavigator().setNodeFollower(() ->
+                    new net.swofty.type.generic.entity.ai.vanilla.VanillaGroundNodeFollower(this));
             addAIGroup(
                     List.of(new net.minestom.server.entity.ai.goal.MeleeAttackGoal(this, 1.8,
                             java.time.Duration.ofMillis(1500))),
