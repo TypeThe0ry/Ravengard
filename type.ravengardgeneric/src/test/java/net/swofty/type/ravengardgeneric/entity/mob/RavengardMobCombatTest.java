@@ -840,6 +840,29 @@ class RavengardMobCombatTest {
     }
 
     @Test
+    void aMobStillReachesAPlayerStandingOneStepAboveIt() throws Exception {
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        instance.setBlock(6, 1, 8, Block.STONE);
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "target"));
+        player.setInstance(instance, new net.minestom.server.coordinate.Pos(6.5, 2, 8.5)).join();
+        float full = player.getHealth();
+        RavengardMob mob = new RavengardMob(clip(),
+                new net.minestom.server.coordinate.Pos(5.3, 1, 8.5));
+        mob.spawnMob(instance);
+
+        mob.attack(player, false);
+
+        assertTrue(player.getHealth() < full);
+
+        mob.removeRig();
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
     void aWokenZombieKnightDoesNotLieBackDownBetweenAttacks() throws Exception {
         RavengardMobClip clip = clip();
         set(clip, "name", "zombie_knight");
