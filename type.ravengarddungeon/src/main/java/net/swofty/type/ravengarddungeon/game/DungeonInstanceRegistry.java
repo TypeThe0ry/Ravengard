@@ -1630,7 +1630,10 @@ public final class DungeonInstanceRegistry {
 
     static Integer groundBelow(BlockLookup blocks, int blockX, int blockZ, int level) {
         for (int y = level; y >= level - ENCOUNTER_GROUND_SEARCH_DOWN; y--) {
-            if (standable(blocks, blockX, y, blockZ)) return y;
+            if (!passable(blocks.blockAt(blockX, y, blockZ))) return null;
+            if (supports(blocks.blockAt(blockX, y - 1, blockZ))) {
+                return passable(blocks.blockAt(blockX, y + 1, blockZ)) ? y : null;
+            }
         }
         return null;
     }
@@ -1651,9 +1654,9 @@ public final class DungeonInstanceRegistry {
     private static boolean supports(net.minestom.server.instance.block.Block block) {
         if (block == null || block.compare(net.minestom.server.instance.block.Block.BARRIER)) return false;
         var shape = block.registry().collisionShape();
-        var start = shape.relativeStart();
-        var end = shape.relativeEnd();
-        return end.y() > 0 && start.x() <= 0 && start.z() <= 0 && end.x() >= 1 && end.z() >= 1;
+        return shape.relativeEnd().y() <= 1
+                && (shape.isFaceFull(net.minestom.server.instance.block.BlockFace.TOP)
+                || shape.isFaceFull(net.minestom.server.instance.block.BlockFace.BOTTOM));
     }
 
     private static boolean passable(net.minestom.server.instance.block.Block block) {

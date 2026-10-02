@@ -184,6 +184,12 @@ class DungeonExtractionAnchorTest {
             assertTrue(anchor.x() > 0 && anchor.x() < room.getWidth() - 1, anchor.toString());
             assertTrue(anchor.z() > 0 && anchor.z() < room.getDepth() - 1, anchor.toString());
         }
+        var rooms = RavengardDungeonGenerator.getCatalog().getRooms();
+        var room22 = DungeonInstanceRegistry.cyanAnchorSource(
+                rooms.stream().filter(room -> room.getId().equals("room_22")).findFirst().orElseThrow());
+        var room46 = DungeonInstanceRegistry.cyanAnchorSource(
+                rooms.stream().filter(room -> room.getId().equals("room_46")).findFirst().orElseThrow());
+        assertEquals(List.of(15, 33, 13, 29), List.of(room22.x(), room22.z(), room46.x(), room46.z()));
     }
 
     @Test

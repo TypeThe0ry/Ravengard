@@ -369,6 +369,31 @@ class DungeonEncounterSpawnTest {
     }
 
     @Test
+    void railingsConnectedOnEverySideAreStillNotGround() {
+        Block railing = Block.IRON_BARS.withProperties(Map.of(
+                "north", "true", "east", "true", "south", "true", "west", "true"));
+        var resolved = DungeonInstanceRegistry.resolveSpawnMarker(
+                new RavengardDungeonConfig.DungeonObject("entity_spawn", "eye_beam", 8.5, 69.3, 8.5, 0, 0),
+                (x, y, z) -> {
+                    if (y <= 64) return Block.STONE;
+                    return x == 8 && z == 8 && y <= 66 ? railing : Block.AIR;
+                });
+
+        assertEquals(65, resolved.y());
+        assertTrue(Math.floor(resolved.x()) != 8 || Math.floor(resolved.z()) != 8);
+    }
+
+    @Test
+    void aMarkerNeverDropsThroughTheFloorIntoARoomBelow() {
+        var marker = new RavengardDungeonConfig.DungeonObject("entity_spawn", "splinter", 3.5, 64.9, 3.5, 0, 0);
+        var resolved = DungeonInstanceRegistry.resolveSpawnMarker(marker,
+                (x, y, z) -> y == 64 || y <= 61 ? Block.STONE : Block.AIR);
+
+        assertEquals(3.5, resolved.x());
+        assertEquals(65, resolved.y());
+    }
+
+    @Test
     void aMarkerSunkIntoTheFloorRisesOntoIt() {
         var marker = new RavengardDungeonConfig.DungeonObject("entity_spawn", "splinter", 3.5, 64.6, 3.5, 0, 0);
         var resolved = DungeonInstanceRegistry.resolveSpawnMarker(marker,

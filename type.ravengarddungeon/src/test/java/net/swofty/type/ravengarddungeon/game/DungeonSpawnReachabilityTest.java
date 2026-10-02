@@ -110,8 +110,8 @@ class DungeonSpawnReachabilityTest {
                 for (int dy = 1; dy >= -MAXIMUM_DROP; dy--) {
                     int y = from[1] + dy;
                     if (!standable(x, y, z)) continue;
-                    if (dy == 1 && blocked(from[0], from[1] + 2, from[2])) continue;
-                    if (dy < 0 && blocked(x, from[1] + 1, z)) continue;
+                    if (dy == 1 && blocked(from[0], from[1] + 2, from[2])) break;
+                    if (dy < 0 && !clearColumn(x, y + 2, from[1] + 1, z)) break;
                     if (seen.add(cell(x, y, z))) queue.add(new int[]{x, y, z});
                     break;
                 }
@@ -121,7 +121,18 @@ class DungeonSpawnReachabilityTest {
     }
 
     private static boolean standable(int x, int y, int z) {
-        return blocked(x, y - 1, z) && !blocked(x, y, z) && !blocked(x, y + 1, z);
+        return blocked(x, y - 1, z) && !tallerThanAStep(x, y - 1, z) && !blocked(x, y, z) && !blocked(x, y + 1, z);
+    }
+
+    private static boolean clearColumn(int x, int fromY, int toY, int z) {
+        for (int y = fromY; y <= toY; y++) {
+            if (blocked(x, y, z)) return false;
+        }
+        return true;
+    }
+
+    private static boolean tallerThanAStep(int x, int y, int z) {
+        return map.blockAt(x, y, z).registry().collisionShape().relativeEnd().y() > 1;
     }
 
     private static boolean blocked(int x, int y, int z) {
