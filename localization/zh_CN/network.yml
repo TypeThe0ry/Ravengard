@@ -384,3 +384,6 @@ entries:
   "<6><l>----------- <r><c>Server Notice <6><l>-----------": "<6><l>----------- <r><c>服务器公告 <6><l>-----------"
   "<r><c>Although we do support versions prior to <6>{}<c>, the experience may be degraded.": "<r><c>我们支持 <6>{}<c> 之前的版本，但体验可能会打折扣。"
   "<c>If you experience any issues, please test if it also occurs on <6>{}<c> before reporting it.": "<c>如果遇到问题，请先确认在 <6>{}<c> 上是否同样出现，再进行反馈。"
+
+  # ---- 连接 ----
+  "Timeout": "连接超时"
