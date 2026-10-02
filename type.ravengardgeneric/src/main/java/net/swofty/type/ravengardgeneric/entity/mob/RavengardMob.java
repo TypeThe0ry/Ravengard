@@ -388,7 +388,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         }
         if (target == null || target.isRemoved() || attackCooldown > 0 || chargeCooldown > 0) return;
         double distance = position.distance(target.getPosition());
-        if (distance >= CHARGE_MIN_RANGE && distance <= CHARGE_MAX_RANGE) {
+        if (distance >= CHARGE_MIN_RANGE && distance <= CHARGE_MAX_RANGE && hasLineOfSight(target)) {
             chargeTicksLeft = CHARGE_TICKS;
             chargeCooldown = CHARGE_COOLDOWN_TICKS;
             speed.setBaseValue(base * CHARGE_SPEED_MULTIPLIER);
