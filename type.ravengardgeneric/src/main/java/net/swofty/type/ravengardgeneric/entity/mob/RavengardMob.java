@@ -380,7 +380,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
                 speed.setBaseValue(base);
                 startOneShot(chargeAnimation());
                 attackCooldown = ATTACK_COOLDOWN_TICKS;
-                if (arrived) {
+                if (arrived && hasLineOfSight(target)) {
                     hit(target);
                 }
             }

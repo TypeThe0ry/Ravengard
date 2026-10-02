@@ -912,6 +912,50 @@ class RavengardMobCombatTest {
     }
 
     @Test
+    void aChargeDoesNotLandThroughAWall() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.13d);
+        RavengardMobClip.Animation charge = new RavengardMobClip.Animation();
+        set(charge, "loop", false);
+        set(charge, "frames", List.of(Map.of(), Map.of()));
+        set(clip, "animations", Map.of("charge", charge));
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        for (int x = 5; x <= 8; x++) {
+            for (int z = 7; z <= 9; z++) {
+                if ((x == 6 || x == 7) && z == 8) continue;
+                for (int y = 1; y <= 3; y++) instance.setBlock(x, y, z, Block.STONE);
+            }
+        }
+        var farEnd = new net.minestom.server.coordinate.Pos(7.4, 1, 8.5);
+        var nearEnd = new net.minestom.server.coordinate.Pos(6.3, 1, 8.5);
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "target"));
+        player.setInstance(instance, farEnd).join();
+        float full = player.getHealth();
+        RavengardMob mob = new RavengardMob(clip,
+                new net.minestom.server.coordinate.Pos(4.3, 1, 8.5));
+        mob.spawnMob(instance);
+
+        long time = System.currentTimeMillis();
+        for (int tick = 0; tick < 40; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            mob.tick(now);
+            mob.tickRig();
+            // the charge starts at range, then the target steps up to the wall
+            player.teleport(tick < 3 ? farEnd : nearEnd).join();
+        }
+        assertTrue(mob.getPosition().distance(player.getPosition()) <= 2.4);
+        assertEquals(full, player.getHealth());
+
+        mob.removeRig();
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
     void aWokenZombieKnightDoesNotLieBackDownBetweenAttacks() throws Exception {
         RavengardMobClip clip = clip();
         set(clip, "name", "zombie_knight");
