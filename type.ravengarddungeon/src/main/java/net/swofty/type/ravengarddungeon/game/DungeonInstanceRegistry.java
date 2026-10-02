@@ -513,6 +513,8 @@ public final class DungeonInstanceRegistry {
     private static final int ENCOUNTER_GROUND_SEARCH_RADIUS = 4;
     private static final int ENCOUNTER_GROUND_SEARCH_UP = 2;
     private static final int ENCOUNTER_GROUND_SEARCH_DOWN = 12;
+    private static final int PORTAL_HALF_WIDTH = 1;
+    private static final int PORTAL_HEIGHT = 3;
     private static final Map<net.minestom.server.instance.Instance, EncounterRuntime> ENCOUNTERS =
             new ConcurrentHashMap<>();
     private static final Set<String> COMBAT_MOB_TYPES = Set.of(
@@ -1274,6 +1276,52 @@ public final class DungeonInstanceRegistry {
     }
 
     static ExtractionAnchorSource cyanAnchorSource(DungeonRoom room) {
+        ExtractionAnchorSource preferred = preferredCyanAnchor(room);
+        if (portalFits(room, preferred.x(), preferred.z(), preferred.feetY())) return preferred;
+        // these two masks only trace the room's outline, so the room itself is what they enclose
+        boolean outlineOnly = outlineOnlyMask(room);
+        java.util.Set<Long> mask = new java.util.HashSet<>();
+        for (int[] run : room.getMask()) {
+            for (int x = run[1]; x <= run[2]; x++) mask.add(maskKey(x, run[0]));
+        }
+        ExtractionAnchorSource nearest = null;
+        int nearestDistance = Integer.MAX_VALUE;
+        for (int z = 1; z < room.getDepth() - 1; z++) {
+            for (int x = 1; x < room.getWidth() - 1; x++) {
+                if (outlineOnly == mask.contains(maskKey(x, z))) continue;
+                int distance = (x - preferred.x()) * (x - preferred.x()) + (z - preferred.z()) * (z - preferred.z());
+                if (distance >= nearestDistance) continue;
+                Integer feetY = extractionGroundY(room, x, z);
+                if (feetY == null || !portalFits(room, x, z, feetY)) continue;
+                nearest = new ExtractionAnchorSource(x, z, feetY);
+                nearestDistance = distance;
+            }
+        }
+        return nearest == null ? preferred : nearest;
+    }
+
+    private static boolean outlineOnlyMask(DungeonRoom room) {
+        return room.getId().equals("room_22") || room.getId().equals("room_46");
+    }
+
+    private static boolean portalFits(DungeonRoom room, int sourceX, int sourceZ, int feetY) {
+        DungeonTemplate template = DungeonTemplate.get();
+        int worldX = room.getMinX() + sourceX;
+        int worldZ = room.getMinZ() + sourceZ;
+        for (int dx = -PORTAL_HALF_WIDTH; dx <= PORTAL_HALF_WIDTH; dx++) {
+            var floor = template.blockAt(worldX + dx, feetY - 1, worldZ);
+            if (floor.compare(net.minestom.server.instance.block.Block.BARRIER)
+                    || !floor.registry().collisionShape().isFaceFull(
+                    net.minestom.server.instance.block.BlockFace.TOP)) return false;
+            for (int dy = 0; dy < PORTAL_HEIGHT; dy++) {
+                if (!passable(template.blockAt(worldX + dx, feetY + dy, worldZ))) return false;
+            }
+        }
+        return standable(template::blockAt, worldX, feetY, worldZ - 1)
+                || standable(template::blockAt, worldX, feetY, worldZ + 1);
+    }
+
+    private static ExtractionAnchorSource preferredCyanAnchor(DungeonRoom room) {
         List<int[]> cells = new ArrayList<>();
         for (int[] run : room.getMask()) {
             for (int x = run[1]; x <= run[2]; x++) cells.add(new int[]{x, run[0]});
@@ -1288,7 +1336,7 @@ public final class DungeonInstanceRegistry {
         cells.removeIf(cell -> !primaryComponent.contains(maskKey(cell[0], cell[1])));
         mask.removeIf(key -> !primaryComponent.contains(key));
 
-        if (room.getId().equals("room_22") || room.getId().equals("room_46")) {
+        if (outlineOnlyMask(room)) {
             ExtractionAnchorSource openEnd = widestHorizontalRunAnchor(room, mask);
             if (openEnd != null) return openEnd;
         }
@@ -1562,28 +1610,54 @@ public final class DungeonInstanceRegistry {
                 .thenComparingInt(offset -> Math.abs(offset[0]) + Math.abs(offset[1]))
                 .thenComparingInt(offset -> offset[0])
                 .thenComparingInt(offset -> offset[1]));
-        for (int[] offset : offsets) {
-            Integer groundY = groundAt(blocks, originX + offset[0], originZ + offset[1], marker.y());
-            if (groundY == null) continue;
-            double x = offset[0] == 0 ? marker.x() : originX + offset[0] + 0.5;
-            double z = offset[1] == 0 ? marker.z() : originZ + offset[1] + 0.5;
-            return new RavengardDungeonConfig.DungeonObject(marker.category(), marker.type(),
-                    x, groundY, z, marker.yaw(), marker.pitch());
+        int level = (int) Math.floor(marker.y());
+        // the ground a marker hangs over comes first; ground above it is only for markers sunk into the floor
+        for (boolean below : new boolean[]{true, false}) {
+            for (int[] offset : offsets) {
+                int blockX = originX + offset[0];
+                int blockZ = originZ + offset[1];
+                Integer groundY = below ? groundBelow(blocks, blockX, blockZ, level)
+                        : groundAbove(blocks, blockX, blockZ, level);
+                if (groundY == null) continue;
+                double x = offset[0] == 0 ? marker.x() : blockX + 0.5;
+                double z = offset[1] == 0 ? marker.z() : blockZ + 0.5;
+                return new RavengardDungeonConfig.DungeonObject(marker.category(), marker.type(),
+                        x, groundY, z, marker.yaw(), marker.pitch());
+            }
         }
         return null;
     }
 
-    static Integer groundAt(BlockLookup blocks, int blockX, int blockZ, double referenceY) {
-        int maximumY = (int) Math.floor(referenceY) + ENCOUNTER_GROUND_SEARCH_UP;
-        int minimumY = (int) Math.floor(referenceY) - ENCOUNTER_GROUND_SEARCH_DOWN;
-        for (int y = maximumY; y >= minimumY; y--) {
-            var floor = blocks.blockAt(blockX, y, blockZ);
-            if (floor == null || !floor.solid()) continue;
-            var feet = blocks.blockAt(blockX, y + 1, blockZ);
-            var head = blocks.blockAt(blockX, y + 2, blockZ);
-            if (feet != null && head != null && !feet.solid() && !head.solid()) return y + 1;
+    static Integer groundBelow(BlockLookup blocks, int blockX, int blockZ, int level) {
+        for (int y = level; y >= level - ENCOUNTER_GROUND_SEARCH_DOWN; y--) {
+            if (standable(blocks, blockX, y, blockZ)) return y;
         }
         return null;
+    }
+
+    static Integer groundAbove(BlockLookup blocks, int blockX, int blockZ, int level) {
+        for (int y = level + 1; y <= level + ENCOUNTER_GROUND_SEARCH_UP; y++) {
+            if (standable(blocks, blockX, y, blockZ)) return y;
+        }
+        return null;
+    }
+
+    private static boolean standable(BlockLookup blocks, int blockX, int feetY, int blockZ) {
+        return supports(blocks.blockAt(blockX, feetY - 1, blockZ))
+                && passable(blocks.blockAt(blockX, feetY, blockZ))
+                && passable(blocks.blockAt(blockX, feetY + 1, blockZ));
+    }
+
+    private static boolean supports(net.minestom.server.instance.block.Block block) {
+        if (block == null || block.compare(net.minestom.server.instance.block.Block.BARRIER)) return false;
+        var shape = block.registry().collisionShape();
+        var start = shape.relativeStart();
+        var end = shape.relativeEnd();
+        return end.y() > 0 && start.x() <= 0 && start.z() <= 0 && end.x() >= 1 && end.z() >= 1;
+    }
+
+    private static boolean passable(net.minestom.server.instance.block.Block block) {
+        return block != null && block.registry().collisionShape().relativeEnd().y() <= 0;
     }
 
     @FunctionalInterface

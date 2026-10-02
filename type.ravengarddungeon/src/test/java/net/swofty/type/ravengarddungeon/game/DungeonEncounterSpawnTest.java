@@ -311,6 +311,74 @@ class DungeonEncounterSpawnTest {
     }
 
     @Test
+    void aMarkerCapturedInsideBarsLandsBesideThemNotOnTop() {
+        var marker = new RavengardDungeonConfig.DungeonObject("entity_spawn", "splinter", 12.71, 65.53, 171.83, 0, 0);
+        var resolved = DungeonInstanceRegistry.resolveSpawnMarker(marker, (x, y, z) -> {
+            if (y <= 64) return Block.STONE;
+            return x == 12 && z == 171 && y <= 67 ? Block.IRON_BARS : Block.AIR;
+        });
+
+        assertEquals(65, resolved.y());
+        assertEquals(1, Math.abs(Math.floor(resolved.x()) - 12) + Math.abs(Math.floor(resolved.z()) - 171));
+    }
+
+    @Test
+    void aMarkerUnderAnOverhangStaysOnTheFloorItWasCapturedOn() {
+        var resolved = DungeonInstanceRegistry.resolveSpawnMarker(marker("splinter", 4.5, 4.5),
+                (x, y, z) -> y <= 64 || y == 67 ? Block.STONE : Block.AIR);
+
+        assertEquals(4.5, resolved.x());
+        assertEquals(65, resolved.y());
+    }
+
+    @Test
+    void decorationsWithoutCollisionAreNeitherGroundNorObstacle() {
+        var marker = new RavengardDungeonConfig.DungeonObject("entity_spawn", "splinter", 47.51, 64.53, 107.51, 0, 0);
+        var resolved = DungeonInstanceRegistry.resolveSpawnMarker(marker, (x, y, z) -> {
+            if (y <= 63) return Block.STONE;
+            return y == 65 ? Block.DEAD_BUBBLE_CORAL_WALL_FAN : Block.AIR;
+        });
+
+        assertEquals(47.51, resolved.x());
+        assertEquals(64, resolved.y());
+    }
+
+    @Test
+    void invisibleBarrierFurnitureIsNotGround() {
+        var marker = new RavengardDungeonConfig.DungeonObject("entity_spawn", "splinter", 221.85, 65.5, 133.27, 0, 0);
+        var resolved = DungeonInstanceRegistry.resolveSpawnMarker(marker, (x, y, z) -> {
+            if (y <= 62) return Block.STONE;
+            return x == 221 && y <= 64 ? Block.BARRIER : Block.AIR;
+        });
+
+        assertEquals(63, resolved.y());
+        assertEquals(1, Math.abs(Math.floor(resolved.x()) - 221));
+    }
+
+    @Test
+    void narrowBlocksAreNotGround() {
+        var resolved = DungeonInstanceRegistry.resolveSpawnMarker(
+                new RavengardDungeonConfig.DungeonObject("entity_spawn", "eye_beam", 8.5, 69.3, 8.5, 0, 0),
+                (x, y, z) -> {
+                    if (y <= 64) return Block.STONE;
+                    return x == 8 && z == 8 && y <= 66 ? Block.OAK_FENCE : Block.AIR;
+                });
+
+        assertEquals(65, resolved.y());
+        assertTrue(Math.floor(resolved.x()) != 8 || Math.floor(resolved.z()) != 8);
+    }
+
+    @Test
+    void aMarkerSunkIntoTheFloorRisesOntoIt() {
+        var marker = new RavengardDungeonConfig.DungeonObject("entity_spawn", "splinter", 3.5, 64.6, 3.5, 0, 0);
+        var resolved = DungeonInstanceRegistry.resolveSpawnMarker(marker,
+                (x, y, z) -> y <= 64 ? Block.STONE : Block.AIR);
+
+        assertEquals(3.5, resolved.x());
+        assertEquals(65, resolved.y());
+    }
+
+    @Test
     void unresolvedMarkerIsSkippedInsteadOfFallingBackToDungeonCentre() {
         var plan = new DungeonInstanceRegistry.MobSpawnPlan(
                 "skeleton_archer", marker("splinter", 230, -225));
@@ -336,10 +404,10 @@ class DungeonEncounterSpawnTest {
         var planned = DungeonInstanceRegistry.planEncounterMobs(clusters, appearances, 919191L);
         var floors = planned.stream().collect(java.util.stream.Collectors.toMap(
                 plan -> (int) Math.floor(plan.marker().x()) + ":" + (int) Math.floor(plan.marker().z()),
-                plan -> 64, (first, second) -> first));
+                plan -> (int) Math.floor(plan.marker().y()) - 1, Math::min));
 
         var grounded = DungeonInstanceRegistry.resolveSpawnPlans(planned, (x, y, z) ->
-                floors.containsKey(x + ":" + z) && y == 64 ? Block.STONE : Block.AIR);
+                floors.containsKey(x + ":" + z) && y <= floors.get(x + ":" + z) ? Block.STONE : Block.AIR);
         Map<String, Integer> distribution = DungeonInstanceRegistry.encounterDistribution(grounded.plans());
 
         assertEquals(planned.size(), grounded.plans().size());
