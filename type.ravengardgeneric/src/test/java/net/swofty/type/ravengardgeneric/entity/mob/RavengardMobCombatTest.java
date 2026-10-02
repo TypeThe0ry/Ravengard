@@ -61,10 +61,15 @@ class RavengardMobCombatTest {
     }
     @Test
     void meleeDamageKeepsTheMobAsTheAttacker() throws Exception {
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
         RavengardMob mob = new RavengardMob(
                 clip(),
-                new net.minestom.server.coordinate.Pos(0, 0, 0));
+                new net.minestom.server.coordinate.Pos(2.5, 1, 2.5));
+        mob.spawnMob(instance);
         LivingEntity target = new LivingEntity(EntityType.ZOMBIE);
+        target.setInstance(instance, new net.minestom.server.coordinate.Pos(3.5, 1, 2.5)).join();
         target.setHealth(40);
         float before = target.getHealth();
 
@@ -73,6 +78,9 @@ class RavengardMobCombatTest {
         assertEquals(before - 2, target.getHealth(), 0.001);
         assertSame(mob, target.getLastDamageSource().getAttacker());
         assertSame(mob, target.getLastDamageSource().getSource());
+
+        mob.removeRig();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
     }
 
     @Test
@@ -776,6 +784,55 @@ class RavengardMobCombatTest {
             player.teleport(new net.minestom.server.coordinate.Pos(8.5, 1, 8.5)).join();
         }
         assertTrue(mob.getPosition().distance(player.getPosition()) < 1.8, "stayed at " + mob.getPosition());
+
+        mob.removeRig();
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
+    void aMobCannotHitThroughAWall() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.13d);
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        for (int x = 5; x <= 7; x++) {
+            for (int z = 7; z <= 9; z++) {
+                if (x == 6 && z == 8) continue;
+                for (int y = 1; y <= 3; y++) instance.setBlock(x, y, z, Block.STONE);
+            }
+        }
+        var walledIn = new net.minestom.server.coordinate.Pos(6.35, 1, 8.5);
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "target"));
+        player.setInstance(instance, walledIn).join();
+        float full = player.getHealth();
+        RavengardMob mob = new RavengardMob(clip,
+                new net.minestom.server.coordinate.Pos(4.65, 1, 8.5));
+        mob.spawnMob(instance);
+        assertTrue(mob.getPosition().distance(player.getPosition()) < 1.8);
+
+        long time = System.currentTimeMillis();
+        int tick = 0;
+        for (; tick < 100; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            mob.tick(now);
+            mob.tickRig();
+            player.teleport(walledIn).join();
+        }
+        assertEquals(full, player.getHealth());
+
+        for (int y = 1; y <= 3; y++) instance.setBlock(5, y, 8, Block.AIR);
+        for (; tick < 300 && player.getHealth() == full; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            mob.tick(now);
+            mob.tickRig();
+            player.teleport(walledIn.add(0, 0, tick % 2 == 0 ? 0.01 : 0)).join();
+        }
+        assertTrue(player.getHealth() < full, "the mob never attacked once the wall was open");
 
         mob.removeRig();
         player.remove();

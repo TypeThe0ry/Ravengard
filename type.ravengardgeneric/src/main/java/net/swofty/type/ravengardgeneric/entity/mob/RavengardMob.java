@@ -250,6 +250,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     public void attack(Entity target, boolean swingHand) {
         if (dying || attackCooldown > 0 || chargeTicksLeft > 0) return;
         if (target instanceof Player && !isTargetable(target)) return;
+        if (!hasLineOfSight(target)) return;
         attackCooldown = ATTACK_COOLDOWN_TICKS;
         List<String> options = new ArrayList<>(clip.attackAnimations());
         options.remove(chargeAnimation());
