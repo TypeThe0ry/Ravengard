@@ -134,6 +134,8 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private boolean[] scaleChanged;
     private boolean restoreScales;
     private boolean holdingStandoff;
+    private Pos stallAnchor;
+    private int stalledTicks;
     private double groundDrop;
     private float lastAppliedYaw = Float.NaN;
     private int attackCooldown;
@@ -157,6 +159,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final double CHARGE_HIT_RANGE = 2.4;
     private static final double MELEE_STANDOFF = 1.2;
     private static final double MELEE_REACH = 1.8;
+    private static final int STALLED_REPATH_TICKS = 40;
     private static final double CROWD_SPACING = 0.9;
     private static final double CROWD_PUSH_PER_TICK = 0.1;
     private static final double CHARGE_SPEED_MULTIPLIER = 3.0;
@@ -307,12 +310,24 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         if (distance <= MELEE_STANDOFF) {
             getNavigator().setPathTo(null);
             holdingStandoff = true;
-        } else if (holdingStandoff && distance > MELEE_REACH) {
+        } else if (distance > MELEE_REACH && (holdingStandoff || stalledOutOfReach())) {
             // the goal only looks for a new path when its target moves; a mob shoved away from a
-            // target that is standing still has to be sent back itself
+            // target that is standing still, or one whose way in opened after its last search,
+            // has to be sent back itself
             holdingStandoff = false;
             getNavigator().setPathTo(target.getPosition());
         }
+    }
+
+    private boolean stalledOutOfReach() {
+        if (stallAnchor == null || !stallAnchor.samePoint(position)) {
+            stallAnchor = position;
+            stalledTicks = 0;
+            return false;
+        }
+        if (++stalledTicks < STALLED_REPATH_TICKS) return false;
+        stalledTicks = 0;
+        return true;
     }
 
     // vanilla mobs push each other apart; Minestom has no entity collision, so a pack chasing one

@@ -863,6 +863,55 @@ class RavengardMobCombatTest {
     }
 
     @Test
+    void aMobComesThroughADoorThatOpensWhileItsTargetStandsStill() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.13d);
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        for (int x = 5; x <= 7; x++) {
+            for (int z = 7; z <= 9; z++) {
+                if (x == 6 && z == 8) continue;
+                for (int y = 1; y <= 3; y++) instance.setBlock(x, y, z, Block.STONE);
+            }
+        }
+        var walledIn = new net.minestom.server.coordinate.Pos(6.5, 1, 8.5);
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "target"));
+        player.setInstance(instance, walledIn).join();
+        player.getAttribute(net.minestom.server.entity.attribute.Attribute.MAX_HEALTH).setBaseValue(1024);
+        player.setHealth(1024);
+        RavengardMob mob = new RavengardMob(clip,
+                new net.minestom.server.coordinate.Pos(1.5, 1, 8.5));
+        mob.spawnMob(instance);
+
+        long time = System.currentTimeMillis();
+        int tick = 0;
+        for (; tick < 100; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            mob.tick(now);
+            mob.tickRig();
+            player.teleport(walledIn).join();
+        }
+        assertEquals(1024f, player.getHealth());
+
+        for (int y = 1; y <= 3; y++) instance.setBlock(5, y, 8, Block.AIR);
+        for (; tick < 400 && player.getHealth() == 1024f; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            mob.tick(now);
+            mob.tickRig();
+            player.teleport(walledIn).join();
+        }
+        assertTrue(player.getHealth() < 1024f, "the mob stayed at " + mob.getPosition());
+
+        mob.removeRig();
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
     void aWokenZombieKnightDoesNotLieBackDownBetweenAttacks() throws Exception {
         RavengardMobClip clip = clip();
         set(clip, "name", "zombie_knight");
