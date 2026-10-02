@@ -80,6 +80,7 @@ import net.swofty.velocity.redis.RedisHandlerRegistry;
 import net.swofty.velocity.redis.listeners.ListenerStaffChat;
 import net.swofty.velocity.redis.listeners.ListenerStorePurchaseFulfillment;
 import net.swofty.velocity.testflow.TestFlowManager;
+import net.swofty.velocity.upstream.UpstreamForwarding;
 import net.swofty.velocity.text.ProxyText;
 import net.swofty.velocity.viaversion.SkyBlockPlatform;
 import net.swofty.velocity.viaversion.SkyBlockPlatformLoader;
@@ -139,6 +140,10 @@ public class SkyBlockVelocity {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         net.swofty.commons.text.MarkupLocalization.installFromEnvironment();
         server = proxy;
+        UpstreamForwarding upstreamForwarding = UpstreamForwarding.fromEnvironment();
+        if (upstreamForwarding != null) {
+            server.getEventManager().register(this, upstreamForwarding);
+        }
         supportCrossVersion = ConfigProvider.settings().getIntegrations().isViaVersion();
 
         if (supportCrossVersion) {
