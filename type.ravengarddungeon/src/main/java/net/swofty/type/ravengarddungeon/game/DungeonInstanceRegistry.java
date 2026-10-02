@@ -336,13 +336,15 @@ public final class DungeonInstanceRegistry {
 
             int chests = net.swofty.type.ravengarddungeon.interactables.DungeonChest
                     .convertDecorChests(dungeonInstance.getInstance(), dungeonInstance.getSeed());
+            int satchels = net.swofty.type.ravengarddungeon.interactables.DungeonSatchel
+                    .clearCapturedSatchels(dungeonInstance.getInstance());
             List<net.minestom.server.coordinate.Pos> extractions = dungeonInstance.getGame().getExtractionPoints();
             for (var extraction : extractions) {
                 net.swofty.type.ravengarddungeon.interactables.DungeonExtraction.spawn(
                         dungeonInstance.getInstance(), dungeonInstance.getGame(), extraction);
             }
-            org.tinylog.Logger.info("Registered interactables: {} proximity mob encounters, {} door chunks loaded, {} chests converted",
-                    mobs, chunks.size(), chests);
+            org.tinylog.Logger.info("Registered interactables: {} proximity mob encounters, {} door chunks loaded, {} chests converted, {} captured satchels cleared",
+                    mobs, chunks.size(), chests, satchels);
             org.tinylog.Logger.info("Registered {} dynamic cyan-room extraction points", extractions.size());
         } catch (Exception exception) {
             org.tinylog.Logger.error(exception, "Failed to spawn dungeon interactables");
@@ -361,6 +363,7 @@ public final class DungeonInstanceRegistry {
                 doorSpawns.orphanLeaves(), doorSpawns.displays(), doorSpawns.interactions(),
                 doorSpawns.uniqueBarrierCells());
         int chests = net.swofty.type.ravengarddungeon.interactables.DungeonChest.convertDecorChests(instance, seed);
+        int satchels = net.swofty.type.ravengarddungeon.interactables.DungeonSatchel.clearCapturedSatchels(instance);
         RavengardDungeonGame staticGame = TypeRavengardDungeonLoader.getGame();
         List<net.minestom.server.coordinate.Pos> extractions = staticGame == null
                 ? List.of() : staticGame.getExtractionPoints();
@@ -368,8 +371,8 @@ public final class DungeonInstanceRegistry {
             net.swofty.type.ravengarddungeon.interactables.DungeonExtraction.spawn(
                     instance, staticGame, extraction);
         }
-        org.tinylog.Logger.info("Registered static dungeon interactables: {} proximity mob encounters, {} chests, {} extraction points",
-                mobs, chests, extractions.size());
+        org.tinylog.Logger.info("Registered static dungeon interactables: {} proximity mob encounters, {} chests, {} extraction points, {} captured satchels cleared",
+                mobs, chests, extractions.size(), satchels);
         MinecraftServer.getSchedulerManager().buildTask(() -> {
             EncounterRuntime runtime = ENCOUNTERS.get(instance);
             if (runtime != null && staticGame != null

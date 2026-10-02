@@ -1,6 +1,7 @@
 package net.swofty.type.ravengarddungeon.interactables;
 
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.component.DataComponents;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
@@ -23,6 +24,8 @@ public final class DungeonSatchel extends DungeonInteractable {
     private static final String OPEN_MODEL = "hypixel_ravengard:item/gameplay/lootbags/lootbag_2_open";
     private static final String SKULL_MODEL = "hypixel_ravengard:item/gameplay/trinkets/crystal_skull/sprite";
     private static final int[] LOOT_SLOTS = {29, 30, 31, 32, 33};
+    private static final net.minestom.server.tag.Tag<Boolean> DROPPED =
+            net.minestom.server.tag.Tag.Boolean("ravengard_dropped_satchel").defaultValue(false);
 
     private final Entity bag;
     private final Pos base;
@@ -33,6 +36,7 @@ public final class DungeonSatchel extends DungeonInteractable {
         this.base = base;
         this.interaction = spawnInteraction(base.sub(0, 0.5, 0), 0.5f, 0.65f);
         this.bag = spawnDisplay(base, CLOSED_MODEL);
+        bag.setTag(DROPPED, true);
     }
 
     public static DungeonSatchel spawn(Instance instance, Pos position) {
@@ -46,6 +50,25 @@ public final class DungeonSatchel extends DungeonInteractable {
                 .delay(TaskSchedule.tick(15)).repeat(TaskSchedule.tick(24)).schedule();
         InteractableRegistry.register(satchel);
         return satchel;
+    }
+
+    /**
+     * The official map was captured mid-run, with the satchels players and mobs had dropped still on
+     * the floor; a fresh dungeon starts without them.
+     */
+    public static int clearCapturedSatchels(Instance instance) {
+        int cleared = 0;
+        for (Entity entity : java.util.List.copyOf(instance.getEntities())) {
+            if (entity.getTag(DROPPED) || !(entity.getEntityMeta() instanceof ItemDisplayMeta meta)) continue;
+            var model = meta.getItemStack().get(DataComponents.ITEM_MODEL);
+            if (model == null) continue;
+            String name = model.toString();
+            if (name.equals(CLOSED_MODEL) || name.equals(OPEN_MODEL)) {
+                entity.remove();
+                cleared++;
+            }
+        }
+        return cleared;
     }
 
     private void riseSkull() {
