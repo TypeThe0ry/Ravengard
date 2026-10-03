@@ -1,0 +1,10 @@
+FROM eclipse-temurin:25-jdk
+WORKDIR /app
+COPY velocity.jar /app/velocity.jar
+COPY jars/SkyBlockProxy.jar /app/plugins/SkyBlockProxy.jar
+COPY configuration /app/configuration_files
+RUN cp configuration_files/velocity.toml velocity.toml && \
+    mkdir -p configuration && \
+    cp configuration_files/config.docker.yml ./configuration/config.yml
+EXPOSE 25565
+CMD ["sh", "-c", "[ -n \"$FORWARDING_SECRET\" ] || { echo 'FORWARDING_SECRET is required' >&2; exit 1; }; printf '%s' \"$FORWARDING_SECRET\" > /app/forwarding.secret; sed -i \"s/velocity-secret: .*/velocity-secret: '$FORWARDING_SECRET'/\" /app/configuration/config.yml; exec java -jar velocity.jar"]

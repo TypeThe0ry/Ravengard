@@ -1,0 +1,11 @@
+FROM eclipse-temurin:25-jdk
+WORKDIR /app
+COPY jars/HypixelCore.jar jars/ServiceOrchestrator.jar jars/ServiceParty.jar jars/net.swofty.packer.HypixelPackServer.jar /app/
+COPY configuration /app/configuration_files
+RUN mkdir -p configuration && \
+    cp -a configuration_files/. ./configuration/ && \
+    cp configuration_files/server.toml ./server.toml && \
+    cp configuration_files/entrypoint.sh ./entrypoint.sh && \
+    sed -i 's/\r$//' entrypoint.sh && \
+    chmod +x entrypoint.sh
+CMD ["sh", "entrypoint.sh"]

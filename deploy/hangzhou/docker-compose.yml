@@ -1,0 +1,170 @@
+name: ravengard
+
+x-forwarding-env: &forwarding_env
+  FORWARDING_SECRET: ${FORWARDING_SECRET:?FORWARDING_SECRET is required}
+
+x-zh-cn-env: &zh_cn_env
+  CARBON_REDIS_URI: redis://172.19.0.1:16379
+  RAVENGARD_HUD_MINIMAP: "false"
+  RAVENGARD_LOCALE: zh_CN
+  RAVENGARD_LOCALE_DIR: /app/localization
+  RAVENGARD_LOCALE_REPORT: "true"
+
+services:
+  mongodb:
+    image: mongo:8.0.9
+    container_name: ravengard_mongo
+    restart: unless-stopped
+    command: ["mongod", "--quiet", "--wiredTigerCacheSizeGB", "0.25"]
+    mem_limit: 640m
+    volumes:
+      - mongodb-data:/data/db
+    networks: [ravengard]
+    healthcheck:
+      test: |
+        mongosh --eval "db.adminCommand('ping').ok" --quiet > /dev/null 2>&1 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    container_name: ravengard_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "96mb"]
+    mem_limit: 160m
+    volumes:
+      - redis-data:/data
+    networks: [ravengard]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  proxy:
+    image: ravengard-proxy:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.proxy
+    container_name: ravengard_proxy
+    restart: unless-stopped
+    environment:
+      <<: *forwarding_env
+      UPSTREAM_FORWARDING_SECRET: ${UPSTREAM_FORWARDING_SECRET:?UPSTREAM_FORWARDING_SECRET is required}
+      RAVENGARD_LOCALE: zh_CN
+      RAVENGARD_LOCALE_DIR: /app/localization
+      JAVA_TOOL_OPTIONS: -Xms128m -Xmx384m
+    mem_limit: 700m
+    ports:
+      - "127.0.0.1:25571:25565"
+    depends_on:
+      mongodb: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    volumes:
+      - ./configuration:/app/configuration_files
+      - ./localization/zh_CN:/app/localization:ro
+    networks:
+      ravengard:
+        aliases: [proxy]
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/25565"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  ravengard_lobby:
+    image: ravengard-game:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.game_server
+    container_name: ravengard_lobby
+    restart: unless-stopped
+    stop_grace_period: 60s
+    environment:
+      <<: [*forwarding_env, *zh_cn_env]
+      SERVICE_CMD: java -Xms256m -Xmx1200m -Dminestom.grouped-packet=false -jar HypixelCore.jar RAVENGARD_LOBBY
+    mem_limit: 1700m
+    depends_on:
+      proxy: {condition: service_healthy}
+    volumes:
+      - ./configuration:/app/configuration_files
+      - ./localization/zh_CN:/app/localization:ro
+    networks: [ravengard]
+
+  ravengard_dungeon:
+    image: ravengard-game:latest
+    container_name: ravengard_dungeon
+    restart: unless-stopped
+    stop_grace_period: 60s
+    environment:
+      <<: [*forwarding_env, *zh_cn_env]
+      SERVICE_CMD: java -Xms256m -Xmx1500m -Dminestom.grouped-packet=false -jar HypixelCore.jar RAVENGARD_DUNGEON
+    mem_limit: 2100m
+    depends_on:
+      proxy: {condition: service_healthy}
+    volumes:
+      - ./configuration:/app/configuration_files
+      - ./localization/zh_CN:/app/localization:ro
+    networks: [ravengard]
+
+  pack_server:
+    image: ravengard-game:latest
+    container_name: ravengard_pack_server
+    restart: unless-stopped
+    environment:
+      <<: *forwarding_env
+      SERVICE_CMD: java -Xms64m -Xmx320m -jar net.swofty.packer.HypixelPackServer.jar
+    mem_limit: 512m
+    ports:
+      - "0.0.0.0:36026:7270"
+    volumes:
+      - ./configuration:/app/configuration_files
+      - ./localization/zh_CN/resourcepack:/app/configuration/resourcepacks/ravengard-zh_CN:ro
+    networks: [ravengard]
+
+  service_orchestrator:
+    image: ravengard-game:latest
+    container_name: ravengard_service_orchestrator
+    restart: unless-stopped
+    environment:
+      <<: *forwarding_env
+      SERVICE_CMD: java -Xms32m -Xmx160m -jar ServiceOrchestrator.jar
+    mem_limit: 320m
+    depends_on:
+      redis: {condition: service_healthy}
+      proxy: {condition: service_healthy}
+    volumes:
+      - ./configuration:/app/configuration_files
+    networks: [ravengard]
+
+  service_party:
+    image: ravengard-game:latest
+    container_name: ravengard_service_party
+    restart: unless-stopped
+    environment:
+      <<: *forwarding_env
+      SERVICE_CMD: java -Xms32m -Xmx160m -jar ServiceParty.jar
+    mem_limit: 320m
+    depends_on:
+      proxy: {condition: service_healthy}
+    volumes:
+      - ./configuration:/app/configuration_files
+    networks: [ravengard]
+
+  carbon_redis_relay:
+    image: alpine/socat:latest
+    container_name: ravengard_carbon_redis_relay
+    restart: unless-stopped
+    network_mode: host
+    mem_limit: 32m
+    command: ["TCP-LISTEN:16379,bind=172.19.0.1,fork,reuseaddr", "TCP:127.0.0.1:6379"]
+
+volumes:
+  mongodb-data:
+  redis-data:
+
+networks:
+  ravengard:
+    driver: bridge
