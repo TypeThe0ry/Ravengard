@@ -114,8 +114,11 @@ public final class DungeonChest extends DungeonInteractable {
                     nearest = distance;
                 }
             }
-            if (top == null) continue;
-            tops.remove(top);
+            if (top == null) {
+                top = capturedWithoutLid(instance, bottom, expectedTop);
+            } else {
+                tops.remove(top);
+            }
             bottom.setTag(CONVERTED, true);
             top.setTag(CONVERTED, true);
             String model = modelOf(bottom);
@@ -130,6 +133,29 @@ public final class DungeonChest extends DungeonInteractable {
             converted++;
         }
         return converted;
+    }
+
+    /**
+     * The map capture holds a few chest bottoms whose lid was not recorded; every recorded lid
+     * shares its bottom's display pose, so the official lid model is put back in that pose.
+     */
+    private static Entity capturedWithoutLid(Instance instance, Entity bottom, String lidModel) {
+        ItemDisplayMeta bottomMeta = (ItemDisplayMeta) bottom.getEntityMeta();
+        Entity lid = new Entity(net.minestom.server.entity.EntityType.ITEM_DISPLAY);
+        lid.setNoGravity(true);
+        lid.editEntityMeta(ItemDisplayMeta.class, meta -> {
+            meta.setItemStack(bottomMeta.getItemStack().with(DataComponents.ITEM_MODEL, lidModel));
+            meta.setDisplayContext(bottomMeta.getDisplayContext());
+            meta.setTranslation(bottomMeta.getTranslation());
+            meta.setScale(bottomMeta.getScale());
+            meta.setLeftRotation(bottomMeta.getLeftRotation());
+            meta.setRightRotation(bottomMeta.getRightRotation());
+            meta.setBillboardRenderConstraints(bottomMeta.getBillboardRenderConstraints());
+            meta.setBrightnessOverride(bottomMeta.getBrightnessOverride());
+            meta.setViewRange(bottomMeta.getViewRange());
+        });
+        lid.setInstance(instance, bottom.getPosition()).join();
+        return lid;
     }
 
     private static String displayKey(Entity entity) {
