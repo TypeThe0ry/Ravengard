@@ -28,6 +28,19 @@ remote() {
     return 255
 }
 
+remote_capture() {
+    local out=$1 attempt
+    shift
+    for attempt in $(seq 1 15); do
+        if ssh -i "$KEY" -o BatchMode=yes -o ConnectTimeout=20 -p "$PORT" "$HOST" "$@" > "$out.part"; then
+            mv "$out.part" "$out"
+            return 0
+        fi
+        sleep 15
+    done
+    return 1
+}
+
 upload() {
     local attempt
     for attempt in $(seq 1 15); do
@@ -58,8 +71,9 @@ echo "== comparing with the host"
 export LC_ALL=C
 (cd "$STAGE" && find configuration localization docker jars docker-compose.yml -type f -print0 \
     | xargs -0 md5sum | sed 's/ \*/  /' | sort -k2) > "$STAGE.local"
-remote "cd $REMOTE && find configuration localization docker jars docker-compose.yml -type f -print0 2>/dev/null \
-    | xargs -0 md5sum" | sort -k2 > "$STAGE.remote" || true
+remote_capture "$STAGE.remote" "cd $REMOTE && { find configuration localization docker jars docker-compose.yml -type f -print0 2>/dev/null || true; } \
+    | xargs -0 -r md5sum" || { echo "cannot list the host's files" >&2; exit 1; }
+sort -k2 -o "$STAGE.remote" "$STAGE.remote"
 changed=$(join -1 2 -2 2 -a 1 -e - -o 0,1.1,2.1 "$STAGE.local" "$STAGE.remote" | awk '$2!=$3 {print $1}')
 removed=$(join -1 2 -2 2 -v 2 "$STAGE.local" "$STAGE.remote" | awk '{print $1}' \
     | grep -E '^(configuration|localization)/' || true)
