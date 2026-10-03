@@ -482,9 +482,9 @@ class DungeonDoorTest {
     }
 
     @Test
-    void partialOfficialDoorwaysUseTheTopApertureForTheirRemainingLeaf() {
+    void partialOfficialDoorwaysGetTheirMissingLeafOnTheOtherSideOfTheHeader() {
         InstanceContainer instance = instance();
-        DungeonDoor.spawnAll(instance, List.of(
+        var summary = DungeonDoor.spawnAll(instance, List.of(
                 marker("door_1", 93, 66.5, -20.5, 0),
                 marker("door_1_top", 93.5, 66.5, -20.5, 180),
                 marker("door_1", -137, 66.5, -180.5, 180),
@@ -497,13 +497,13 @@ class DungeonDoorTest {
                         ((ItemDisplayMeta) entity.getEntityMeta()).getItemStack()
                                 .get(DataComponents.ITEM_MODEL)))
                 .toList();
-        assertEquals(2, leaves.size());
-        assertEquals(0, canonicalYaw(leaves.stream()
-                .filter(entity -> entity.getPosition().x() == 93.0)
-                .findFirst().orElseThrow().getPosition().yaw()));
-        assertEquals(180, canonicalYaw(leaves.stream()
-                .filter(entity -> entity.getPosition().x() == -137.0)
-                .findFirst().orElseThrow().getPosition().yaw()));
+        assertEquals(4, leaves.size());
+        assertEquals(2, summary.completeDoorways());
+        assertEquals(2, summary.restoredLeaves());
+        Map<Double, Integer> expectedYaws = Map.of(93.0, 0, 95.0, 180, -139.0, 0, -137.0, 180);
+        expectedYaws.forEach((x, yaw) -> assertEquals((float) yaw, canonicalYaw(leaves.stream()
+                .filter(entity -> entity.getPosition().x() == x)
+                .findFirst().orElseThrow().getPosition().yaw())));
 
         InteractableRegistry.removeInstance(instance);
         unregister(instance);
@@ -637,7 +637,7 @@ class DungeonDoorTest {
         var summary = DungeonDoor.spawnAll(instance, List.of(left, right, top));
 
         assertEquals(1, summary.completeDoorways());
-        assertEquals(0, summary.partialDoorways());
+        assertEquals(0, summary.restoredLeaves());
         assertEquals(0, summary.orphanLeaves());
         assertEquals(2, summary.leafDisplays());
         assertEquals(1, summary.topDisplays());
@@ -655,7 +655,7 @@ class DungeonDoorTest {
         var summary = DungeonDoor.spawnAll(instance, List.of(left, right));
 
         assertEquals(1, summary.completeDoorways());
-        assertEquals(0, summary.partialDoorways());
+        assertEquals(0, summary.restoredLeaves());
         assertEquals(0, summary.orphanLeaves());
         assertEquals(2, summary.leafDisplays());
         assertEquals(1, summary.topDisplays());
@@ -676,21 +676,65 @@ class DungeonDoorTest {
         assertEquals(1399, summary.inputMarkers());
         assertEquals(821, summary.uniqueLeafMarkers());
         assertEquals(380, summary.uniqueTopMarkers());
-        assertEquals(378, summary.completeDoorways());
-        assertEquals(2, summary.partialDoorways());
+        assertEquals(380, summary.completeDoorways());
+        assertEquals(2, summary.restoredLeaves());
         assertEquals(2, summary.orphanLeaves());
-        assertEquals(760, summary.leafDisplays());
+        assertEquals(762, summary.leafDisplays());
         assertEquals(380, summary.topDisplays());
         assertEquals(8, summary.ironGateDisplays());
-        assertEquals(1148, summary.displays());
+        assertEquals(1150, summary.displays());
         assertEquals(386, summary.interactions());
-        assertEquals(6112, summary.barrierReferences());
+        assertEquals(6144, summary.barrierReferences());
         assertEquals(true, summary.uniqueBarrierCells() > 0);
         assertEquals(summary.uniqueBarrierCells(), DungeonDoor.barrierCellCount(instance));
 
         InteractableRegistry.removeInstance(instance);
         assertEquals(0, DungeonDoor.barrierCellCount(instance));
         unregister(instance);
+    }
+
+    @Test
+    void singleLeafDoorwaysInTheOfficialMapBecomeFullDoorsThatOpen() throws Exception {
+        RavengardDungeonConfig config = new Gson().fromJson(Files.readString(
+                Path.of("..", "configuration", "ravengard", "dungeon_1.json")),
+                RavengardDungeonConfig.class);
+        var manager = MinecraftServer.getInstanceManager();
+        InstanceContainer container = manager.createInstanceContainer();
+        var instance = net.swofty.type.generic.world.HypixelWorldLoader.loadFrom(
+                Path.of("..", "configuration", "ravengard", "dungeon_1.polar"), container, manager);
+        try {
+            singleLeafDoorwaysBecomeFullDoorsThatOpen(instance, config);
+        } finally {
+            InteractableRegistry.removeInstance(instance);
+            manager.unregisterInstance(instance);
+            manager.unregisterInstance(container);
+        }
+    }
+
+    private static void singleLeafDoorwaysBecomeFullDoorsThatOpen(
+            net.minestom.server.instance.Instance instance, RavengardDungeonConfig config) throws Exception {
+        var summary = DungeonDoor.spawnAll(instance, config.objects());
+
+        assertEquals(382, summary.completeDoorways());
+        assertEquals(4, summary.restoredLeaves());
+        assertEquals(0, summary.orphanLeaves());
+        assertEquals(764, summary.leafDisplays());
+        assertEquals(382, summary.topDisplays());
+        for (Vec aperture : List.of(new Vec(62, 66, -124), new Vec(233, 66, 105),
+                new Vec(94, 66, -21), new Vec(-139, 66, -181))) {
+            assertEquals(true, DungeonDoor.isBarrierManaged(instance, aperture), aperture.toString());
+            assertEquals(Block.BARRIER, instance.getBlock(aperture), aperture.toString());
+        }
+
+        DungeonDoor door = (DungeonDoor) InteractableRegistry.byInteraction(instance.getEntities().stream()
+                .filter(entity -> entity.getEntityType() == EntityType.INTERACTION)
+                .filter(entity -> entity.getPosition().distance(new Pos(62.5, 65, -124)) < 0.1)
+                .findFirst().orElseThrow());
+        assertEquals(true, barriers(door).containsKey(new Vec(62, 66, -124)));
+        assertEquals(true, barriers(door).containsKey(new Vec(62, 66, -125)));
+        invokeToggle(door, true);
+        assertEquals(Block.AIR, instance.getBlock(62, 66, -124));
+        assertEquals(Block.AIR, instance.getBlock(62, 66, -125));
     }
 
     @Test

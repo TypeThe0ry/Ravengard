@@ -23,10 +23,18 @@ class DungeonChestCaptureTest {
     void everyCapturedChestBottomBecomesAChestWithItsLid() throws Exception {
         MinecraftServer.init();
         var manager = MinecraftServer.getInstanceManager();
+        var container = manager.createInstanceContainer();
         Instance instance = HypixelWorldLoader.loadFrom(
-                Path.of("..", "configuration", "ravengard", "dungeon_1.polar"),
-                manager.createInstanceContainer(), manager);
+                Path.of("..", "configuration", "ravengard", "dungeon_1.polar"), container, manager);
+        try {
+            assertEveryBottomHasItsLid(instance);
+        } finally {
+            manager.unregisterInstance(instance);
+            manager.unregisterInstance(container);
+        }
+    }
 
+    private static void assertEveryBottomHasItsLid(Instance instance) {
         int converted = DungeonChest.convertDecorChests(instance, 1);
 
         List<Entity> bottoms = chestDisplays(instance, "_bottom");
@@ -42,7 +50,6 @@ class DungeonChestCaptureTest {
         Pos throneRoom = new Pos(-91.5, 63.5, 1.5);
         assertTrue(tops.stream().anyMatch(top -> top.getPosition().samePoint(throneRoom)
                 && model(top).endsWith("silver/silver_top")));
-        manager.unregisterInstance(instance);
     }
 
     private static List<Entity> chestDisplays(Instance instance, String suffix) {

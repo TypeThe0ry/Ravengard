@@ -316,11 +316,11 @@ public final class DungeonInstanceRegistry {
                     dungeonInstance.getInstance(), generatedObjects);
             org.tinylog.Logger.info(
                     "Dungeon doors spawned: inputMarkers={} uniqueLeaves={} uniqueTops={} "
-                            + "completePairs={} partialTops={} orphanLeaves={} displays={} "
+                            + "completePairs={} restoredLeaves={} orphanLeaves={} displays={} "
                             + "interactions={} barrierRefs={} uniqueBarrierCells={}",
                     doorSpawns.inputMarkers(), doorSpawns.uniqueLeafMarkers(),
                     doorSpawns.uniqueTopMarkers(), doorSpawns.completeDoorways(),
-                    doorSpawns.partialDoorways(), doorSpawns.orphanLeaves(), doorSpawns.displays(),
+                    doorSpawns.restoredLeaves(), doorSpawns.orphanLeaves(), doorSpawns.displays(),
                     doorSpawns.interactions(), doorSpawns.barrierReferences(),
                     doorSpawns.uniqueBarrierCells());
 
@@ -357,9 +357,9 @@ public final class DungeonInstanceRegistry {
         int mobs = registerEncounters(instance, config.objects(), seed, RavengardDungeonGame.SPAWN_POINTS);
         var doorSpawns = net.swofty.type.ravengarddungeon.interactables.DungeonDoor.spawnAll(instance, config.objects());
         org.tinylog.Logger.info(
-                "Static dungeon doors spawned: inputMarkers={} completePairs={} partialTops={} "
+                "Static dungeon doors spawned: inputMarkers={} completePairs={} restoredLeaves={} "
                         + "orphanLeaves={} displays={} interactions={} uniqueBarrierCells={}",
-                doorSpawns.inputMarkers(), doorSpawns.completeDoorways(), doorSpawns.partialDoorways(),
+                doorSpawns.inputMarkers(), doorSpawns.completeDoorways(), doorSpawns.restoredLeaves(),
                 doorSpawns.orphanLeaves(), doorSpawns.displays(), doorSpawns.interactions(),
                 doorSpawns.uniqueBarrierCells());
         int chests = net.swofty.type.ravengarddungeon.interactables.DungeonChest.convertDecorChests(instance, seed);

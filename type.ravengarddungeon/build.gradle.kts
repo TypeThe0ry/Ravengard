@@ -32,3 +32,7 @@ dependencies {
     implementation(libs.polar)
     implementation(libs.fastutil)
 }
+
+tasks.test {
+    maxHeapSize = "2g"
+}

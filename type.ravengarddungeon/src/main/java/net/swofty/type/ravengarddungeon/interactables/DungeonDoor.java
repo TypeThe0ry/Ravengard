@@ -84,7 +84,7 @@ public final class DungeonDoor extends DungeonInteractable {
         Set<String> occupiedLeafCoordinates = new HashSet<>();
         List<DungeonDoor> spawnedDoors = new ArrayList<>();
         int completeDoorways = 0;
-        int partialDoorways = 0;
+        int restoredLeaves = 0;
         int topDisplays = 0;
         for (RavengardDungeonConfig.DungeonObject top : topsByCoordinate.values()) {
             List<RavengardDungeonConfig.DungeonObject> pair = new ArrayList<>(2);
@@ -92,23 +92,29 @@ public final class DungeonDoor extends DungeonInteractable {
             double[][] offsets = axisAlongX
                     ? new double[][]{{top.x() - 0.5, top.z()}, {top.x() + 1.5, top.z()}}
                     : new double[][]{{top.x(), top.z() - 0.5}, {top.x(), top.z() + 1.5}};
+            int missingIndex = -1;
             for (int index = 0; index < offsets.length; index++) {
                 double[] offset = offsets[index];
                 String key = coordinateKey(offset[0], top.y(), offset[1]);
                 RavengardDungeonConfig.DungeonObject leaf = selectLeaf(
-                        leavesByCoordinate.get(key), index == 0
-                                ? normalizedYaw(top.yaw() + 180f)
-                                : normalizedYaw(top.yaw()), consumedLeaves);
+                        leavesByCoordinate.get(key), expectedLeafYaw(top, index), consumedLeaves);
                 if (leaf != null) {
                     consumedLeaves.add(markerKey(leaf));
                     occupiedLeafCoordinates.add(coordinateKey(leaf));
                     pair.add(leaf);
+                } else {
+                    missingIndex = index;
                 }
             }
             if (!pair.isEmpty()) {
+                if (pair.size() == 1) {
+                    double[] offset = offsets[missingIndex];
+                    pair.add(new RavengardDungeonConfig.DungeonObject(top.category(), "door_1",
+                            offset[0], top.y(), offset[1], expectedLeafYaw(top, missingIndex), top.pitch()));
+                    restoredLeaves++;
+                }
                 spawnedDoors.add(spawnDoorway(instance, pair, top));
-                if (pair.size() == 2) completeDoorways++;
-                else partialDoorways++;
+                completeDoorways++;
                 topDisplays++;
             } else {
                 StaticPiece staticPiece = new StaticPiece(instance);
@@ -132,21 +138,24 @@ public final class DungeonDoor extends DungeonInteractable {
                             orphanCandidates, candidate, consumedLeaves, synthesizedOrphanLeaves);
                     if (counterpart != null) {
                         synthesizedOrphanLeaves.add(markerKey(counterpart));
-                        double midpointX = (candidate.x() + counterpart.x()) / 2.0;
-                        double midpointZ = (candidate.z() + counterpart.z()) / 2.0;
-                        boolean axisAlongX = Math.abs(candidate.x() - counterpart.x())
-                                >= Math.abs(candidate.z() - counterpart.z());
-                        RavengardDungeonConfig.DungeonObject syntheticTop =
-                                new RavengardDungeonConfig.DungeonObject(
-                                        "door", "door_1_top", midpointX, candidate.y(), midpointZ,
-                                        axisAlongX ? 180f : 270f, candidate.pitch());
-                        spawnedDoors.add(spawnDoorway(instance, List.of(candidate, counterpart), syntheticTop));
+                        spawnedDoors.add(spawnDoorway(instance, List.of(candidate, counterpart),
+                                syntheticTop(candidate, counterpart)));
                         completeDoorways++;
                         topDisplays++;
                         continue;
                     }
                 }
                 if (synthesizedOrphanLeaves.contains(markerKey(candidate))) continue;
+                RavengardDungeonConfig.DungeonObject apertureLeaf = apertureCounterpart(instance, candidate);
+                if (apertureLeaf != null && !occupiedLeafCoordinates.contains(coordinateKey(apertureLeaf))) {
+                    occupiedLeafCoordinates.add(coordinateKey(apertureLeaf));
+                    spawnedDoors.add(spawnDoorway(instance, List.of(candidate, apertureLeaf),
+                            syntheticTop(candidate, apertureLeaf)));
+                    completeDoorways++;
+                    topDisplays++;
+                    restoredLeaves++;
+                    continue;
+                }
                 spawnedDoors.add(spawnDoorway(instance, List.of(candidate), null));
                 orphanLeaves++;
         }
@@ -182,7 +191,7 @@ public final class DungeonDoor extends DungeonInteractable {
                 .mapToInt(door -> door.leaves.size())
                 .sum();
         return new SpawnSummary(inputMarkers, uniqueLeafMarkers, topsByCoordinate.size(),
-                completeDoorways, partialDoorways, orphanLeaves,
+                completeDoorways, restoredLeaves, orphanLeaves,
                 leafDisplays, topDisplays, uniqueIronGates.size(),
                 spawnedDoors.size(), barrierReferences, barrierCellCount(instance));
     }
@@ -209,6 +218,57 @@ public final class DungeonDoor extends DungeonInteractable {
             }
         }
         return best;
+    }
+
+    private static float expectedLeafYaw(RavengardDungeonConfig.DungeonObject top, int index) {
+        return index == 0 ? normalizedYaw(top.yaw() + 180f) : normalizedYaw(top.yaw());
+    }
+
+    /**
+     * Every catalogued header sits half a block past its first leaf (leaves at top - 0.5 and
+     * top + 1.5), so a synthesized header follows the same rule.
+     */
+    private static RavengardDungeonConfig.DungeonObject syntheticTop(
+            RavengardDungeonConfig.DungeonObject first,
+            RavengardDungeonConfig.DungeonObject second) {
+        boolean axisAlongX = Math.abs(first.x() - second.x()) >= Math.abs(first.z() - second.z());
+        double x = axisAlongX ? Math.min(first.x(), second.x()) + 0.5 : (first.x() + second.x()) / 2.0;
+        double z = axisAlongX ? (first.z() + second.z()) / 2.0 : Math.min(first.z(), second.z()) + 0.5;
+        return new RavengardDungeonConfig.DungeonObject(
+                "door", "door_1_top", x, first.y(), z, axisAlongX ? 180f : 270f, first.pitch());
+    }
+
+    /**
+     * A few catalogued double doorways list a single leaf and no header. The map still holds
+     * the two-block aperture on one side of that leaf, so the other leaf belongs on its far edge.
+     */
+    private static RavengardDungeonConfig.DungeonObject apertureCounterpart(
+            Instance instance, RavengardDungeonConfig.DungeonObject leaf) {
+        boolean axisAlongX = isAxisAlongX(leaf.yaw());
+        double edge = axisAlongX ? leaf.x() : leaf.z();
+        int plane = (int) Math.floor(axisAlongX ? leaf.z() : leaf.x());
+        int first = (int) Math.floor(edge);
+        boolean forward = isOpenAperture(instance, axisAlongX, plane, first, leaf.y());
+        boolean backward = isOpenAperture(instance, axisAlongX, plane, first - 2, leaf.y());
+        if (forward == backward) return null;
+        double other = edge + (forward ? 2.0 : -2.0);
+        return new RavengardDungeonConfig.DungeonObject(leaf.category(), leaf.type(),
+                axisAlongX ? other : leaf.x(), leaf.y(), axisAlongX ? leaf.z() : other,
+                normalizedYaw(leaf.yaw() + 180f), leaf.pitch());
+    }
+
+    private static boolean isOpenAperture(Instance instance, boolean axisAlongX, int plane,
+                                          int from, double y) {
+        int baseY = (int) Math.floor(y);
+        for (int along = from; along <= from + 1; along++) {
+            for (int blockY = baseY; blockY <= baseY + 1; blockY++) {
+                var block = axisAlongX
+                        ? blockAtLoaded(instance, along, blockY, plane)
+                        : blockAtLoaded(instance, plane, blockY, along);
+                if (block == null || !isDoorGapBlock(block)) return false;
+            }
+        }
+        return true;
     }
 
     private static void linkOverlappingDoors(Instance instance, List<DungeonDoor> doors) {
@@ -249,7 +309,7 @@ public final class DungeonDoor extends DungeonInteractable {
             int uniqueLeafMarkers,
             int uniqueTopMarkers,
             int completeDoorways,
-            int partialDoorways,
+            int restoredLeaves,
             int orphanLeaves,
             int leafDisplays,
             int topDisplays,
