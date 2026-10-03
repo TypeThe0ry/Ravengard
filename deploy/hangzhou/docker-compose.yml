@@ -5,7 +5,6 @@ x-forwarding-env: &forwarding_env
 
 x-zh-cn-env: &zh_cn_env
   CARBON_REDIS_URI: redis://172.19.0.1:16379
-  RAVENGARD_HUD_MINIMAP: "false"
   RAVENGARD_LOCALE: zh_CN
   RAVENGARD_LOCALE_DIR: /app/localization
   RAVENGARD_LOCALE_REPORT: "true"

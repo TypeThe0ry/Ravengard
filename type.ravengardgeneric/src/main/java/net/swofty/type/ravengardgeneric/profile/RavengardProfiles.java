@@ -80,7 +80,7 @@ public final class RavengardProfiles {
         if (profileId == null) return;
 
         player.sendMessage("<8>Profile ID: {}", profileId);
-        player.sendMessage("       ");
+        player.sendMessage(net.swofty.type.ravengardgeneric.hud.ClientMinimapSuppressor.joinSpacer());
         restoreInventory(player, profileId);
     }
 
