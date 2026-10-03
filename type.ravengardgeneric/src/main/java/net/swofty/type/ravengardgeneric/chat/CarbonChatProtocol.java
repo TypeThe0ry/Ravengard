@@ -23,6 +23,9 @@ public final class CarbonChatProtocol {
     public static final int PACKET_VERSION_REPLY = 4;
     public static final int PACKET_VERSION_REQUEST = 5;
     public static final int CHAT_MESSAGE = 7;
+    public static final int LOCAL_PLAYERS = 9;
+    public static final int LOCAL_PLAYER_CHANGE = 10;
+    public static final int WHISPER = 11;
 
     private static final int MAX_STRING_BYTES = 32767;
 
@@ -36,6 +39,12 @@ public final class CarbonChatProtocol {
     }
 
     public record ChatMessage(UUID userId, String channelKey, String username, String componentJson) {
+    }
+
+    public record PlayerChange(UUID playerId, boolean added, String playerName) {
+    }
+
+    public record Whisper(UUID from, UUID to, String componentJson) {
     }
 
     public static byte[] frame(UUID server, UUID messageId, int packetId, byte[] payload) {
@@ -120,6 +129,56 @@ public final class CarbonChatProtocol {
         return new ChatMessage(userId, channel, username, component);
     }
 
+    public static byte[] localPlayers(java.util.Map<UUID, String> players) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeVarInt(out, players.size());
+        players.forEach((id, name) -> {
+            writeUuid(out, id);
+            writeString(out, name);
+        });
+        return out.toByteArray();
+    }
+
+    public static java.util.Map<UUID, String> readLocalPlayers(byte[] payload) {
+        ByteBuffer data = ByteBuffer.wrap(payload);
+        int size = readVarInt(data);
+        java.util.Map<UUID, String> players = new java.util.HashMap<>();
+        for (int i = 0; i < size; i++) {
+            players.put(readUuid(data), readString(data));
+        }
+        return players;
+    }
+
+    public static byte[] playerChange(PlayerChange change) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeUuid(out, change.playerId());
+        writeString(out, change.added() ? "ADD" : "REMOVE");
+        if (change.added()) {
+            writeString(out, change.playerName());
+        }
+        return out.toByteArray();
+    }
+
+    public static PlayerChange readPlayerChange(byte[] payload) {
+        ByteBuffer data = ByteBuffer.wrap(payload);
+        UUID id = readUuid(data);
+        boolean added = "ADD".equals(readString(data));
+        return new PlayerChange(id, added, added ? readString(data) : null);
+    }
+
+    public static byte[] whisper(Whisper whisper) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        writeUuid(out, whisper.from());
+        writeUuid(out, whisper.to());
+        writeString(out, whisper.componentJson());
+        return out.toByteArray();
+    }
+
+    public static Whisper readWhisper(byte[] payload) {
+        ByteBuffer data = ByteBuffer.wrap(payload);
+        return new Whisper(readUuid(data), readUuid(data), readString(data));
+    }
+
     private static byte[] inflate(byte[] body) {
         if (body.length == 0) {
             throw new IllegalArgumentException("Empty frame");
@@ -157,25 +216,33 @@ public final class CarbonChatProtocol {
         if (bytes.length > MAX_STRING_BYTES) {
             throw new IllegalArgumentException("String too long for CarbonChat: " + bytes.length + " bytes");
         }
-        int length = bytes.length;
-        do {
-            int part = length & 0x7F;
-            length >>>= 7;
-            out.write(length != 0 ? part | 0x80 : part);
-        } while (length != 0);
+        writeVarInt(out, bytes.length);
         out.writeBytes(bytes);
     }
 
-    private static String readString(ByteBuffer data) {
-        int length = 0;
+    private static void writeVarInt(ByteArrayOutputStream out, int value) {
+        do {
+            int part = value & 0x7F;
+            value >>>= 7;
+            out.write(value != 0 ? part | 0x80 : part);
+        } while (value != 0);
+    }
+
+    private static int readVarInt(ByteBuffer data) {
+        int value = 0;
         int shift = 0;
         byte current;
         do {
             current = data.get();
-            length |= (current & 0x7F) << shift;
+            value |= (current & 0x7F) << shift;
             shift += 7;
             if (shift > 35) throw new IllegalArgumentException("VarInt too big");
         } while ((current & 0x80) != 0);
+        return value;
+    }
+
+    private static String readString(ByteBuffer data) {
+        int length = readVarInt(data);
         if (length > MAX_STRING_BYTES || length > data.remaining()) {
             throw new IllegalArgumentException("Bad string length " + length);
         }

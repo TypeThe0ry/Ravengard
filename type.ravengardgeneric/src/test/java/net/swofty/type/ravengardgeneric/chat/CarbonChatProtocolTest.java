@@ -98,6 +98,53 @@ class CarbonChatProtocolTest {
         assertNull(CarbonChatProtocol.versionRequester(toOthers.toByteArray(), self));
     }
 
+    @Test
+    void playerListsAndChangesMatchCarbonsLayout() {
+        UUID other = UUID.fromString("0000000a-0000-0000-0000-00000000000b");
+        java.util.Map<UUID, String> players = new java.util.LinkedHashMap<>();
+        players.put(PLAYER, "TypeThe0ry");
+        players.put(other, "zxz");
+        byte[] list = CarbonChatProtocol.localPlayers(players);
+
+        ByteArrayOutputStream expected = new ByteArrayOutputStream();
+        expected.write(2);
+        expected.writeBytes(uuid(PLAYER));
+        expected.writeBytes(carbonString("TypeThe0ry"));
+        expected.writeBytes(uuid(other));
+        expected.writeBytes(carbonString("zxz"));
+        assertArrayEquals(expected.toByteArray(), list);
+        assertEquals(players, CarbonChatProtocol.readLocalPlayers(list));
+
+        byte[] added = CarbonChatProtocol.playerChange(new CarbonChatProtocol.PlayerChange(PLAYER, true, "TypeThe0ry"));
+        ByteArrayOutputStream addLayout = new ByteArrayOutputStream();
+        addLayout.writeBytes(uuid(PLAYER));
+        addLayout.writeBytes(carbonString("ADD"));
+        addLayout.writeBytes(carbonString("TypeThe0ry"));
+        assertArrayEquals(addLayout.toByteArray(), added);
+
+        byte[] removed = CarbonChatProtocol.playerChange(new CarbonChatProtocol.PlayerChange(PLAYER, false, "TypeThe0ry"));
+        ByteArrayOutputStream removeLayout = new ByteArrayOutputStream();
+        removeLayout.writeBytes(uuid(PLAYER));
+        removeLayout.writeBytes(carbonString("REMOVE"));
+        assertArrayEquals(removeLayout.toByteArray(), removed);
+        assertEquals(false, CarbonChatProtocol.readPlayerChange(removed).added());
+    }
+
+    @Test
+    void aWhisperCarriesBothPlayersAndTheMessage() {
+        UUID to = UUID.randomUUID();
+        byte[] payload = CarbonChatProtocol.whisper(new CarbonChatProtocol.Whisper(PLAYER, to, "{\"text\":\"在吗\"}"));
+
+        ByteArrayOutputStream expected = new ByteArrayOutputStream();
+        expected.writeBytes(uuid(PLAYER));
+        expected.writeBytes(uuid(to));
+        expected.writeBytes(carbonString("{\"text\":\"在吗\"}"));
+        assertArrayEquals(expected.toByteArray(), payload);
+        CarbonChatProtocol.Whisper read = CarbonChatProtocol.readWhisper(payload);
+        assertEquals(to, read.to());
+        assertEquals("{\"text\":\"在吗\"}", read.componentJson());
+    }
+
     private static byte[] uuid(UUID value) {
         return ByteBuffer.allocate(16).putLong(value.getMostSignificantBits()).putLong(value.getLeastSignificantBits()).array();
     }
