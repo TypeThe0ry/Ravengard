@@ -116,6 +116,10 @@ public class AnimatedRavengardNPC extends RavengardNPC {
 
     @Override
     public void onClick(RavengardPlayer player) {
+        if (clip.joinsQueue()) {
+            net.swofty.type.ravengardgeneric.queue.RavengardQueue.join(player);
+            return;
+        }
         // once the introduction has been heard, shopkeepers go straight to their shop
         if (clip.shop() != null && dialogueSessions.get(player.getUuid()) == null
                 && net.swofty.type.ravengardgeneric.profile.RavengardProfiles.hasIntro(player, clip.name())) {

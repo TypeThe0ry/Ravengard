@@ -67,6 +67,10 @@ public final class RavengardAnimationClip {
         return shop;
     }
 
+    public boolean joinsQueue() {
+        return net.swofty.type.ravengardgeneric.queue.RavengardQueue.NPC_CLIP.equals(name);
+    }
+
     /** An unnumbered line some shopkeepers say as their shop opens, captured without an index. */
     public String shopLine() {
         return shopLine;

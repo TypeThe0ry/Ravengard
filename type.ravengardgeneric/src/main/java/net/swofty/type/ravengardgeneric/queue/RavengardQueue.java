@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class RavengardQueue {
     public static final String FIGHT_QUEUE = "Ravengard Dungeon Trios";
+    public static final String NPC_CLIP = "queue";
     private static final TaskSchedule MATCH_DELAY = TaskSchedule.seconds(3);
     private static final Sound DRUMS = Sound.sound()
             .type(Key.key("hypixel_ravengard", "action.drums"))
