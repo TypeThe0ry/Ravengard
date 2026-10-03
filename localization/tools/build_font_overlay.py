@@ -64,7 +64,7 @@ def main():
         'pack_format': official['pack_format'],
         'min_format': official.get('min_format', official['pack_format']),
         'max_format': official.get('max_format', official['pack_format']),
-        'description': '§6§lHypixel §d§lRavengard §f简体中文补充',
+        'description': {'color': 'gray', 'text': 'Ellan艾尔岚服务器搜打撤材质包'},
     }}
     with open(os.path.join(PACK, 'pack.mcmeta'), 'w', encoding='utf-8') as out:
         json.dump(mcmeta, out, ensure_ascii=False, indent=1)

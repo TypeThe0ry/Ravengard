@@ -32,11 +32,12 @@ public class HypixelPackServer {
             }
         }
 
-        Map<String, BuiltResourcePack> packs = List.of(
-                        RavengardPackDefinition.INSTANCE,
-                        net.swofty.packer.packs.ravengard.RavengardLocalePackDefinition.INSTANCE,
-                        SkyblockPackDefinition.INSTANCE
-                ).stream()
+        List<PackDefinition> definitions = new java.util.ArrayList<>(List.of(
+                RavengardPackDefinition.INSTANCE, SkyblockPackDefinition.INSTANCE));
+        if (Files.isDirectory(Path.of(RavengardPackDefinition.LOCALE_OVERLAY_DIRECTORY))) {
+            definitions.add(RavengardPackDefinition.withOverlay(RavengardPackDefinition.LOCALE_OVERLAY_DIRECTORY));
+        }
+        Map<String, BuiltResourcePack> packs = definitions.stream()
                 .filter(HypixelPackServer::packDirectoryExists)
                 .map(HypixelPackServer::buildPack)
                 .collect(Collectors.toMap(

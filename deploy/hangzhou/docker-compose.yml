@@ -8,6 +8,7 @@ x-zh-cn-env: &zh_cn_env
   RAVENGARD_LOCALE: zh_CN
   RAVENGARD_LOCALE_DIR: /app/localization
   RAVENGARD_LOCALE_REPORT: "true"
+  RAVENGARD_PACK_ID_FROM: /craftengine-cache/gitlab_default.json
 
 services:
   mongodb:
@@ -90,6 +91,7 @@ services:
     volumes:
       - ./configuration:/app/configuration_files
       - ./localization/zh_CN:/app/localization:ro
+      - /mnt/data/minecraft/spawn/plugins/CraftEngine/cache:/craftengine-cache:ro
     networks: [ravengard]
 
   ravengard_dungeon:
@@ -106,6 +108,7 @@ services:
     volumes:
       - ./configuration:/app/configuration_files
       - ./localization/zh_CN:/app/localization:ro
+      - /mnt/data/minecraft/spawn/plugins/CraftEngine/cache:/craftengine-cache:ro
     networks: [ravengard]
 
   pack_server:

@@ -19,12 +19,6 @@ public class ResourcePackManager {
 
     @Getter
     private final HypixelResourcePack activePack;
-    private static final java.util.List<ResourcePackInfo> EXTRA_PACKS = new java.util.concurrent.CopyOnWriteArrayList<>();
-
-    /** Registers a pack applied on top of the active pack, for overlays such as localization fonts and client strings. */
-    public static void addExtraPack(ResourcePackInfo pack) {
-        EXTRA_PACKS.add(pack);
-    }
 
     public ResourcePackManager(HypixelResourcePack pack) {
         this.activePack = pack;
@@ -55,7 +49,7 @@ public class ResourcePackManager {
         }
 
         ResourcePackInfo info = ResourcePackInfo.resourcePackInfo(
-                UUID.nameUUIDFromBytes(packHash.getBytes()),
+                activePack.getPackId(),
                 URI.create(packUrl),
                 packHash
         );
@@ -63,7 +57,6 @@ public class ResourcePackManager {
         CompletableFuture<Void> resolved = new CompletableFuture<>();
         java.util.List<ResourcePackInfo> packs = new java.util.ArrayList<>();
         packs.add(info);
-        packs.addAll(EXTRA_PACKS);
         java.util.Set<UUID> pending = java.util.concurrent.ConcurrentHashMap.newKeySet();
         packs.forEach(pack -> pending.add(pack.id()));
         ResourcePackRequest request = ResourcePackRequest.resourcePackRequest()

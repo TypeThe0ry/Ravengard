@@ -9,6 +9,10 @@ public interface HypixelResourcePack {
     String getPackUrl();
     String getPackHash();
 
+    default java.util.UUID getPackId() {
+        return java.util.UUID.nameUUIDFromBytes(getPackHash().getBytes());
+    }
+
     boolean isRequired();
 
     void initialize();

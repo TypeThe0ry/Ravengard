@@ -76,29 +76,16 @@ public final class RavengardLocalization {
     }
 
     /**
-     * The overlay pack carries the glyph advances the official pack's centring fonts lack for the
-     * translated characters. It is built here only to learn its hash; the pack server serves it.
+     * The localization layer carries the glyph advances the official pack's centring fonts lack for
+     * the translated characters. It is laid over the official files so players get a single pack.
      */
     private static void registerFontOverlay(File packDirectory) {
         if (!packDirectory.isDirectory()) {
             Logger.info("No localization font overlay at {}", packDirectory);
             return;
         }
-        try {
-            var definition = new net.swofty.packer.packs.ravengard.RavengardLocalePackDefinition(packDirectory.getPath());
-            var built = new net.swofty.packer.HypixelPackBuilder(definition).build();
-            String serverUrl = net.swofty.type.generic.resourcepack.HypixelResourcePack
-                    .getConfigFor(net.swofty.packer.packs.ravengard.RavengardPackDefinition.INSTANCE.getPackName())
-                    .getServerUrl();
-            net.swofty.type.generic.resourcepack.ResourcePackManager.addExtraPack(
-                    net.kyori.adventure.resource.ResourcePackInfo.resourcePackInfo(
-                            java.util.UUID.nameUUIDFromBytes(built.hash().getBytes()),
-                            java.net.URI.create(serverUrl + "/" + built.hash() + ".zip"),
-                            built.hash()));
-            Logger.info("Localization font overlay registered: {}", built.hash());
-        } catch (Exception exception) {
-            Logger.error(exception, "Failed to build the localization font overlay from {}", packDirectory);
-        }
+        net.swofty.type.ravengardgeneric.resourcepack.RavengardPack.useOverlay(packDirectory.getPath());
+        Logger.info("Localization pack layer {} is merged into the Ravengard pack", packDirectory);
     }
 
     public static void install(Catalog loaded, String locale, boolean forEveryone) {

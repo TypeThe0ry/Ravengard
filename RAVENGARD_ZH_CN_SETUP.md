@@ -128,7 +128,7 @@ Set-Location D:\Projects\AdventureServer
 - Extraction 门模型使用官方 `exit_portal` 模型的世界实体 `NONE` display context；按 Minecraft 26.2 的 `-0.5` 原点平移和 31 个旋转 element 的实际 bounds 校准，模型底部补偿 `1.228264169` 格，水平偏移为 `0.040813045/0.018987701`，并随 cyan 房间的 yaw 旋转。不会改动 `.polar` 或资源包。
 - 2026-09-24 服务端新 Dungeon 实例实际输出 10 个 extraction 锚点及对应模型/交互坐标；日志确认 `Registered 10 dynamic cyan-room extraction points`。
 - 2026-09-25 修复动态房间门标记去重：房间目录的 `doors` 条目没有 `category` 字段，合并器改为按 `door_1`、`door_1_top`、`iron_gate` 类型识别，避免重复模型和重复 BARRIER；不完整单叶/缺顶标记不再写入整面透明屏障。
-- 旧运行镜像曾通过临时验收 Agent 记录过 `Interact resolved`、3 秒后的 `Interact open` 和 `Ravengard extraction successful`；当前镜像也已完成真实客户端闭环验收。撤离通道水平有效距离为 3.5 格、垂直有效距离为 3 格，并在蓄力期间播放官方资源包对应的传送门环境音与原生 PORTAL 粒子动画，避免玩家站在传送门前正常右键后读条被立即取消。临时 Agent 只位于 `artifacts/`，未挂载或打包进生产服务。
+- 旧运行镜像曾通过临时验收 Agent 记录过 `Interact resolved`、3 秒后的 `Interact open` 和 `Ravengard extraction successful`；当前镜像也已完成真实客户端闭环验收。撤离通道水平有效距离为点击距离 4.5 格加交互框半宽（共 5.5 格）、垂直有效距离为 3 格，并在蓄力期间播放官方资源包对应的传送门环境音与原生 PORTAL 粒子动画，避免玩家站在传送门前正常右键后读条被立即取消。临时 Agent 只位于 `artifacts/`，未挂载或打包进生产服务。
 - 2026-09-24 Computer Use 已通过 `node_repl + @oai/sky` 重新绑定 Minecraft 26.2；实际画面显示 Ravengard 小地图、HUD、地图模型和 Resource Pack，F3 读取到玩家坐标，移动输入改变坐标且圈外受到伤害。
 - 2026-09-25 重建后的当前 Dungeon 镜像再次通过原生 Computer Use 进入；画面可见官方 Dungeon 地形、门、箱子、HUD 与小地图。当前客户端截图中未观察到无材质碰撞块；服务端本局记录 `379 door chunks loaded`、`440 chests converted`。宝箱伪装逻辑由 `DungeonChest` 保持：先保留官方箱子显示，交互后按概率转为 Mimic；普通遭遇注册明确排除所有 chest-mimic 类型。该日期的早期探针未产生 `ClientInteractEntityPacket`，属于历史未通过记录；后续原生客户端已完成开箱、Mimic 揭示、击杀和 Satchel GUI 回归，详见下方最新验证。
 - 2026-09-25 最新实例使用 native Computer Use 对真实撤离模型右键：服务端依次记录 `Interact resolved class=DungeonExtraction`、约 3 秒后的 `Interact open class=DungeonExtraction`、`Ravengard extraction successful`，客户端随后返回 Ravengard Lobby。该回归没有直接调用 `open()`。

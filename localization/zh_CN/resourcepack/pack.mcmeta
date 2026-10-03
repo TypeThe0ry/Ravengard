@@ -3,6 +3,9 @@
   "pack_format": 88,
   "min_format": 88,
   "max_format": 88,
-  "description": "§6§lHypixel §d§lRavengard §f简体中文补充"
+  "description": {
+   "color": "gray",
+   "text": "Ellan艾尔岚服务器搜打撤材质包"
+  }
  }
 }

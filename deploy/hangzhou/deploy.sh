@@ -38,12 +38,12 @@ upload() {
 }
 
 echo "== building"
-(cd "$ROOT" && ./gradlew.bat :loader:shadowJar :velocity.extension:shadowJar --offline --no-daemon -q)
+(cd "$ROOT" && ./gradlew.bat :loader:shadowJar :velocity.extension:shadowJar :packer:shadowJar --offline --no-daemon -q)
 
 echo "== staging"
 mkdir -p "$STAGE/jars" "$STAGE/localization"
-cp "$ROOT/loader/build/libs/HypixelCore.jar" "$ROOT/velocity.extension/build/libs/SkyBlockProxy.jar" "$STAGE/jars/"
-for jar in ServiceOrchestrator.jar ServiceParty.jar net.swofty.packer.HypixelPackServer.jar; do
+cp "$ROOT/loader/build/libs/HypixelCore.jar" "$ROOT/velocity.extension/build/libs/SkyBlockProxy.jar"     "$ROOT/packer/build/libs/net.swofty.packer.HypixelPackServer.jar" "$STAGE/jars/"
+for jar in ServiceOrchestrator.jar ServiceParty.jar; do
     cp "$ROOT/DockerFiles/jars/$jar" "$STAGE/jars/"
 done
 cp -r "$ROOT/configuration" "$STAGE/configuration"
