@@ -22,7 +22,7 @@ public final class DungeonExtraction extends DungeonInteractable {
     static final double MODEL_Z_OFFSET = 0.018987701;
     static final float INTERACTION_WIDTH = 2.0f;
     static final float INTERACTION_HEIGHT = 2.8f;
-    static final double CHANNEL_HORIZONTAL_DISTANCE = 3.5;
+    static final double CHANNEL_HORIZONTAL_DISTANCE = InteractableRegistry.AIM_REACH + INTERACTION_WIDTH / 2.0;
     static final double CHANNEL_VERTICAL_DISTANCE = 3.0;
 
     private final RavengardDungeonGame game;

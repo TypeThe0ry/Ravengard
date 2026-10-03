@@ -24,8 +24,13 @@ public final class InteractableRegistry {
     private static final Map<UUID, BossBar> BARS = new ConcurrentHashMap<>();
     private static final Map<Inventory, CloseHandler> CLOSE_HANDLERS = new ConcurrentHashMap<>();
     private static final Set<UUID> HELD_RIGHT_CLICK = ConcurrentHashMap.newKeySet();
-    private static final Map<UUID, DungeonDoor> DOOR_CLICK_LATCHES = new ConcurrentHashMap<>();
+    private static final Map<UUID, DoorLatch> DOOR_CLICK_LATCHES = new ConcurrentHashMap<>();
     private static final double DOOR_REARM_DISTANCE = 3.0;
+    /**
+     * A held right click repeats the interact packet every four ticks; a longer gap means the
+     * button was released and pressed again.
+     */
+    static final long DOOR_REPEAT_GAP_MILLIS = 400;
     static final int UNVIEWED_CLOSE_TICKS = 40;
     private static volatile java.util.function.Predicate<Player> accessGate = player -> true;
 
@@ -76,7 +81,7 @@ public final class InteractableRegistry {
             else BARS.remove(entry.getKey());
             return true;
         });
-        DOOR_CLICK_LATCHES.entrySet().removeIf(entry -> entry.getValue() == interactable);
+        DOOR_CLICK_LATCHES.entrySet().removeIf(entry -> entry.getValue().door() == interactable);
         CLOSE_HANDLERS.entrySet().removeIf(entry -> entry.getValue().target == interactable);
     }
 
@@ -205,9 +210,9 @@ public final class InteractableRegistry {
             return;
         }
         Channel current = CHANNELS.get(player.getUuid());
+        if (interactable instanceof DungeonDoor door && !tryDoorClickEdge(
+                player.getUuid(), door, player.getPosition(), System.currentTimeMillis())) return;
         if (current != null && current.target() == interactable) return;
-        if (interactable instanceof DungeonDoor door
-                && !tryDoorClickEdge(player.getUuid(), door, player.getPosition())) return;
         if (current != null) current.target().channelCancelled(player);
         CHANNELS.put(player.getUuid(), new Channel(interactable, 0f));
         bar(player, interactable, 0f);
@@ -235,15 +240,14 @@ public final class InteractableRegistry {
         if (channel != null) channel.target().channelCancelled(player);
     }
 
-    static boolean tryDoorClickEdge(UUID playerId, DungeonDoor door, Pos playerPosition) {
-        DungeonDoor latched = DOOR_CLICK_LATCHES.get(playerId);
-        if (latched != null && latched == door
-                && playerPosition.distance(door.getInteraction().getPosition()) <= DOOR_REARM_DISTANCE) {
-            return false;
-        }
-        if (latched != null) DOOR_CLICK_LATCHES.remove(playerId, latched);
-        DOOR_CLICK_LATCHES.put(playerId, door);
-        return true;
+    static boolean tryDoorClickEdge(UUID playerId, DungeonDoor door, Pos playerPosition, long nowMillis) {
+        DoorLatch latched = DOOR_CLICK_LATCHES.put(playerId, new DoorLatch(door, nowMillis));
+        return latched == null || latched.door() != door
+                || nowMillis - latched.lastPacketMillis() > DOOR_REPEAT_GAP_MILLIS
+                || playerPosition.distance(door.getInteraction().getPosition()) > DOOR_REARM_DISTANCE;
+    }
+
+    private record DoorLatch(DungeonDoor door, long lastPacketMillis) {
     }
 
     public static void watchClose(Inventory inventory, DungeonInteractable target, Consumer<Player> handler) {

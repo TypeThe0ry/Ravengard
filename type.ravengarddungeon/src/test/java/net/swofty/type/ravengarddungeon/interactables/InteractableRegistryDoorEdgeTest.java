@@ -28,7 +28,7 @@ class InteractableRegistryDoorEdgeTest {
     }
 
     @Test
-    void repeatedDoorPacketsDoNotToggleUntilPlayerLeavesDoorway() {
+    void heldClickPacketsToggleOnceButAReleasedClickTogglesAgain() {
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
         instance.setGenerator(unit -> unit.modifier().fillHeight(64, 66, Block.AIR));
         instance.loadChunk(0, 0).join();
@@ -42,12 +42,17 @@ class InteractableRegistryDoorEdgeTest {
                 .map(DungeonDoor.class::cast)
                 .findFirst()
                 .orElseThrow();
-        assertFalse(door.allowReactivation());
+        assertTrue(door.allowReactivation());
         UUID player = UUID.randomUUID();
 
-        assertTrue(InteractableRegistry.tryDoorClickEdge(player, door, new Pos(4, 65, 7.5)));
-        assertFalse(InteractableRegistry.tryDoorClickEdge(player, door, new Pos(4, 65, 7.5)));
-        assertTrue(InteractableRegistry.tryDoorClickEdge(player, door, new Pos(4, 65, 9.5)));
+        Pos doorway = new Pos(4, 65, 7.5);
+        long gap = InteractableRegistry.DOOR_REPEAT_GAP_MILLIS;
+        assertTrue(InteractableRegistry.tryDoorClickEdge(player, door, doorway, 1_000));
+        assertFalse(InteractableRegistry.tryDoorClickEdge(player, door, doorway, 1_200));
+        assertFalse(InteractableRegistry.tryDoorClickEdge(player, door, doorway, 1_400));
+        assertFalse(InteractableRegistry.tryDoorClickEdge(player, door, doorway, 1_400 + gap));
+        assertTrue(InteractableRegistry.tryDoorClickEdge(player, door, doorway, 1_401 + gap * 2));
+        assertTrue(InteractableRegistry.tryDoorClickEdge(player, door, new Pos(4, 65, 9.5), 1_402 + gap * 2));
 
         InteractableRegistry.removeInstance(instance);
         MinecraftServer.getInstanceManager().unregisterInstance(instance);

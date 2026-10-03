@@ -31,8 +31,13 @@ class DungeonExtractionModelTest {
         assertEquals(0.018987701, DungeonExtraction.MODEL_Z_OFFSET, 1.0e-9);
         assertEquals(2.0f, DungeonExtraction.INTERACTION_WIDTH);
         assertEquals(2.8f, DungeonExtraction.INTERACTION_HEIGHT);
-        assertEquals(3.5, DungeonExtraction.CHANNEL_HORIZONTAL_DISTANCE, 1.0e-9);
         assertEquals(3.0, DungeonExtraction.CHANNEL_VERTICAL_DISTANCE, 1.0e-9);
+    }
+
+    @Test
+    void aPortalThatCanBeClickedCanAlsoBeChannelledFromThere() {
+        assertTrue(DungeonExtraction.CHANNEL_HORIZONTAL_DISTANCE
+                >= InteractableRegistry.AIM_REACH + DungeonExtraction.INTERACTION_WIDTH / 2.0);
     }
 
     @Test

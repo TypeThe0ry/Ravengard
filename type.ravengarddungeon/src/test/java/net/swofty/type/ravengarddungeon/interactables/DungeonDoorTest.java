@@ -822,6 +822,46 @@ class DungeonDoorTest {
     }
 
     @Test
+    void openedDoorClosesAgainUnlessSomethingStandsInTheDoorway() throws Exception {
+        InstanceContainer instance = instance();
+        DungeonDoor.spawnAll(instance, List.of(
+                marker("door_1", 3, 66.5, 5, 0),
+                marker("door_1", 5, 66.5, 5, 180),
+                marker("door_1_top", 3.5, 66.5, 5, 180)
+        ));
+        DungeonDoor door = instance.getEntities().stream()
+                .filter(entity -> entity.getEntityType() == EntityType.INTERACTION)
+                .map(InteractableRegistry::byInteraction)
+                .map(DungeonDoor.class::cast)
+                .findFirst()
+                .orElseThrow();
+
+        door.open(null);
+        finishSwing(door);
+        assertEquals(true, door.isOpened());
+
+        var blocker = new net.minestom.server.entity.LivingEntity(EntityType.ZOMBIE);
+        blocker.setInstance(instance, new Pos(4, 65, 5.5)).join();
+        door.open(null);
+        assertEquals(true, door.isOpened());
+        assertEquals(Block.AIR, instance.getBlock(4, 65, 5));
+
+        blocker.remove();
+        door.open(null);
+        assertEquals(false, door.isOpened());
+        assertEquals(Block.BARRIER, instance.getBlock(4, 65, 5));
+
+        InteractableRegistry.removeInstance(instance);
+        unregister(instance);
+    }
+
+    private static void finishSwing(DungeonDoor door) throws Exception {
+        Field field = DungeonDoor.class.getDeclaredField("swinging");
+        field.setAccessible(true);
+        field.setBoolean(door, false);
+    }
+
+    @Test
     void doorOpenCloseOpenCycleReleasesAndReacquiresItsOwnBarriers() throws Exception {
         InstanceContainer instance = instance();
         DungeonDoor.spawnAll(instance, List.of(

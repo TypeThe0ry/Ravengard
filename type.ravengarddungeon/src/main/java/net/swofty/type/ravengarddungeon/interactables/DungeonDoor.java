@@ -686,7 +686,7 @@ public final class DungeonDoor extends DungeonInteractable {
 
     @Override
     public boolean allowReactivation() {
-        return false;
+        return true;
     }
 
     @Override
@@ -703,9 +703,24 @@ public final class DungeonDoor extends DungeonInteractable {
     public void open(Player player) {
         if (swinging) return;
         boolean target = !opened;
+        if (!target && overlapGroup().stream().anyMatch(DungeonDoor::doorwayOccupied)) return;
         for (DungeonDoor door : overlapGroup()) {
             if (door.opened != target) door.swing(target);
         }
+    }
+
+    private boolean doorwayOccupied() {
+        for (var cell : closedBarriers.keySet()) {
+            var block = new net.minestom.server.collision.BoundingBox(1, 1, 1);
+            var corner = new Pos(cell.blockX(), cell.blockY(), cell.blockZ());
+            for (Entity entity : instance.getNearbyEntities(corner.add(0.5, 0.5, 0.5), 2.5)) {
+                if (!(entity instanceof net.minestom.server.entity.LivingEntity) || entity.isRemoved()) continue;
+                if (entity.getBoundingBox().intersectBox(corner.add(0.5, 0, 0.5).sub(entity.getPosition()), block)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void toggleBarriers(boolean open) {
