@@ -58,6 +58,11 @@ public class Hypixel {
     @SneakyThrows
     static void main(String[] args) {
         System.setProperty("minestom.automatic-component-translation", "true");
+        // a client applying the large server resource pack on first join stops answering keep-alives
+        // for longer than Minestom's 15 s default
+        if (System.getProperty("minestom.keep-alive-kick") == null) {
+            System.setProperty("minestom.keep-alive-kick", "60000");
+        }
         if (args.length == 0 || !ServerType.isServerType(args[0])) {
             Logger.error("Please specify a server type.");
             Arrays.stream(ServerType.values()).forEach(serverType -> Logger.error(serverType.name()));
