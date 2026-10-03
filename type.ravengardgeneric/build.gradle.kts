@@ -24,6 +24,8 @@ dependencies {
         exclude(group = "org.jboss.shrinkwrap.resolver", module = "shrinkwrap-resolver-depchain")
     }
     implementation(libs.gson)
+    implementation(libs.jedis)
+    implementation(libs.zstd.jni)
     implementation(libs.tinylog.api)
     implementation(libs.tinylog.impl)
 
