@@ -39,6 +39,23 @@ class RavengardHudComposerTest {
     }
 
     @Test
+    void withoutTheMinimapItsLayersAreBlankAndTheRestOfTheHudStays() {
+        RavengardHudState state = new RavengardHudState();
+        state.setDungeon(true);
+        state.setDate("10/03/26");
+
+        var withMinimap = RavengardHudComposer.compose(state, true);
+        var withoutMinimap = RavengardHudComposer.compose(state, false);
+
+        for (RavengardHudLayer layer : new RavengardHudLayer[]{RavengardHudLayer.PLAYER_MARKER,
+                RavengardHudLayer.MINIMAP_FRAME, RavengardHudLayer.MINIMAP_TILES, RavengardHudLayer.MINIMAP_BACKGROUND}) {
+            assertEquals(net.kyori.adventure.text.Component.empty(), withoutMinimap.get(layer), layer.name());
+        }
+        assertEquals(withMinimap.get(RavengardHudLayer.STATS), withoutMinimap.get(RavengardHudLayer.STATS));
+        assertEquals(withMinimap.get(RavengardHudLayer.KEYBIND_ICONS), withoutMinimap.get(RavengardHudLayer.KEYBIND_ICONS));
+    }
+
+    @Test
     void abilityItemCarriesTheAbilityUsedByItsTrigger() {
         for (RavengardAbility ability : RavengardAbility.values()) {
             var item = RavengardKit.ability(ability, RavengardKit.SLOT_ABILITY_ONE);

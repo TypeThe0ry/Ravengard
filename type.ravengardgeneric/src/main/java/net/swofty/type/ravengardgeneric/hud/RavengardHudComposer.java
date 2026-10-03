@@ -25,6 +25,11 @@ public final class RavengardHudComposer {
      * carry absolute positions on the 512px map canvas centred on the layout. */
     public static volatile java.util.function.Function<RavengardHudState, Component> dungeonTabMap;
 
+    private static final boolean MINIMAP = !"false".equalsIgnoreCase(System.getenv("RAVENGARD_HUD_MINIMAP"));
+    private static final java.util.Set<RavengardHudLayer> MINIMAP_LAYERS = java.util.EnumSet.of(
+            RavengardHudLayer.PLAYER_MARKER, RavengardHudLayer.MINIMAP_FRAME,
+            RavengardHudLayer.MINIMAP_TILES, RavengardHudLayer.MINIMAP_BACKGROUND);
+
     private static final Gson GSON = new Gson();
     private static final Map<String, String> TEMPLATES = new HashMap<>();
 
@@ -47,15 +52,23 @@ public final class RavengardHudComposer {
     }
 
     public static Map<RavengardHudLayer, Component> compose(RavengardHudState state) {
+        return compose(state, MINIMAP);
+    }
+
+    static Map<RavengardHudLayer, Component> compose(RavengardHudState state, boolean minimap) {
         Map<RavengardHudLayer, Component> layers = new EnumMap<>(RavengardHudLayer.class);
         for (RavengardHudLayer layer : RavengardHudLayer.values()) {
+            if (!minimap && MINIMAP_LAYERS.contains(layer)) {
+                layers.put(layer, Component.empty());
+                continue;
+            }
             if (layer == RavengardHudLayer.MINIMAP_TILES && state.isDungeon()) {
                 layers.put(layer, Component.text(RavengardHudGlyphs.cryptTiles())
                         .font(RavengardFont.RAVENGARD)
                         .color(TextColor.color(mapTint(state))));
                 continue;
             }
-            if (layer == RavengardHudLayer.SPACER_10 && state.isDungeon() && state.getDeathWall() != null) {
+            if (minimap && layer == RavengardHudLayer.SPACER_10 && state.isDungeon() && state.getDeathWall() != null) {
                 layers.put(layer, minimapDeathWall(state));
                 continue;
             }
