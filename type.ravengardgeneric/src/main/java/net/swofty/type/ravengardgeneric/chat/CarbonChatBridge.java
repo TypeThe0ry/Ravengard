@@ -71,6 +71,8 @@ public final class CarbonChatBridge {
                 .delay(TaskSchedule.seconds(5)).repeat(TaskSchedule.seconds(5)).schedule();
         MinecraftServer.getSchedulerManager().buildTask(bridge::announcePlayers)
                 .delay(TaskSchedule.seconds(60)).repeat(TaskSchedule.seconds(60)).schedule();
+        MinecraftServer.getSchedulerManager().buildTask(bridge::hideNetworkFromTabList)
+                .delay(TaskSchedule.seconds(3)).repeat(TaskSchedule.seconds(3)).schedule();
         MinecraftServer.getSchedulerManager().buildShutdownTask(() -> bridge.publish(
                 CarbonChatProtocol.LOCAL_PLAYERS, CarbonChatProtocol.localPlayers(Map.of())));
         MinecraftServer.getGlobalEventHandler()
@@ -123,6 +125,29 @@ public final class CarbonChatBridge {
         rememberConversation(sender.getUuid(), recipient.id());
         Thread.ofVirtual().start(() -> publish(CarbonChatProtocol.WHISPER, CarbonChatProtocol.whisper(
                 new CarbonChatProtocol.Whisper(sender.getUuid(), recipient.id(), component))));
+    }
+
+    /**
+     * A network proxy that rebuilds the tab list on a server switch (TAB's global playerlist) can
+     * still list the players of the server the viewer just left; the Ravengard tab list only
+     * carries the map, so the network's players are taken off it.
+     */
+    private void hideNetworkFromTabList() {
+        java.util.Set<UUID> local = new java.util.HashSet<>();
+        for (Player player : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
+            local.add(player.getUuid());
+        }
+        java.util.List<UUID> remote = remotePlayers.values().stream()
+                .flatMap(players -> players.keySet().stream())
+                .filter(id -> !local.contains(id))
+                .distinct()
+                .toList();
+        if (remote.isEmpty()) return;
+        net.minestom.server.network.packet.server.play.PlayerInfoRemovePacket packet =
+                new net.minestom.server.network.packet.server.play.PlayerInfoRemovePacket(remote);
+        for (Player player : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
+            player.sendPacket(packet);
+        }
     }
 
     private void heartbeat() {
