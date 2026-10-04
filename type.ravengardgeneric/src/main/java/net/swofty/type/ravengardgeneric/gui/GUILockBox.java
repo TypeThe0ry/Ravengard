@@ -1,10 +1,7 @@
 package net.swofty.type.ravengardgeneric.gui;
 
 import net.kyori.adventure.nbt.TagStringIO;
-import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
-import net.minestom.server.item.Material;
-import net.minestom.server.item.component.TooltipDisplay;
 import net.swofty.commons.text.Text;
 import net.swofty.type.generic.gui.v2.DefaultState;
 import net.swofty.type.generic.gui.v2.ViewLayout;
@@ -18,30 +15,28 @@ import org.tinylog.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
- * The lock box, rebuilt verbatim from the captured menu: the top five rows are the storage grid, the
- * bottom row is navigation (back left, page arrows right), and the only chrome drawn over the grid is
- * the captured "next tier" widget -- two locked panes then the four wide expand button, sitting right
- * after the last unlocked slot. Empty unlocked slots are left bare so the panel's own grid shows
- * through, exactly as the capture does. Tier one opens twenty-eight slots and each expansion adds
- * eight for the captured hundred crowns; later tier prices double, pending captures.
+ * The lock box, rebuilt from the captured menu: the top five rows are the storage grid, eight cells a
+ * row as the panel draws them, and the bottom row is navigation (back left, page arrows right). The
+ * only chrome over the grid is the four wide expand button right after the last unlocked cell. Empty
+ * unlocked cells are left bare so the panel's own grid shows through, exactly as the capture does.
+ * Tier one opens twenty-eight cells and each expansion adds eight for the captured hundred crowns;
+ * later tier prices double, pending captures.
  */
 public class GUILockBox extends RavengardView {
     private static final int PANEL_ICON = 0xF00A;
-    private static final int CONTENT_SLOTS = 45;
+    private static final int COLUMNS = 8;
+    private static final int CELLS_PER_PAGE = COLUMNS * 5;
     private static final int BASE_SLOTS = 28;
     private static final int SLOTS_PER_TIER = 8;
     private static final int MAX_TIER = 5;
     private static final int MAX_SLOTS = BASE_SLOTS + SLOTS_PER_TIER * (MAX_TIER - 1);
     private static final int[] EXPAND_COSTS = {100, 200, 400, 800};
     private static final int EXPAND_WIDTH = 4;
-    private static final int WIDGET_WIDTH = 2 + EXPAND_WIDTH;
     private static final int SLOT_PREVIOUS = 51;
     private static final int SLOT_NEXT = 53;
-    private static final String LOCKED_MODEL_ROOT = "hypixel_ravengard:ui/menu/generic/storage_locked_";
 
     private final int page;
 
@@ -75,12 +70,12 @@ public class GUILockBox extends RavengardView {
 
         for (Map.Entry<Integer, String> entry : stored.entrySet()) {
             int absolute = entry.getKey();
-            if (absolute >= unlocked || absolute / CONTENT_SLOTS != page) {
+            if (absolute >= unlocked || absolute / CELLS_PER_PAGE != page) {
                 continue;
             }
             ItemStack stack = fromSnbt(entry.getValue());
             if (!stack.isAir()) {
-                layout.slot(absolute % CONTENT_SLOTS, stack.builder(),
+                layout.slot(chestSlot(absolute), stack.builder(),
                         (click, viewContext) -> withdraw(viewContext, absolute));
             }
         }
@@ -107,25 +102,21 @@ public class GUILockBox extends RavengardView {
     }
 
     /**
-     * The captured "next tier" widget: two locked panes then the four wide expand button, flush after
-     * the last unlocked slot, flowing to the next page rather than splitting at a row edge.
+     * The four wide expand button, right after the last unlocked cell, moved to the next row (or page)
+     * when the row has no room left. The captured locked panes are oversized GUI models, which the
+     * 26.x client draws at a fixed spot outside the menu whatever slot holds them, so they are left out.
      */
     private void placeExpand(ViewLayout<DefaultState> layout, int unlocked, int tier) {
-        int widgetPage = unlocked / CONTENT_SLOTS;
-        int widgetCol = unlocked % CONTENT_SLOTS;
-        if (widgetCol + WIDGET_WIDTH > CONTENT_SLOTS) {
-            widgetPage += 1;
-            widgetCol = 0;
+        int cell = unlocked;
+        if (cell % COLUMNS + EXPAND_WIDTH > COLUMNS) {
+            cell += COLUMNS - cell % COLUMNS;
         }
-        if (widgetPage != page) {
+        if (cell / CELLS_PER_PAGE != page) {
             return;
         }
         int nextTier = tier + 1;
-        layout.slot(widgetCol, lockedPane(nextTier, "left"));
-        layout.slot(widgetCol + 1, lockedPane(nextTier, "right"));
-
         int cost = EXPAND_COSTS[tier - 1];
-        interactive(layout, widgetCol + 2, RavengardItems.button(RavengardButton.TEXT_EXPAND)
+        interactive(layout, chestSlot(cell), RavengardItems.button(RavengardButton.TEXT_EXPAND)
                         .label("扩展保险箱！")
                         .lore(Text.of("<7>将保险箱升级到 {} 级！", nextTier),
                                 Text.of("<7>这将额外解锁 {} 个", SLOTS_PER_TIER),
@@ -165,7 +156,7 @@ public class GUILockBox extends RavengardView {
         stored.put(free, snbt);
         RavengardProfileStorage.writeLockBox(profile, stored);
         player.getInventory().setItemStack(click.slot(), ItemStack.AIR);
-        ViewNavigator.get(player).push(new GUILockBox(free / CONTENT_SLOTS));
+        ViewNavigator.get(player).push(new GUILockBox(free / CELLS_PER_PAGE));
         return false;
     }
 
@@ -218,8 +209,8 @@ public class GUILockBox extends RavengardView {
             return;
         }
         int tier = RavengardProfileStorage.lockBoxTier(player.getSelectedProfile());
-        int reach = unlockedSlots(tier) + (tier < MAX_TIER ? WIDGET_WIDTH : 0);
-        int pages = Math.max(1, (reach + CONTENT_SLOTS - 1) / CONTENT_SLOTS);
+        int reach = unlockedSlots(tier) + (tier < MAX_TIER ? EXPAND_WIDTH : 0);
+        int pages = Math.max(1, (reach + CELLS_PER_PAGE - 1) / CELLS_PER_PAGE);
         int clamped = Math.floorMod(target, pages);
         if (clamped == page) {
             return;
@@ -227,14 +218,14 @@ public class GUILockBox extends RavengardView {
         ViewNavigator.get(player).push(new GUILockBox(clamped));
     }
 
-    private static int unlockedSlots(int tier) {
-        return BASE_SLOTS + SLOTS_PER_TIER * (Math.max(1, tier) - 1);
+    /** The panel draws eight cells a row over the chest's columns one to eight; column zero sits under its border. */
+    static int chestSlot(int cell) {
+        int onPage = cell % CELLS_PER_PAGE;
+        return (onPage / COLUMNS) * 9 + 1 + onPage % COLUMNS;
     }
 
-    private static ItemStack.Builder lockedPane(int tier, String side) {
-        return ItemStack.builder(Material.LEATHER_CHESTPLATE)
-                .set(DataComponents.ITEM_MODEL, LOCKED_MODEL_ROOT + tier + "_" + side)
-                .set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(true, Set.of()));
+    private static int unlockedSlots(int tier) {
+        return BASE_SLOTS + SLOTS_PER_TIER * (Math.max(1, tier) - 1);
     }
 
     private static String toSnbt(ItemStack stack) {
