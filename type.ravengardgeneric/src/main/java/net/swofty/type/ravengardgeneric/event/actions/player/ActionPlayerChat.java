@@ -1,9 +1,7 @@
 package net.swofty.type.ravengardgeneric.event.actions.player;
 
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.Component;
 import net.minestom.server.event.player.PlayerChatEvent;
-import net.swofty.commons.text.Text;
 import net.swofty.type.generic.HypixelGenericLoader;
 import net.swofty.type.generic.chat.StaffChat;
 import net.swofty.type.generic.data.HypixelDataHandler;
@@ -16,9 +14,8 @@ import net.swofty.type.generic.party.PartyManager;
 import net.swofty.type.generic.user.HypixelPlayer;
 import net.swofty.type.generic.user.categories.Rank;
 import net.swofty.type.ravengardgeneric.chat.CarbonChatBridge;
-import net.swofty.type.ravengardgeneric.classes.RavengardClass;
+import net.swofty.type.ravengardgeneric.chat.CarbonChatFormat;
 import net.swofty.type.ravengardgeneric.i18n.RavengardLocalization;
-import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
 import java.util.List;
 
@@ -63,28 +60,10 @@ public class ActionPlayerChat implements HypixelEventClass {
             return;
         }
 
-        Text line = format(player, rank, finalMessage);
-        net.swofty.type.ravengardgeneric.i18n.RavengardLocalization.verbatim(line.asComponent());
+        Component line = CarbonChatFormat.line(player.getUsername(), finalMessage);
+        RavengardLocalization.verbatim(line);
         List<HypixelPlayer> receivers = HypixelGenericLoader.getLoadedPlayers();
         receivers.forEach(onlinePlayer -> onlinePlayer.sendMessage(line));
         CarbonChatBridge.sendGlobal(player, finalMessage);
-    }
-
-    private static Text format(HypixelPlayer player, Rank rank, String message) {
-        String icon = "";
-        int level = 1;
-        if (player instanceof RavengardPlayer ravengardPlayer) {
-            RavengardClass playerClass = ravengardPlayer.getRavengardClass();
-            if (playerClass != null) {
-                icon = String.valueOf(playerClass.getIcon());
-            }
-            level = ravengardPlayer.getRavengardLevel();
-        }
-
-        TextColor messageColor = rank.equals(Rank.DEFAULT) ? NamedTextColor.GRAY : NamedTextColor.WHITE;
-
-        return Text.of("{} ", icon)
-                .append(player.getFullDisplayName())
-                .append("<color:{}> <6><l>{}</l><color:{}>: {}", messageColor, level, messageColor, message);
     }
 }
