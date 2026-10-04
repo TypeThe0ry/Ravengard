@@ -17,10 +17,12 @@ ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 STAGE=$(mktemp -d)
 trap 'rm -rf "$STAGE"' EXIT
 
+SSH_OPTS="-o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=4"
+
 remote() {
     local attempt
     for attempt in $(seq 1 15); do
-        if ssh -i "$KEY" -o BatchMode=yes -o ConnectTimeout=20 -p "$PORT" "$HOST" "$@"; then return 0; fi
+        if ssh -i "$KEY" $SSH_OPTS -p "$PORT" "$HOST" "$@"; then return 0; fi
         local code=$?
         [ $code -ne 255 ] && return $code
         sleep 15
@@ -32,7 +34,7 @@ remote_capture() {
     local out=$1 attempt
     shift
     for attempt in $(seq 1 15); do
-        if ssh -i "$KEY" -o BatchMode=yes -o ConnectTimeout=20 -p "$PORT" "$HOST" "$@" > "$out.part"; then
+        if ssh -i "$KEY" $SSH_OPTS -p "$PORT" "$HOST" "$@" > "$out.part"; then
             mv "$out.part" "$out"
             return 0
         fi
@@ -44,7 +46,7 @@ remote_capture() {
 upload() {
     local attempt
     for attempt in $(seq 1 15); do
-        scp -q -i "$KEY" -P "$PORT" -o BatchMode=yes "$1" "$HOST:$2" 2>/dev/null && return 0
+        scp -q -i "$KEY" -P "$PORT" $SSH_OPTS "$1" "$HOST:$2" 2>/dev/null && return 0
         sleep 10
     done
     return 1
@@ -105,8 +107,12 @@ if [ -n "$changed" ]; then
         echo "re-uploading $(echo "$pending" | wc -w) part(s)"
     done
     rm -f "$STAGE.sums" "$STAGE.remote_sums"
+    [ -z "$pending" ] || { echo "parts still not uploaded intact: $pending" >&2; exit 1; }
     expected=$(sha256sum "$STAGE.tgz" | cut -c1-64)
-    actual=$(remote "cat $REMOTE/../upload/parts/part.* | tee $REMOTE/../upload/changes.tgz | sha256sum | cut -c1-64")
+    for attempt in $(seq 1 5); do
+        actual=$(remote "cat $REMOTE/../upload/parts/part.* | tee $REMOTE/../upload/changes.tgz | sha256sum | cut -c1-64" | tail -1)
+        [ "$expected" = "$actual" ] && break
+    done
     rm -rf "$STAGE.tgz" "$STAGE.parts"
     [ "$expected" = "$actual" ] || { echo "upload checksum mismatch" >&2; exit 1; }
 fi
