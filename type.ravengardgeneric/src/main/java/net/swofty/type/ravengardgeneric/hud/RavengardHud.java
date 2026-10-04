@@ -157,6 +157,12 @@ public final class RavengardHud {
                         .color(net.kyori.adventure.text.format.NamedTextColor.WHITE)
                         .shadowColor(net.kyori.adventure.text.format.ShadowColor.shadowColor(0)))
                 .append(Component.newline());
+        if (state.isDungeon() && RavengardHudComposer.dungeonTabMapIcons != null) {
+            Component icons = RavengardHudComposer.dungeonTabMapIcons.apply(state);
+            if (icons != null && !icons.children().isEmpty()) {
+                header = header.append(icons).append(Component.newline());
+            }
+        }
         header = header
                 .append(Component.text(PLAYER_MARKER)
                         .font(net.swofty.type.ravengardgeneric.gui.RavengardFont.RAVENGARD)

@@ -24,6 +24,8 @@ public final class RavengardHudComposer {
     /** Dungeon servers plug the fullscreen tab-map composer in here; glyph colours
      * carry absolute positions on the 512px map canvas centred on the layout. */
     public static volatile java.util.function.Function<RavengardHudState, Component> dungeonTabMap;
+    /** Dungeon servers add icons to the official tab map here, in the same absolute encoding. */
+    public static volatile java.util.function.Function<RavengardHudState, Component> dungeonTabMapIcons;
 
     private static final boolean MINIMAP = !"false".equalsIgnoreCase(System.getenv("RAVENGARD_HUD_MINIMAP"));
     private static final java.util.Set<RavengardHudLayer> MINIMAP_LAYERS = java.util.EnumSet.of(
