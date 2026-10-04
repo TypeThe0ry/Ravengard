@@ -14,6 +14,7 @@ import net.minestom.server.event.item.PlayerCancelItemUseEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.particle.Particle;
 import net.minestom.server.sound.SoundEvent;
 import net.swofty.type.generic.event.EventNodes;
 import net.swofty.type.generic.event.HypixelEventClass;
@@ -23,6 +24,7 @@ import net.swofty.type.ravengardgeneric.entity.RavengardArrow;
 import net.swofty.type.ravengardgeneric.entity.mob.RavengardMob;
 import net.swofty.type.ravengardgeneric.classes.RavengardAbility;
 import net.swofty.type.ravengardgeneric.classes.RavengardAbilityService;
+import net.swofty.type.ravengardgeneric.classes.RavengardSpells;
 import net.swofty.type.ravengardgeneric.item.RavengardItemType;
 import net.swofty.type.ravengardgeneric.item.attribute.RavengardItemAttributeHandler;
 import net.swofty.type.ravengardgeneric.item.statistics.RavengardItemStatistic;
@@ -71,6 +73,8 @@ public class ActionPlayerBow implements HypixelEventClass {
         double power = bowPower(useTicks);
         org.tinylog.Logger.debug("Ravengard bow release: player={} ticks={} power={} item={} ",
                 player.getUsername(), useTicks, power, event.getItemStack().material());
+        boolean rapid = RavengardAbilityService.consumeCharge(player, RavengardAbility.RAPID_FIRE);
+        if (rapid) power = 1.0;
         if (power < MIN_POWER) return;
 
         ItemStack bow = event.getItemStack();
@@ -94,11 +98,22 @@ public class ActionPlayerBow implements HypixelEventClass {
                 damage *= 1.2f;
             }
         }
-        RavengardArrow arrow = new RavengardArrow(player, damage, power >= 1.0);
+        damage *= (float) RavengardAbilityService.outgoingDamageMultiplier(player);
+        boolean poison = RavengardAbilityService.consumeBuff(player, RavengardAbility.POISON_ARROW);
+        boolean immobilize = RavengardAbilityService.consumeBuff(player, RavengardAbility.IMMOBILIZE);
+        boolean twin = RavengardAbilityService.consumeBuff(player, RavengardAbility.DOUBLE_SHOT);
+        RavengardArrow arrow = null;
+        for (float spread : twin ? new float[]{-4f, 4f} : new float[]{0f}) {
+            arrow = new RavengardArrow(player, damage, power >= 1.0);
+            if (poison) arrow.onHit(mob -> RavengardSpells.damageOverTime(player, mob, 5, 6, Particle.ITEM_SLIME));
+            if (immobilize) arrow.onHit(mob -> RavengardSpells.slow(mob, 2));
+            Pos eye = player.getPosition().add(0, 1.62, 0);
+            arrow.setInstance(player.getInstance(), eye);
+            arrow.shoot(eye.add(player.getPosition().withYaw(player.getPosition().yaw() + spread)
+                            .direction().mul(TARGET_DISTANCE)),
+                    ARROW_SPEED * power, ARROW_SPREAD);
+        }
         Pos eye = player.getPosition().add(0, 1.62, 0);
-        arrow.setInstance(player.getInstance(), eye);
-        arrow.shoot(eye.add(player.getPosition().direction().mul(TARGET_DISTANCE)),
-                ARROW_SPEED * power, ARROW_SPREAD);
         org.tinylog.Logger.debug("Ravengard arrow spawned: player={} uuid={} pos={} damage={} power={}",
                 player.getUsername(), arrow.getUuid(), eye, damage, power);
         player.playSound(Sound.sound(SoundEvent.ENTITY_ARROW_SHOOT, Sound.Source.PLAYER,
@@ -131,6 +146,7 @@ public class ActionPlayerBow implements HypixelEventClass {
                 : new Damage(DamageType.PLAYER_ATTACK, arrow, null, null, arrow.damage()));
         if (!applied) return false;
         arrow.markResolved();
+        arrow.applyHitEffects(mob);
         org.tinylog.Logger.debug("Ravengard arrow damage: mob={} before={} after={} amount={}",
                 mob.getUuid(), before, mob.getHealth(), arrow.damage());
         arrow.remove();

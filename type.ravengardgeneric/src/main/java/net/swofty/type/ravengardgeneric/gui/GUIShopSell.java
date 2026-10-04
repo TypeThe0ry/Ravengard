@@ -132,7 +132,7 @@ public class GUIShopSell extends RavengardView {
 
         List<Text> lore = new ArrayList<>(RavengardItem.loreOf(type, true));
         lore.add(Text.empty());
-        lore.add(Text.of("<e>Selling for <f>\uD83D\uDC51<#FFCE47>{}<e>! Click to take back.", value));
+        lore.add(Text.of("<e>以 <f>\uD83D\uDC51<#FFCE47>{}<e> 出售！点击取回。", value));
 
         ItemStack.Builder display = RavengardItem.displayBuilder(type);
         ItemStacks.lines(display, lore);

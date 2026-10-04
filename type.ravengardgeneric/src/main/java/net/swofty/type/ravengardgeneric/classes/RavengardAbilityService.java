@@ -24,6 +24,8 @@ public final class RavengardAbilityService {
     private static final Map<UUID, Map<RavengardAbility, Long>> COOLDOWNS = new ConcurrentHashMap<>();
     private static final Map<UUID, Map<RavengardAbility, Long>> BUFFS = new ConcurrentHashMap<>();
     private static final Map<UUID, List<Task>> HEALING = new ConcurrentHashMap<>();
+    private static final Map<UUID, Map<RavengardAbility, Integer>> CHARGES = new ConcurrentHashMap<>();
+    static final int RAPID_FIRE_ARROWS = 3;
 
     private RavengardAbilityService() {
     }
@@ -65,15 +67,89 @@ public final class RavengardAbilityService {
         switch (ability) {
             case RECOVERY, MED_KIT -> heal(player, 30);
             case COOL_OFF, HEAL_WOUNDS -> healOverTime(player, 35, 10);
+            case SPRING_HEALING -> healOverTime(player, 45, 10);
             case SHADOWS -> shadows(player);
+            case FIREBALL -> RavengardSpells.fireball(player);
+            case LIGHTNING_STRIKE -> RavengardSpells.lightningStrike(player);
+            case ICE_SHARDS -> RavengardSpells.iceShards(player);
+            case RUMBLE -> RavengardSpells.rumble(player);
+            case WIND_CUTTER -> RavengardSpells.windCutter(player);
+            case SHIELD_BASH, OVERPOWER -> RavengardSpells.mobsNear(player.getInstance(), player.getPosition(), 5.0)
+                    .forEach(mob -> RavengardSpells.knockback(mob, player.getPosition(), 1.0));
+            case PROVOKE -> RavengardSpells.mobsNear(player.getInstance(), player.getPosition(), 7.0)
+                    .forEach(mob -> mob.setTarget(player));
+            case RALLY -> player.getInstance().getPlayers().stream()
+                    .filter(other -> other instanceof RavengardPlayer)
+                    .filter(other -> other.getPosition().distanceSquared(player.getPosition()) <= 6.0 * 6.0)
+                    .forEach(other -> buff((RavengardPlayer) other, RavengardAbility.RALLY, 10));
+            case SHADOW_STEP -> player.setVelocity(player.getPosition().withPitch(0).direction().mul(30).withY(4));
+            case SWIFT -> swift(player, 10);
+            case DIRECT_HIT, ARMOR_BREAK, CARNAGE, RUSH -> buff(player, ability, 5);
+            case RAPID_FIRE -> {
+                buff(player, ability, NEXT_ATTACK_WINDOW_SECONDS);
+                CHARGES.computeIfAbsent(player.getUuid(), ignored -> new ConcurrentHashMap<>())
+                        .put(ability, RAPID_FIRE_ARROWS);
+            }
+            case WAR_CRY, LACERATE, WOUND, POISON_DAGGER, POISON_ARROW, IMMOBILIZE,
+                 DOUBLE_SHOT, POWER_SHOT -> buff(player, ability, NEXT_ATTACK_WINDOW_SECONDS);
             default -> buff(player, ability, 10);
         }
+    }
+
+    /** How long a "next attack" ability waits for that attack. */
+    static final int NEXT_ATTACK_WINDOW_SECONDS = 15;
+
+    /** Rally (+20%) and Armor Break (+10%) on whatever the player deals to mobs. */
+    public static double outgoingDamageMultiplier(RavengardPlayer player) {
+        double multiplier = 1.0;
+        if (hasBuff(player, RavengardAbility.RALLY)) multiplier *= 1.2;
+        if (hasBuff(player, RavengardAbility.ARMOR_BREAK)) multiplier *= 1.1;
+        return multiplier;
+    }
+
+    /** Sentinel (+30% physical defence) and Bolster (-20%) on the damage mobs deal to the player. */
+    public static double incomingDamageMultiplier(RavengardPlayer player) {
+        double multiplier = 1.0;
+        if (hasBuff(player, RavengardAbility.SENTINEL)) multiplier /= 1.3;
+        if (hasBuff(player, RavengardAbility.BOLSTER)) multiplier *= 0.8;
+        return multiplier;
+    }
+
+    /** Accelerate halves the cooldown of magic items such as staves. */
+    public static double magicCooldownMultiplier(RavengardPlayer player) {
+        return hasBuff(player, RavengardAbility.ACCELERATE) ? 0.5 : 1.0;
+    }
+
+    private static void swift(RavengardPlayer player, int seconds) {
+        buff(player, RavengardAbility.SWIFT, seconds);
+        net.kyori.adventure.key.Key id = net.kyori.adventure.key.Key.key("hypixel_ravengard", "swift");
+        var speed = player.getAttribute(Attribute.MOVEMENT_SPEED);
+        speed.removeModifier(id);
+        speed.addModifier(new net.minestom.server.entity.attribute.AttributeModifier(id, 0.5,
+                net.minestom.server.entity.attribute.AttributeOperation.ADD_MULTIPLIED_TOTAL));
+        MinecraftServer.getSchedulerManager().buildTask(() -> speed.removeModifier(id))
+                .delay(TaskSchedule.seconds(seconds)).schedule();
     }
 
     /** Whether a timed buff from an ability is currently active, for the damage code to read. */
     public static boolean hasBuff(RavengardPlayer player, RavengardAbility ability) {
         Map<RavengardAbility, Long> buffs = BUFFS.get(player.getUuid());
         return buffs != null && buffs.getOrDefault(ability, 0L) > System.currentTimeMillis();
+    }
+
+    /** Uses one of an ability's charges (Rapid Fire's three arrows) while its window lasts. */
+    public static boolean consumeCharge(RavengardPlayer player, RavengardAbility ability) {
+        Map<RavengardAbility, Integer> charges = CHARGES.get(player.getUuid());
+        if (charges == null || !hasBuff(player, ability)) return false;
+        Integer left = charges.get(ability);
+        if (left == null || left <= 0) return false;
+        if (left == 1) {
+            charges.remove(ability);
+            consumeBuff(player, ability);
+        } else {
+            charges.put(ability, left - 1);
+        }
+        return true;
     }
 
     public static boolean consumeBuff(RavengardPlayer player, RavengardAbility ability) {
@@ -160,6 +236,7 @@ public final class RavengardAbilityService {
     public static void forget(UUID uuid) {
         COOLDOWNS.remove(uuid);
         BUFFS.remove(uuid);
+        CHARGES.remove(uuid);
         stopHealing(uuid);
     }
 }

@@ -13,6 +13,8 @@ public final class RavengardArrow extends EntityProjectile {
 
     private final float damage;
     private boolean resolved;
+    private java.util.function.Consumer<RavengardMob> onHit = mob -> {
+    };
 
     public RavengardArrow(Entity shooter, float damage, boolean critical) {
         super(shooter, EntityType.ARROW);
@@ -23,6 +25,16 @@ public final class RavengardArrow extends EntityProjectile {
 
     public float damage() {
         return damage;
+    }
+
+    /** Something an ability adds to this arrow's hit, such as a poison or a slow. */
+    public RavengardArrow onHit(java.util.function.Consumer<RavengardMob> effect) {
+        this.onHit = this.onHit.andThen(effect);
+        return this;
+    }
+
+    public void applyHitEffects(RavengardMob mob) {
+        onHit.accept(mob);
     }
 
     public boolean resolved() {

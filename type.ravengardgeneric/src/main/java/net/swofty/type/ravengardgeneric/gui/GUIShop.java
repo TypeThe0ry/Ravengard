@@ -101,18 +101,35 @@ public class GUIShop extends RavengardView {
         List<Text> lore = new ArrayList<>(RavengardItem.loreOf(type, true));
         lore.add(Text.empty());
         if (!entry.inStock()) {
-            display.set(DataComponents.ITEM_MODEL, type.getItemModel() + "_greyed");
+            greyOut(display, type);
             lore.add(Text.of("<c>缺货！"));
         } else if (wrongClass) {
-            display.set(DataComponents.ITEM_MODEL, type.getItemModel() + "_greyed");
+            greyOut(display, type);
             lore.add(Text.of("<c>你的职业无法使用该物品！"));
         } else if (entry.price() == 0) {
             lore.add(Text.of("<e>点击免费领取！"));
         } else {
-            lore.add(Text.of("<e>Click to buy for <f>\uD83D\uDC51<#FFCE47>{}<e>!", entry.price()));
+            lore.add(Text.of("<e>点击花费 <f>\uD83D\uDC51<#FFCE47>{}<e> 购买！", entry.price()));
         }
         ItemStacks.lines(display, lore);
         return display;
+    }
+
+    private static final java.util.Map<String, Boolean> GREYED_MODELS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** The pack's greyed-out model where it has one; the consumables have none, so they keep theirs. */
+    private static void greyOut(ItemStack.Builder display, RavengardItemType type) {
+        String greyed = type.getItemModel() + "_greyed";
+        if (GREYED_MODELS.computeIfAbsent(greyed, GUIShop::packHasItemModel)) {
+            display.set(DataComponents.ITEM_MODEL, greyed);
+        }
+    }
+
+    static boolean packHasItemModel(String model) {
+        int colon = model.indexOf(':');
+        if (colon < 0) return false;
+        return java.nio.file.Files.isRegularFile(java.nio.file.Path.of("./configuration/resourcepacks/ravengard/assets",
+                model.substring(0, colon), "items", model.substring(colon + 1) + ".json"));
     }
 
     private void buy(int slot, ViewContext viewContext) {

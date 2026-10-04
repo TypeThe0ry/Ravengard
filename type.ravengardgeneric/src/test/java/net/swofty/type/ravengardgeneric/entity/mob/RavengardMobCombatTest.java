@@ -1172,6 +1172,36 @@ class RavengardMobCombatTest {
     }
 
     @Test
+    void aFireballFliesIntoTheMobAheadAndRumbleHitsMobsAround() throws Exception {
+        var instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        var player = new net.swofty.type.ravengardgeneric.user.RavengardPlayer(
+                new DummyConnection(), new GameProfile(UUID.randomUUID(), "spell-caster"));
+        player.setInstance(instance, new net.minestom.server.coordinate.Pos(2.5, 1, 2.5, 0f, 0f)).join();
+        var ahead = new RavengardMob(clip(), new net.minestom.server.coordinate.Pos(2.5, 1, 9.5));
+        ahead.spawnMob(instance);
+        float before = ahead.getHealth();
+
+        net.swofty.type.ravengardgeneric.classes.RavengardSpells.fireball(player);
+        for (int tick = 0; tick < 20 && ahead.getHealth() == before; tick++) {
+            instance.getEntities().stream().filter(entity -> entity.getEntityType() == EntityType.SMALL_FIREBALL)
+                    .forEach(entity -> entity.tick(System.currentTimeMillis()));
+        }
+        assertEquals(before - 15f, ahead.getHealth(), 0.01f, "60 display damage is 15 on the mob");
+
+        var near = new RavengardMob(clip(), new net.minestom.server.coordinate.Pos(4.5, 1, 2.5));
+        near.spawnMob(instance);
+        float nearBefore = near.getHealth();
+        var far = new RavengardMob(clip(), new net.minestom.server.coordinate.Pos(12.5, 1, 2.5));
+        far.spawnMob(instance);
+        float farBefore = far.getHealth();
+        net.swofty.type.ravengardgeneric.classes.RavengardSpells.rumble(player);
+        assertEquals(nearBefore - 5f, near.getHealth(), 0.01f);
+        assertEquals(farBefore, far.getHealth(), 0.01f);
+    }
+
+    @Test
     void packetBridgeHonorsReachAndRightClickDoesNotAttack() throws Exception {
         var instance = MinecraftServer.getInstanceManager().createInstanceContainer();
         instance.loadChunk(0, 0).join();

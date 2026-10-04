@@ -96,6 +96,7 @@ public class RavengardPack implements HypixelResourcePack {
     @Override
     public void initialize() {
         RavengardHud.start();
+        net.swofty.type.ravengardgeneric.classes.RavengardStamina.start();
     }
 
     @Override

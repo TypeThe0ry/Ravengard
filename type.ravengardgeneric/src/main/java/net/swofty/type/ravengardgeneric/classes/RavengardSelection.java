@@ -3,6 +3,7 @@ package net.swofty.type.ravengardgeneric.classes;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.utils.inventory.PlayerInventoryUtils;
 import net.swofty.type.generic.HypixelConst;
 import net.swofty.type.ravengardgeneric.item.RavengardItem;
 import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
@@ -73,6 +74,9 @@ public final class RavengardSelection {
         int hotbarSlot = 0;
         for (String itemId : kit.hotbarIds()) {
             player.getInventory().setItemStack(hotbarSlot++, RavengardItem.of(itemId, player));
+        }
+        if (kit.offhandId() != null) {
+            player.getInventory().setItemStack(PlayerInventoryUtils.OFFHAND_SLOT, RavengardItem.of(kit.offhandId(), player));
         }
         if (value == RavengardClass.HUNTER) {
             player.getInventory().setItemStack(hotbarSlot, ItemStack.of(Material.ARROW, 64));

@@ -17,10 +17,10 @@ import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
  * captured Knight inventory. The pieces themselves are defined in configuration/ravengard/items.
  */
 public record RavengardKit(String chestId, String legsId, String bootsId,
-                           java.util.List<String> hotbarIds) {
+                           java.util.List<String> hotbarIds, String offhandId) {
 
-    public RavengardKit(String chestId, String legsId, String bootsId) {
-        this(chestId, legsId, bootsId, java.util.List.of());
+    public RavengardKit(String chestId, String legsId, String bootsId, java.util.List<String> hotbarIds) {
+        this(chestId, legsId, bootsId, hotbarIds, null);
     }
 
     public static final int SLOT_ABILITY_ONE = PlayerInventoryUtils.CRAFT_SLOT_1;
@@ -46,14 +46,17 @@ public record RavengardKit(String chestId, String legsId, String bootsId,
     private static final int OFFSET_ABILITY_TWO = 0x934700;
 
     public static RavengardKit forClass(RavengardClass value) {
-        // Only the Knight and Sorcerer kits have been captured; the others reuse the Knight
-        // shape until they are.
+        // The captured Knight kit only held armour and the Sorcerer kit its staff; the weapons and
+        // the other classes' pieces are the class's own free items from the captured free gear shop.
         return switch (value) {
-            case KNIGHT -> new RavengardKit("TUNIC", "REINFORCED_PANTS", "OLD_BOOTS");
-            case WARRIOR -> new RavengardKit("WEATHERED_HARNESS", "WEATHERED_PANTS", "OLD_BOOTS");
-            case HUNTER -> new RavengardKit("TUNIC", "REINFORCED_PANTS", "OLD_BOOTS",
-                    java.util.List.of("ASH_BOW"));
-            case ASSASSIN -> new RavengardKit("TUNIC", "REINFORCED_PANTS", "OLD_BOOTS");
+            case KNIGHT -> new RavengardKit("TUNIC", "REINFORCED_PANTS", "OLD_BOOTS",
+                    java.util.List.of("RUSTY_SWORD"), "BUCKLER");
+            case WARRIOR -> new RavengardKit("WEATHERED_HARNESS", "WEATHERED_PANTS", "OLD_BOOTS",
+                    java.util.List.of("RUSTY_GREAT_AXE"));
+            case HUNTER -> new RavengardKit("WEATHERED_COAT", "WEATHERED_PANTS", "OLD_BOOTS",
+                    java.util.List.of("ASH_BOW", "RUSTY_KNIFE"));
+            case ASSASSIN -> new RavengardKit("CLOTH_SHIRT", "WEATHERED_PANTS", "OLD_BOOTS",
+                    java.util.List.of("RUSTY_DAGGER"));
             case SORCERER -> new RavengardKit("WEATHERED_ROBE", "WEATHERED_PANTS", "OLD_BOOTS",
                     java.util.List.of("APPRENTICE_STAFF", "STARTER_BANDAGE"));
         };
