@@ -11,6 +11,7 @@ import net.swofty.type.generic.event.phase.PhasedEvent;
 import net.swofty.type.ravengardgeneric.entity.mob.RavengardMob;
 import net.swofty.type.ravengardgeneric.classes.RavengardAbility;
 import net.swofty.type.ravengardgeneric.classes.RavengardAbilityService;
+import net.swofty.type.ravengardgeneric.classes.RavengardSpells;
 import net.swofty.type.ravengardgeneric.item.RavengardItemType;
 import net.swofty.type.ravengardgeneric.item.attribute.RavengardItemAttributeHandler;
 import net.swofty.type.ravengardgeneric.item.statistics.RavengardItemStatistic;
@@ -51,11 +52,7 @@ public class ActionPlayerCombat implements HypixelEventClass {
             return;
         }
 
-        double attackSpeed = DEFAULT_ATTACK_SPEED;
-        if (type != null) {
-            double bonus = type.statistic(RavengardItemStatistic.ATTACK_SPEED) * handler.getStatBoost();
-            if (bonus > 0) attackSpeed += bonus;
-        }
+        double attackSpeed = attackSpeed(type);
         if (mob.isDying()) return;
         double strength = attackStrength(player.getUuid(), System.nanoTime(), attackSpeed);
         if (strength < 0) return;
@@ -79,6 +76,7 @@ public class ActionPlayerCombat implements HypixelEventClass {
             }
             damage *= (float) sustainedMultiplier;
         }
+        damage *= (float) RavengardAbilityService.outgoingDamageMultiplier(player);
         boolean warCry = RavengardAbilityService.hasBuff(player, RavengardAbility.WAR_CRY);
         boolean lacerate = RavengardAbilityService.hasBuff(player, RavengardAbility.LACERATE);
         if (warCry) damage *= 1.2f;
@@ -88,6 +86,21 @@ public class ActionPlayerCombat implements HypixelEventClass {
         if (!mob.damage(new EntityDamage(player, damage))) return;
         if (warCry) RavengardAbilityService.consumeBuff(player, RavengardAbility.WAR_CRY);
         if (lacerate) RavengardAbilityService.consumeBuff(player, RavengardAbility.LACERATE);
+        if (RavengardAbilityService.consumeBuff(player, RavengardAbility.WOUND)) {
+            RavengardSpells.damageOverTime(player, mob, 10, 5, net.minestom.server.particle.Particle.DAMAGE_INDICATOR);
+        }
+        if (RavengardAbilityService.consumeBuff(player, RavengardAbility.POISON_DAGGER)) {
+            RavengardSpells.damageOverTime(player, mob, 7, 6, net.minestom.server.particle.Particle.ITEM_SLIME);
+        }
+        if (RavengardAbilityService.hasBuff(player, RavengardAbility.CARNAGE)) {
+            RavengardSpells.knockback(mob, player.getPosition(), 0.8);
+        }
+    }
+
+    /** Attacks a second as the item data gives it (not scaled by stars, as the tooltip shows); fists swing at {@value #DEFAULT_ATTACK_SPEED}. */
+    static double attackSpeed(RavengardItemType type) {
+        double speed = type == null ? 0 : type.statistic(RavengardItemStatistic.ATTACK_SPEED);
+        return speed > 0 ? speed : DEFAULT_ATTACK_SPEED;
     }
 
     /** A swing inside half the weapon's recovery answers with a negative strength and is dropped. */

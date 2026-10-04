@@ -146,8 +146,8 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final float CASTER_DAMAGE_PER_HIT = 1.5f;
     private static final double CASTER_RANGE = 11.0;
     private static final int CASTER_COOLDOWN_TICKS = 45;
-    private static final double KNOCKBACK_HORIZONTAL = 0.79 * 20;
-    private static final double KNOCKBACK_VERTICAL = 0.50 * 20;
+    private static final double KNOCKBACK_HORIZONTAL = 0.40 * 20;
+    private static final double KNOCKBACK_VERTICAL = 0.30 * 20;
     // the invisible zombie body is the combat target: scaling it keeps right-clicks passing through
     // to the held item, which an interaction entity would swallow
     static final double COMBAT_SCALE = 1.15;
@@ -316,6 +316,10 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private void hit(Entity target) {
         if (target instanceof LivingEntity living) {
             float damage = playerDamage();
+            if (living instanceof net.swofty.type.ravengardgeneric.user.RavengardPlayer defender) {
+                damage *= (float) net.swofty.type.ravengardgeneric.classes.RavengardAbilityService
+                        .incomingDamageMultiplier(defender);
+            }
             if (living instanceof net.swofty.type.ravengardgeneric.user.RavengardPlayer player
                     && player.isBlockingWithShield()) {
                 damage *= SHIELD_BLOCK_KEPT;

@@ -97,6 +97,16 @@ public final class RavengardItem {
     }
 
     /** Shop menus include the crown value line; the item itself never carries it. */
+    /** The client's attack cooldown indicator follows the weapon's attack speed (players swing at 4 a second bare-handed). */
+    static net.minestom.server.item.component.AttributeList attackSpeedModifier(double attacksPerSecond) {
+        return new net.minestom.server.item.component.AttributeList(new net.minestom.server.item.component.AttributeList.Modifier(
+                net.minestom.server.entity.attribute.Attribute.ATTACK_SPEED,
+                new net.minestom.server.entity.attribute.AttributeModifier(
+                        net.kyori.adventure.key.Key.key("hypixel_ravengard", "attack_speed"), attacksPerSecond - 4.0,
+                        net.minestom.server.entity.attribute.AttributeOperation.ADD_VALUE),
+                net.minestom.server.entity.EquipmentSlotGroup.MAIN_HAND));
+    }
+
     public static List<Text> loreOf(RavengardItemType type, boolean shopContext) {
         return type.component(PlaceholderSlotComponent.class) != null
                 ? placeholderLore(type)
@@ -125,6 +135,11 @@ public final class RavengardItem {
             builder.set(DataComponents.UNBREAKABLE, net.minestom.server.utils.Unit.INSTANCE);
             builder.set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(false, HIDDEN));
             builder.set(DataComponents.TOOLTIP_STYLE, type.getRarity().tooltipStyle());
+            double attackSpeed = type.statistic(
+                    net.swofty.type.ravengardgeneric.item.statistics.RavengardItemStatistic.ATTACK_SPEED);
+            if (attackSpeed > 0) {
+                builder.set(DataComponents.ATTRIBUTE_MODIFIERS, attackSpeedModifier(attackSpeed));
+            }
             if (tracked) {
                 applyTrackedAttributes(builder, type, owner, boost);
             }

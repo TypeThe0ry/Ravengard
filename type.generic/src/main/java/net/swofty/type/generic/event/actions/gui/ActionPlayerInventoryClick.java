@@ -40,7 +40,9 @@ public class ActionPlayerInventoryClick implements HypixelEventClass {
         ItemStack clickedItem = event.getClickedItem();
         ItemStack cursorItem = player.getInventory().getCursorItem();
 
-        if (event.getSlot() == 45 && event.getInventory() instanceof PlayerInventory) {
+        // the offhand is SkyBlock's to keep empty; Ravengard decides itself what may go there (shields)
+        if (event.getSlot() == 45 && event.getInventory() instanceof PlayerInventory
+                && !(net.swofty.type.generic.HypixelConst.getTypeLoader() instanceof net.swofty.type.generic.RavengardTypeLoader)) {
             event.setCancelled(true);
             return;
         }
