@@ -138,7 +138,6 @@ public class SkyBlockVelocity {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        net.swofty.commons.text.MarkupLocalization.installFromEnvironment();
         server = proxy;
         UpstreamForwarding upstreamForwarding = UpstreamForwarding.fromEnvironment();
         if (upstreamForwarding != null) {

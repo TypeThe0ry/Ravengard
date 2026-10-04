@@ -96,6 +96,8 @@ public class HypixelPackBuilder {
      * Fonts and languages combine across stacked packs instead of replacing one another: the
      * client concatenates font providers bottom to top and lets later ones win, and lets upper
      * languages override single keys. Merging those files keeps one pack identical to the stack.
+     * A layer's font references are the exception: they go below the existing providers, so a
+     * pixel font falls back to the referenced font only for characters it does not draw itself.
      */
     static byte[] stack(String name, byte[] below, byte[] above) {
         boolean font = name.matches("assets/[^/]+/font/.+\\.json");
@@ -105,13 +107,24 @@ public class HypixelPackBuilder {
         JsonObject upper = JsonParser.parseString(new String(above, StandardCharsets.UTF_8)).getAsJsonObject();
         if (font) {
             JsonArray providers = new JsonArray();
+            JsonArray added = upper.getAsJsonArray("providers");
+            added.forEach(provider -> {
+                if (isReference(provider)) providers.add(provider);
+            });
             providers.addAll(lower.getAsJsonArray("providers"));
-            providers.addAll(upper.getAsJsonArray("providers"));
+            added.forEach(provider -> {
+                if (!isReference(provider)) providers.add(provider);
+            });
             lower.add("providers", providers);
         } else {
             upper.entrySet().forEach(entry -> lower.add(entry.getKey(), entry.getValue()));
         }
         return lower.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static boolean isReference(com.google.gson.JsonElement provider) {
+        return provider.isJsonObject() && provider.getAsJsonObject().has("type")
+                && "reference".equals(provider.getAsJsonObject().get("type").getAsString());
     }
 
 }

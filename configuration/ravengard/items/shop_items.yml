@@ -417,7 +417,7 @@ items:
     description:
       - '一条结实的绷带，随时间'
       - '恢复中等量的生命值。'
-    effect: 'Heals +80 HP over 5 seconds.'
+    effect: '在 <e>5 秒</e>内恢复 <c>+80 HP</c>。'
     components:
       - id: STANDARD_ITEM
         standard_item_type: CONSUMABLE
@@ -430,7 +430,7 @@ items:
     description:
       - '一种常见的水果，食用后'
       - '恢复少量生命值。'
-    effect: 'Heals +30 HP over 4 seconds.'
+    effect: '在 <e>4 秒</e>内恢复 <c>+30 HP</c>。'
     components:
       - id: STANDARD_ITEM
         standard_item_type: CONSUMABLE
@@ -798,7 +798,7 @@ items:
     description:
       - '一条简单的绷带，随时间'
       - '恢复少量生命值。'
-    effect: 'Heals +50 HP over 5 seconds.'
+    effect: '在 <e>5 秒</e>内恢复 <c>+50 HP</c>。'
     components:
       - id: STANDARD_ITEM
         standard_item_type: CONSUMABLE
@@ -870,7 +870,7 @@ items:
       - '一种基础的炼金药剂，'
       - '饮用后可恢复少量'
       - '生命值。'
-    effect: 'Heals +75 HP over 2 seconds.'
+    effect: '在 <e>2 秒</e>内恢复 <c>+75 HP</c>。'
     components:
       - id: STANDARD_ITEM
         standard_item_type: CONSUMABLE
@@ -1180,7 +1180,7 @@ items:
       - '一种强效的炼金药剂，'
       - '饮用后可恢复中等量'
       - '生命值。'
-    effect: 'Heals +120 HP over 2 seconds.'
+    effect: '在 <e>2 秒</e>内恢复 <c>+120 HP</c>。'
     components:
       - id: STANDARD_ITEM
         standard_item_type: CONSUMABLE

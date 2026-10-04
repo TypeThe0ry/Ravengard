@@ -43,11 +43,12 @@ class RavengardPackTest {
     }
 
     @Test
-    void stackedFontsAndLanguagesCombineLikeSeparatePacksWould() throws Exception {
+    void stackedFontsAndLanguagesCombineLikeSeparatePacksWouldWithReferencesAsFallbacks() throws Exception {
         Path base = temp.resolve("official");
         Path overlay = temp.resolve("overlay");
         write(base.resolve("assets/ns/font/-full.json"), "{\"providers\":[{\"type\":\"space\",\"advances\":{\"a\":-8}}]}");
-        write(overlay.resolve("assets/ns/font/-full.json"), "{\"providers\":[{\"type\":\"space\",\"advances\":{\"b\":-9}}]}");
+        write(overlay.resolve("assets/ns/font/-full.json"), "{\"providers\":[{\"type\":\"space\",\"advances\":{\"b\":-9}},"
+                + "{\"type\":\"reference\",\"id\":\"minecraft:default\"}]}");
         write(base.resolve("assets/minecraft/lang/zh_cn.json"), "{\"kept\":\"official\",\"shared\":\"official\"}");
         write(overlay.resolve("assets/minecraft/lang/zh_cn.json"), "{\"shared\":\"translated\",\"added\":\"translated\"}");
         write(base.resolve("assets/ns/textures/logo.png"), "official");
@@ -55,7 +56,8 @@ class RavengardPackTest {
 
         Map<String, String> entries = entries(new HypixelPackBuilder(layered(base, overlay)).build().data().toByteArray());
 
-        assertEquals("{\"providers\":[{\"type\":\"space\",\"advances\":{\"a\":-8}},"
+        assertEquals("{\"providers\":[{\"type\":\"reference\",\"id\":\"minecraft:default\"},"
+                + "{\"type\":\"space\",\"advances\":{\"a\":-8}},"
                 + "{\"type\":\"space\",\"advances\":{\"b\":-9}}]}", entries.get("assets/ns/font/-full.json"));
         assertEquals("{\"kept\":\"official\",\"shared\":\"translated\",\"added\":\"translated\"}",
                 entries.get("assets/minecraft/lang/zh_cn.json"));

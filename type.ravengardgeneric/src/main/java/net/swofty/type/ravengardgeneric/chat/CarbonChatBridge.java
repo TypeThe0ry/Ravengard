@@ -9,7 +9,6 @@ import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.timer.TaskSchedule;
 import net.swofty.type.generic.HypixelGenericLoader;
 import net.swofty.type.generic.user.HypixelPlayer;
-import net.swofty.type.ravengardgeneric.i18n.RavengardLocalization;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 import redis.clients.jedis.BinaryJedisPubSub;
@@ -277,13 +276,11 @@ public final class CarbonChatBridge {
         if (recipient == null) return;
         String senderName = findRemote(whisper.from()).map(NetworkPlayer::name).orElse("?");
         Component line = CarbonChatFormat.whisperFrom(senderName, GSON.deserialize(whisper.componentJson()));
-        RavengardLocalization.verbatim(line);
         recipient.sendMessage(line);
         rememberConversation(recipient.getUuid(), whisper.from());
     }
 
     private static void show(Component line) {
-        RavengardLocalization.verbatim(line);
         for (HypixelPlayer player : HypixelGenericLoader.getLoadedPlayers()) {
             player.sendMessage(line);
         }

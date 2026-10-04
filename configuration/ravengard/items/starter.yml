@@ -114,7 +114,7 @@ items:
     description:
       - '一条基础的绷带，随时间'
       - '恢复少量生命值。'
-    effect: Heals +35 HP over 6 seconds.
+    effect: '在 <e>6 秒</e>内恢复 <c>+35 HP</c>。'
     components:
       - id: STANDARD_ITEM
         standard_item_type: CONSUMABLE

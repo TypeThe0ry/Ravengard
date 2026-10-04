@@ -1,11 +1,9 @@
-"""Generates the zh_CN overlay pack next to the catalog: font advances and client strings.
+"""Generates the zh_CN pack layer: font advances and client strings.
 
 The official pack centres and right-aligns HUD text with two invisible "space" fonts
 (hypixel_ravengard:-half / -full) whose advances are minus half / minus the full width of
-each character. Those fonts only list ASCII, so every character the translations use gets
-an advance here; CJK glyphs in the default font are 8px wide plus 1px spacing. Player-visible
-text is written in Chinese directly in the server source and data files too, so their CJK
-characters are collected alongside the catalog's.
+each character. Those fonts only list ASCII, so every CJK character the server source and data
+files use gets an advance here; CJK glyphs in the default font are 8px wide plus 1px spacing.
 
 The official pack also renames a few vanilla client strings (the pause-menu button, sound
 sliders) in every language file. client_lang.json translates those; the overlay is applied on
@@ -17,7 +15,6 @@ import os
 import re
 import sys
 
-import yaml
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CATALOG = os.path.join(ROOT, 'zh_CN')
@@ -34,22 +31,12 @@ SOURCE_DIRS = [os.path.join(module, 'src', 'main') for module in
                + [os.path.join(REPOSITORY, name) for name in
                   ('type.generic', 'commons', 'proxy.api', 'velocity.extension')]]
 SOURCE_DIRS.append(os.path.join(REPOSITORY, 'configuration', 'ravengard'))
+SOURCE_DIRS.append(os.path.join(REPOSITORY, 'configuration', 'i18n', 'en_US'))
 SOURCE_EXTENSIONS = ('.java', '.kt', '.json', '.yml', '.yaml', '.properties', '.txt')
 CJK = re.compile('[⺀-⿟　-〿㐀-䶿一-鿿豈-﫿︰-﹏！-｠￠-￦]')
 UNICODE_ESCAPE = re.compile(r'\\u([0-9a-fA-F]{4})')
 
 CJK_ADVANCE = 9.0
-
-
-def catalog_characters():
-    chars = set()
-    for file in glob.glob(os.path.join(CATALOG, '*.yml')):
-        data = yaml.safe_load(open(file, encoding='utf-8'))
-        for value in data.get('entries', {}).values():
-            for char in str(value):
-                if ord(char) > 0x7F and not char.isspace():
-                    chars.add(char)
-    return chars
 
 
 def source_characters():
@@ -66,7 +53,7 @@ def source_characters():
 
 
 def used_characters():
-    return sorted(catalog_characters() | source_characters())
+    return sorted(source_characters())
 
 
 def write_client_strings():

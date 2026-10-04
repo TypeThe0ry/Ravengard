@@ -15,7 +15,6 @@ import net.swofty.type.generic.user.HypixelPlayer;
 import net.swofty.type.generic.user.categories.Rank;
 import net.swofty.type.ravengardgeneric.chat.CarbonChatBridge;
 import net.swofty.type.ravengardgeneric.chat.CarbonChatFormat;
-import net.swofty.type.ravengardgeneric.i18n.RavengardLocalization;
 
 import java.util.List;
 
@@ -32,9 +31,6 @@ public class ActionPlayerChat implements HypixelEventClass {
 
         String message = event.getRawMessage();
         Rank rank = player.getRank();
-
-        if (!rank.isStaff() && !RavengardLocalization.isActive() && !CarbonChatBridge.isEnabled())
-            message = message.replaceAll("[^\\x00-\\x7F]", "");
 
         String finalMessage = message;
 
@@ -61,7 +57,6 @@ public class ActionPlayerChat implements HypixelEventClass {
         }
 
         Component line = CarbonChatFormat.line(player.getUsername(), finalMessage);
-        RavengardLocalization.verbatim(line);
         List<HypixelPlayer> receivers = HypixelGenericLoader.getLoadedPlayers();
         receivers.forEach(onlinePlayer -> onlinePlayer.sendMessage(line));
         CarbonChatBridge.sendGlobal(player, finalMessage);

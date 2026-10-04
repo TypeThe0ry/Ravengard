@@ -1,32 +1,19 @@
-# Opt-in Simplified Chinese overlay for the Ravengard servers.
+# Ravengard's Chinese resource pack layer (tooltip tags, button and title textures, glyph advances,
+# pack name and icon), merged over the official pack. The text itself is written in Chinese in the
+# source and configuration.
 # Usage (from the repository root):
-#   docker compose -f docker-compose.yml -f localization/docker-compose.zh_CN.yml up -d --force-recreate --no-deps ravengard_lobby ravengard_dungeon
-# The catalog is read from localization/zh_CN at startup; the base stack stays English without this file.
-# Grouped packets are serialised once for every viewer and skip per-player translation, so they are
-# disabled here: scoreboard, tab, entity name tags and shared item packets then reach each player translated.
+#   docker compose -f docker-compose.yml -f localization/docker-compose.zh_CN.yml up -d --force-recreate --no-deps pack_server ravengard_lobby ravengard_dungeon
 services:
   ravengard_lobby:
     environment:
-      RAVENGARD_LOCALE: zh_CN
       RAVENGARD_LOCALE_DIR: /app/localization
-      RAVENGARD_LOCALE_REPORT: "true"
-      SERVICE_CMD: java -Dminestom.grouped-packet=false -jar HypixelCore.jar RAVENGARD_LOBBY
     volumes:
       - ./localization/zh_CN:/app/localization:ro
   ravengard_dungeon:
     environment:
-      RAVENGARD_LOCALE: zh_CN
       RAVENGARD_LOCALE_DIR: /app/localization
-      RAVENGARD_LOCALE_REPORT: "true"
-      SERVICE_CMD: java -Dminestom.grouped-packet=false -jar HypixelCore.jar RAVENGARD_DUNGEON
     volumes:
       - ./localization/zh_CN:/app/localization:ro
   pack_server:
     volumes:
       - ./localization/zh_CN/resourcepack:/app/configuration/resourcepacks/ravengard-zh_CN:ro
-  proxy:
-    environment:
-      RAVENGARD_LOCALE: zh_CN
-      RAVENGARD_LOCALE_DIR: /app/localization
-    volumes:
-      - ./localization/zh_CN:/app/localization:ro

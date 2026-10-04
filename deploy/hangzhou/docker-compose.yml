@@ -5,9 +5,7 @@ x-forwarding-env: &forwarding_env
 
 x-zh-cn-env: &zh_cn_env
   CARBON_REDIS_URI: redis://172.19.0.1:16379
-  RAVENGARD_LOCALE: zh_CN
   RAVENGARD_LOCALE_DIR: /app/localization
-  RAVENGARD_LOCALE_REPORT: "true"
   RAVENGARD_PACK_ID_FROM: /craftengine-cache/gitlab_default.json
 
 services:
@@ -52,8 +50,6 @@ services:
     environment:
       <<: *forwarding_env
       UPSTREAM_FORWARDING_SECRET: ${UPSTREAM_FORWARDING_SECRET:?UPSTREAM_FORWARDING_SECRET is required}
-      RAVENGARD_LOCALE: zh_CN
-      RAVENGARD_LOCALE_DIR: /app/localization
       JAVA_TOOL_OPTIONS: -Xms128m -Xmx384m
     mem_limit: 700m
     ports:
@@ -63,7 +59,6 @@ services:
       redis: {condition: service_healthy}
     volumes:
       - ./configuration:/app/configuration_files
-      - ./localization/zh_CN:/app/localization:ro
     networks:
       ravengard:
         aliases: [proxy]
@@ -84,7 +79,7 @@ services:
     stop_grace_period: 60s
     environment:
       <<: [*forwarding_env, *zh_cn_env]
-      SERVICE_CMD: java -Xms256m -Xmx1200m -Dminestom.grouped-packet=false -jar HypixelCore.jar RAVENGARD_LOBBY
+      SERVICE_CMD: java -Xms256m -Xmx1200m -jar HypixelCore.jar RAVENGARD_LOBBY
     mem_limit: 1700m
     depends_on:
       proxy: {condition: service_healthy}
@@ -101,7 +96,7 @@ services:
     stop_grace_period: 60s
     environment:
       <<: [*forwarding_env, *zh_cn_env]
-      SERVICE_CMD: java -Xms256m -Xmx1500m -Dminestom.grouped-packet=false -jar HypixelCore.jar RAVENGARD_DUNGEON
+      SERVICE_CMD: java -Xms256m -Xmx1500m -jar HypixelCore.jar RAVENGARD_DUNGEON
     mem_limit: 2100m
     depends_on:
       proxy: {condition: service_healthy}

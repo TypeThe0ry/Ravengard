@@ -1,7 +1,6 @@
 package net.swofty.type.ravengardgeneric.hud;
 
 import net.kyori.adventure.text.Component;
-import net.swofty.type.ravengardgeneric.i18n.RavengardLocalization;
 
 /**
  * Ravengard draws its own minimap, so it asks client-side minimap mods to step aside. Xaero's
@@ -19,8 +18,6 @@ public final class ClientMinimapSuppressor {
 
     public static Component joinSpacer() {
         if (!ENABLED) return Component.text(SPACER);
-        Component line = Component.text(SPACER + XAERO_NO_MINIMAP);
-        RavengardLocalization.verbatim(line);
-        return line;
+        return Component.text(SPACER + XAERO_NO_MINIMAP);
     }
 }

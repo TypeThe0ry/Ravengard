@@ -148,7 +148,10 @@ def build_tags(glyphs):
     providers = tag_providers(TAG_TEXT)
     os.makedirs(os.path.dirname(FONT_OUT), exist_ok=True)
     with open(FONT_OUT, 'w', encoding='utf-8', newline='\n') as out:
-        json.dump({'providers': providers}, out, ensure_ascii=True, indent=1)
+        # the reference goes below the official glyphs at build time, so text without a pixel glyph
+        # (Chinese) falls back to the default font instead of rendering as missing boxes
+        json.dump({'providers': [{'type': 'reference', 'id': 'minecraft:default'}] + providers},
+                  out, ensure_ascii=True, indent=1)
     return len(TAG_TEXT), len(providers)
 
 

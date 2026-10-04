@@ -10,7 +10,6 @@ import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.command.builder.arguments.ArgumentWord;
 import net.minestom.server.command.builder.suggestion.SuggestionEntry;
 import net.minestom.server.entity.Player;
-import net.swofty.type.ravengardgeneric.i18n.RavengardLocalization;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -107,7 +106,6 @@ final class CarbonWhisperCommands {
     }
 
     private static void tell(Player player, Component line) {
-        RavengardLocalization.verbatim(line);
         player.sendMessage(line);
     }
 }
