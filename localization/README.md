@@ -15,15 +15,21 @@
 
   键是源码里的英文标记文本（或配置里的英文原文，可带 `§` 颜色码），值是同一标记语法的译文；`{}`/`{0}` 占位符按位置对应。键里的 `{#}` 只匹配数字，用于时长和 `25s`、`1m 40s` 这类紧凑写法；`{=}` 捕获的内容原样输出、不再查目录，用于玩家输入的文字（队伍聊天、私聊）。两者在译文里都写 `{}`。公屏聊天整行不翻译，在线玩家的名字也不翻译，即使它恰好与某个词条同名。多个文件在加载时合并。
 - `zh_CN/resourcepack/` —— 覆盖层（由 `tools/build_font_overlay.py` 生成），构建时叠在官方包文件之上合成一个资源包发送
-  （同路径以覆盖层为准，包名与图标也由这里的 `pack.mcmeta`/`pack.png` 决定），官方包目录本身不改动。它包含两部分：
+  （同路径以覆盖层为准，包名与图标也由这里的 `pack.mcmeta`/`pack.png` 决定），官方包目录本身不改动。它包含三部分：
   - 字体进距：官方包用两个不可见的“间距字体”（`hypixel_ravengard:-half` / `-full`）给 HUD 文字居中、右对齐，
     它们只登记了 ASCII 字符；覆盖包为译文用到的每个非 ASCII 字符补上进距。
   - 客户端文字：官方包在每个语言文件里改写了几条原版界面文字（暂停菜单的 Ravengard Menu 按钮、声音滑块名）。
     `zh_CN/client_lang.json` 给出译文，生成脚本把它写进官方包覆盖过的每一个语言文件。
+  - 贴图文字：官方包画在贴图里的英文（物品描述里的稀有度/类型/职业徽章、菜单按钮上的 Fight、Confirm、Cancel、
+    Expand 等、背包界面的 Inventory 标题、顶部的 RAVENGARD 标志）由 `tools/build_texture_text.py` 与
+    `tools/build_logo.py` 用宋体 12px 点阵字重画，沿用官方配色与尺寸；徽章另存为 `font/tags_zh/`，由覆盖字体
+    `hypixel_ravengard:ravengard` 把官方字符映射到新图。
 - `docker-compose.zh_CN.yml` —— 可选的 compose 覆盖文件：把目录挂进两个游戏服、代理与 pack server，设置
   `RAVENGARD_LOCALE=zh_CN`、`RAVENGARD_LOCALE_DIR=/app/localization`，并关闭 Minestom 的分组数据包
   （分组包对所有观众只序列化一次，绕过逐玩家翻译）。
-- `tools/build_font_overlay.py` —— 改动译文或 `client_lang.json` 后重新生成覆盖包。
+- `tools/build_font_overlay.py` —— 改动译文、源码或配置里的中文、`client_lang.json` 后重新生成字体进距与客户端文字
+  （进距覆盖目录译文与 Ravengard 源码、`configuration/ravengard` 里出现的全部中日韩字符）。
+- `tools/build_texture_text.py` —— 重新生成贴图文字（需要 Windows 的 `simsun.ttc`）。
 
 ## 机制
 
@@ -34,8 +40,7 @@ Minestom 的 `MinestomAdventure.COMPONENT_TRANSLATOR`：每个携带文本组件
 故意不可读的符文字体（`illageralt`）不翻译。整句译文会沿用原文共有的点击与悬停事件（悬停文字同样翻译），模板捕获的参数保留原有样式（例如带会员颜色的玩家名）；原文只用一种样式书写时译文沿用该样式，因为官方着色器按精确色值摆放 HUD 文字（引导条上的“开启宝箱”等）。技能描述在换行前就本地化。代理（Velocity）没有数据包边界，
 改由 `Text.of` 按同一目录替换标记文本（`commons` 的 `MarkupLocalization`）。
 
-不可翻译的部分：资源包里画成贴图的按钮文字（Fight、Confirm、Cancel、Expand）、背包界面的 Inventory 标题、
-顶部的 RAVENGARD 标志、稀有度/类型/职业徽章，这些都是官方包的图片。服务器名、地牢 ID、玩家名等标识符保持原样。
+服务器名、地牢 ID、玩家名等标识符保持原样。
 
 ## 查漏
 

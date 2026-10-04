@@ -3,7 +3,7 @@ items:
   - id: IRON_HALBERD
     rarity: COMMON
     material: golden_sword
-    display_name: 'Iron Halberd'
+    display_name: '铁戟'
     item_model: hypixel_ravengard:item/weapons/halberds/iron/iron_halberd
     value: 5
     default_statistics:
@@ -17,7 +17,7 @@ items:
   - id: RUSTY_GREATSWORD
     rarity: COMMON
     material: wooden_sword
-    display_name: 'Rusty Great Sword'
+    display_name: '生锈巨剑'
     item_model: hypixel_ravengard:item/weapons/greatswords/rusty/rusty_greatsword
     value: 1
     default_statistics:
@@ -31,7 +31,7 @@ items:
   - id: STEEL_GREAT_AXE
     rarity: UNCOMMON
     material: iron_axe
-    display_name: 'Steel Great Axe'
+    display_name: '钢巨斧'
     item_model: hypixel_ravengard:item/weapons/axes/steel/steel_great_axe
     value: 7
     default_statistics:
@@ -45,7 +45,7 @@ items:
   - id: BARBARIAN_GREAT_AXE
     rarity: UNCOMMON
     material: stone_axe
-    display_name: 'Barbarian Great Axe'
+    display_name: '野蛮人巨斧'
     item_model: hypixel_ravengard:item/weapons/axes/barbarian/barbarian_great_axe
     value: 12
     default_statistics:
@@ -59,7 +59,7 @@ items:
   - id: RUSTY_HALBERD
     rarity: COMMON
     material: golden_sword
-    display_name: 'Rusty Halberd'
+    display_name: '生锈戟'
     item_model: hypixel_ravengard:item/weapons/halberds/rusty/rusty_halberd
     value: 2
     default_statistics:
@@ -73,7 +73,7 @@ items:
   - id: BALLISTIC_WAR_HAMMER
     rarity: UNCOMMON
     material: iron_axe
-    display_name: 'Ballistic War Hammer'
+    display_name: '破城战锤'
     item_model: hypixel_ravengard:item/weapons/war_hammers/ballistic/ballistic_war_hammer
     value: 13
     default_statistics:
@@ -87,7 +87,7 @@ items:
   - id: IRON_WAR_HAMMER
     rarity: COMMON
     material: stone_axe
-    display_name: 'Iron War Hammer'
+    display_name: '铁战锤'
     item_model: hypixel_ravengard:item/weapons/war_hammers/iron/iron_war_hammer
     value: 3
     default_statistics:
@@ -101,7 +101,7 @@ items:
   - id: WAR_GREAT_AXE
     rarity: UNCOMMON
     material: iron_axe
-    display_name: 'War-Torn Great Axe'
+    display_name: '饱经战火的巨斧'
     item_model: hypixel_ravengard:item/weapons/axes/war_torn/war_torn_great_axe
     value: 5
     default_statistics:
@@ -115,7 +115,7 @@ items:
   - id: IRON_DAGGER
     rarity: UNCOMMON
     material: iron_sword
-    display_name: 'Iron Dagger'
+    display_name: '铁匕首'
     item_model: hypixel_ravengard:item/weapons/daggers/iron/iron_dagger
     value: 4
     default_statistics:
@@ -129,7 +129,7 @@ items:
   - id: WAR_BOW
     rarity: UNCOMMON
     material: bow
-    display_name: 'War Bow'
+    display_name: '战弓'
     item_model: hypixel_ravengard:item/weapons/bows/war/war_bow
     value: 8
     default_statistics:
@@ -143,7 +143,7 @@ items:
   - id: HUNTING_KNIFE
     rarity: UNCOMMON
     material: diamond_sword
-    display_name: 'Hunting Knife'
+    display_name: '猎刀'
     item_model: hypixel_ravengard:item/weapons/knives/hunting/hunting_knife
     value: 8
     default_statistics:
@@ -157,7 +157,7 @@ items:
   - id: ELM_BOW
     rarity: UNCOMMON
     material: bow
-    display_name: 'Elm Bow'
+    display_name: '榆木弓'
     item_model: hypixel_ravengard:item/weapons/bows/elm/elm_bow
     value: 5
     default_statistics:
@@ -171,7 +171,7 @@ items:
   - id: IRON_KNIFE
     rarity: UNCOMMON
     material: iron_sword
-    display_name: 'Iron Knife'
+    display_name: '铁小刀'
     item_model: hypixel_ravengard:item/weapons/knives/iron/iron_knife
     value: 9
     default_statistics:
@@ -185,7 +185,7 @@ items:
   - id: STEEL_MACE
     rarity: UNCOMMON
     material: iron_sword
-    display_name: 'Steel Mace'
+    display_name: '钢钉锤'
     item_model: hypixel_ravengard:item/weapons/maces/steel/steel_mace
     value: 12
     default_statistics:
@@ -199,7 +199,7 @@ items:
   - id: SPIKED_MACE
     rarity: UNCOMMON
     material: iron_sword
-    display_name: 'Spiked Mace'
+    display_name: '尖刺钉锤'
     item_model: hypixel_ravengard:item/weapons/maces/spiked/spiked_mace
     value: 5
     default_statistics:
@@ -213,7 +213,7 @@ items:
   - id: STILETTO_DAGGER
     rarity: UNCOMMON
     material: iron_sword
-    display_name: 'Stiletto Dagger'
+    display_name: '细刃匕首'
     item_model: hypixel_ravengard:item/weapons/daggers/stiletto/stiletto_dagger
     value: 8
     default_statistics:
@@ -227,7 +227,7 @@ items:
   - id: STEEL_SWORD
     rarity: UNCOMMON
     material: diamond_sword
-    display_name: 'Steel Sword'
+    display_name: '钢剑'
     item_model: hypixel_ravengard:item/weapons/swords/steel/steel_sword
     value: 7
     default_statistics:
@@ -241,7 +241,7 @@ items:
   - id: CAPTAINS_SWORD
     rarity: UNCOMMON
     material: iron_sword
-    display_name: 'Captain Sword'
+    display_name: '船长之剑'
     item_model: hypixel_ravengard:item/weapons/swords/captains/captains_sword
     value: 8
     default_statistics:
@@ -255,7 +255,7 @@ items:
   - id: LEATHER_TUNIC
     rarity: COMMON
     material: leather_chestplate
-    display_name: 'Leather Tunic'
+    display_name: '皮革外衣'
     item_model: hypixel_ravengard:item/armor/leather/chestplate/leather_tunic
     value: 1
     default_statistics:
@@ -268,7 +268,7 @@ items:
   - id: STUDDED_BREECHES
     rarity: COMMON
     material: leather_leggings
-    display_name: 'Studded Breeches'
+    display_name: '铆钉马裤'
     item_model: hypixel_ravengard:item/armor/studded/leggings/studded_breeches
     value: 4
     default_statistics:
@@ -281,7 +281,7 @@ items:
   - id: LIGHT_BOOTS
     rarity: UNCOMMON
     material: leather_boots
-    display_name: 'Light Boots'
+    display_name: '轻便靴'
     item_model: hypixel_ravengard:item/armor/light/boots/light_boots
     value: 8
     default_statistics:
@@ -294,7 +294,7 @@ items:
   - id: ROGUE_COAT
     rarity: UNCOMMON
     material: leather_chestplate
-    display_name: 'Rogue Coat'
+    display_name: '游荡者外套'
     item_model: hypixel_ravengard:item/armor/rogue/chestplate/rogue_coat
     value: 19
     default_statistics:
@@ -307,7 +307,7 @@ items:
   - id: DOUBLET
     rarity: UNCOMMON
     material: leather_chestplate
-    display_name: 'Doublet'
+    display_name: '紧身上衣'
     item_model: hypixel_ravengard:item/armor/doublet
     value: 3
     default_statistics:
@@ -320,7 +320,7 @@ items:
   - id: PADDED_TUNIC
     rarity: UNCOMMON
     material: leather_chestplate
-    display_name: 'Padded Tunic'
+    display_name: '夹层外衣'
     item_model: hypixel_ravengard:item/armor/padded_leather/chestplate/padded_tunic
     value: 6
     default_statistics:
@@ -333,7 +333,7 @@ items:
   - id: QUILTED_LEGGINGS
     rarity: UNCOMMON
     material: leather_leggings
-    display_name: 'Quilted Leggings'
+    display_name: '绗缝护腿'
     item_model: hypixel_ravengard:item/armor/quilted/leggings/quilted_leggings
     value: 8
     default_statistics:
@@ -346,7 +346,7 @@ items:
   - id: KNIGHTS_HAUBERK
     rarity: UNCOMMON
     material: chainmail_chestplate
-    display_name: 'Knight''s Hauberk'
+    display_name: '骑士锁子甲'
     item_model: hypixel_ravengard:item/armor/knights/chestplate/knights_hauberk
     value: 19
     default_statistics:
@@ -359,7 +359,7 @@ items:
   - id: LIGHT_LEGGINGS
     rarity: UNCOMMON
     material: leather_leggings
-    display_name: 'Light Leggings'
+    display_name: '轻便护腿'
     item_model: hypixel_ravengard:item/armor/light/leggings/light_leggings
     value: 9
     default_statistics:
@@ -372,7 +372,7 @@ items:
   - id: PADDED_LEGGINGS
     rarity: COMMON
     material: leather_leggings
-    display_name: 'Padded Leggings'
+    display_name: '夹层护腿'
     item_model: hypixel_ravengard:item/armor/padded_leather/leggings/padded_leggings
     value: 4
     default_statistics:
@@ -385,7 +385,7 @@ items:
   - id: SOLDIERS_SABATONS
     rarity: COMMON
     material: iron_boots
-    display_name: 'Soldier''s Sabatons'
+    display_name: '士兵铁靴'
     item_model: hypixel_ravengard:item/armor/soldier/boots/soldiers_sabatons
     value: 5
     default_statistics:
@@ -398,7 +398,7 @@ items:
   - id: MARKSMAN_BOOTS
     rarity: UNCOMMON
     material: iron_boots
-    display_name: 'Marksman Boots'
+    display_name: '神射手靴'
     item_model: hypixel_ravengard:item/armor/marksman/boots/marksman_boots
     value: 14
     default_statistics:
@@ -411,12 +411,12 @@ items:
   - id: BANDAGE
     rarity: UNCOMMON
     material: paper
-    display_name: 'Bandage'
+    display_name: '绷带'
     item_model: hypixel_ravengard:item/consumables/bandage
     value: 6
     description:
-      - 'A strong bandage that restores a'
-      - 'moderate amount of health over time.'
+      - '一条结实的绷带，随时间'
+      - '恢复中等量的生命值。'
     effect: 'Heals +80 HP over 5 seconds.'
     components:
       - id: STANDARD_ITEM
@@ -424,12 +424,12 @@ items:
   - id: APPLE
     rarity: COMMON
     material: apple
-    display_name: 'Apple'
+    display_name: '苹果'
     item_model: hypixel_ravengard:item/consumables/apple
     value: 4
     description:
-      - 'A common fruit that restores a small'
-      - 'amount of health when consumed.'
+      - '一种常见的水果，食用后'
+      - '恢复少量生命值。'
     effect: 'Heals +30 HP over 4 seconds.'
     components:
       - id: STANDARD_ITEM
@@ -437,7 +437,7 @@ items:
   - id: GREAT_WAR_HAMMER
     rarity: UNCOMMON
     material: stone_axe
-    display_name: 'Great War Hammer'
+    display_name: '巨型战锤'
     item_model: hypixel_ravengard:item/weapons/war_hammers/great/great_war_hammer
     value: 3
     default_statistics:
@@ -451,7 +451,7 @@ items:
   - id: STEEL_WAR_HAMMER
     rarity: UNCOMMON
     material: iron_axe
-    display_name: 'Steel War Hammer'
+    display_name: '钢战锤'
     item_model: hypixel_ravengard:item/weapons/war_hammers/steel/steel_war_hammer
     value: 12
     default_statistics:
@@ -465,7 +465,7 @@ items:
   - id: STEEL_HALBERD
     rarity: UNCOMMON
     material: golden_sword
-    display_name: 'Steel Halberd'
+    display_name: '钢戟'
     item_model: hypixel_ravengard:item/weapons/halberds/steel/steel_halberd
     value: 8
     default_statistics:
@@ -479,7 +479,7 @@ items:
   - id: IRON_GREATSWORD
     rarity: UNCOMMON
     material: iron_sword
-    display_name: 'Iron Great Sword'
+    display_name: '铁巨剑'
     item_model: hypixel_ravengard:item/weapons/greatswords/iron/iron_greatsword
     value: 4
     default_statistics:
@@ -493,7 +493,7 @@ items:
   - id: IRON_SWORD
     rarity: COMMON
     material: iron_sword
-    display_name: 'Iron Sword'
+    display_name: '铁剑'
     item_model: hypixel_ravengard:item/weapons/swords/iron/iron_sword
     value: 3
     default_statistics:
@@ -507,7 +507,7 @@ items:
   - id: POWER_BOW
     rarity: UNCOMMON
     material: bow
-    display_name: 'Power Bow'
+    display_name: '强力弓'
     item_model: hypixel_ravengard:item/weapons/bows/power/power_bow
     value: 8
     default_statistics:
@@ -521,7 +521,7 @@ items:
   - id: RUSTY_DAGGER
     rarity: COMMON
     material: wooden_sword
-    display_name: 'Rusty Dagger'
+    display_name: '生锈匕首'
     item_model: hypixel_ravengard:item/weapons/daggers/rusty/rusty_dagger
     default_statistics:
       damage: 27
@@ -534,7 +534,7 @@ items:
   - id: RUSTY_MACE
     rarity: COMMON
     material: iron_sword
-    display_name: 'Rusty Mace'
+    display_name: '生锈钉锤'
     item_model: hypixel_ravengard:item/weapons/maces/rusty/rusty_mace
     value: 3
     default_statistics:
@@ -548,7 +548,7 @@ items:
   - id: STEEL_DAGGER
     rarity: UNCOMMON
     material: iron_sword
-    display_name: 'Steel Dagger'
+    display_name: '钢匕首'
     item_model: hypixel_ravengard:item/weapons/daggers/steel/steel_dagger
     value: 14
     default_statistics:
@@ -562,7 +562,7 @@ items:
   - id: LEATHER_HARNESS
     rarity: COMMON
     material: leather_chestplate
-    display_name: 'Leather Harness'
+    display_name: '皮革护甲'
     item_model: hypixel_ravengard:item/armor/leather_harness/chestplate/leather_harness
     value: 4
     default_statistics:
@@ -575,7 +575,7 @@ items:
   - id: SOLDIERS_GREAVES
     rarity: UNCOMMON
     material: leather_leggings
-    display_name: 'Soldier''s Greaves'
+    display_name: '士兵护胫'
     item_model: hypixel_ravengard:item/armor/soldier/leggings/soldiers_greaves
     value: 9
     default_statistics:
@@ -588,7 +588,7 @@ items:
   - id: WAR_BOOTS
     rarity: UNCOMMON
     material: iron_boots
-    display_name: 'War Boots'
+    display_name: '战靴'
     item_model: hypixel_ravengard:item/armor/war/boots/war_boots
     value: 12
     default_statistics:
@@ -601,7 +601,7 @@ items:
   - id: WAR_LEGGINGS
     rarity: UNCOMMON
     material: iron_leggings
-    display_name: 'War Leggings'
+    display_name: '战斗护腿'
     item_model: hypixel_ravengard:item/armor/war/leggings/war_leggings
     value: 14
     default_statistics:
@@ -614,7 +614,7 @@ items:
   - id: LEATHER_BOOTS
     rarity: COMMON
     material: leather_boots
-    display_name: 'Leather Boots'
+    display_name: '皮靴'
     item_model: hypixel_ravengard:item/armor/leather/boots/leather_boots
     value: 3
     default_statistics:
@@ -625,7 +625,7 @@ items:
   - id: STUDDED_BOOTS
     rarity: UNCOMMON
     material: leather_boots
-    display_name: 'Studded Boots'
+    display_name: '铆钉靴'
     item_model: hypixel_ravengard:item/armor/studded/boots/studded_boots
     value: 7
     default_statistics:
@@ -638,7 +638,7 @@ items:
   - id: KNIGHTS_SABATONS
     rarity: UNCOMMON
     material: iron_boots
-    display_name: 'Knight Sabatons'
+    display_name: '骑士铁靴'
     item_model: hypixel_ravengard:item/armor/knights/boots/knights_sabatons
     value: 14
     default_statistics:
@@ -653,7 +653,7 @@ items:
   - id: RUSTY_GREAT_AXE
     rarity: COMMON
     material: wooden_axe
-    display_name: 'Rusty Great Axe'
+    display_name: '生锈巨斧'
     item_model: hypixel_ravengard:item/weapons/axes/rusty/rusty_great_axe
     value: 0
     default_statistics:
@@ -667,7 +667,7 @@ items:
   - id: IRON_GREAT_AXE
     rarity: COMMON
     material: iron_axe
-    display_name: 'Iron Great Axe'
+    display_name: '铁巨斧'
     item_model: hypixel_ravengard:item/weapons/axes/iron/iron_great_axe
     value: 3
     default_statistics:
@@ -681,7 +681,7 @@ items:
   - id: STUDDED_CHESTPLATE
     rarity: COMMON
     material: iron_chestplate
-    display_name: 'Studded Chestplate'
+    display_name: '铆钉胸甲'
     item_model: hypixel_ravengard:item/armor/studded/chestplate/studded_chestplate
     value: 3
     default_statistics:
@@ -694,24 +694,24 @@ items:
   - id: TOPAZ_GEMSTONE
     rarity: COMMON
     material: stick
-    display_name: 'Topaz Gemstone'
+    display_name: '黄玉宝石'
     item_model: hypixel_ravengard:item/gameplay/trinkets/topaz
     value: 6
     description:
-      - 'A smooth topaz gemstone.'
-      - 'The stone looks a little faded.'
+      - '一颗光滑的黄玉宝石。'
+      - '石头看起来有些褪色。'
     components:
       - id: STANDARD_ITEM
         standard_item_type: TRINKET
   - id: RUBY_JEWEL
     rarity: COMMON
     material: stick
-    display_name: 'Ruby Jewel'
+    display_name: '红宝石'
     item_model: hypixel_ravengard:item/gameplay/trinkets/ruby
     value: 5
     description:
-      - 'A beautiful deep red jewel.'
-      - 'Seems a little faded.'
+      - '一颗美丽的深红色宝石。'
+      - '似乎有些褪色。'
     components:
       - id: STANDARD_ITEM
         standard_item_type: TRINKET
@@ -720,6 +720,7 @@ items:
   - id: APPRENTICE_BOOTS
     rarity: COMMON
     material: leather_boots
+    display_name: '学徒靴'
     item_model: hypixel_ravengard:item/armor/apprentice/boots/apprentice_boots
     value: 3
     default_statistics:
@@ -734,7 +735,7 @@ items:
     tracked_id: UNCOMMON_APPRENTICE_BOOTS
     rarity: UNCOMMON
     material: leather_boots
-    display_name: 'Apprentice Boots'
+    display_name: '学徒靴'
     item_model: hypixel_ravengard:item/armor/apprentice/boots/apprentice_boots
     value: 4
     default_statistics:
@@ -748,6 +749,7 @@ items:
   - id: APPRENTICE_PANTS
     rarity: COMMON
     material: iron_leggings
+    display_name: '学徒长裤'
     item_model: hypixel_ravengard:item/armor/apprentice/leggings/apprentice_pants
     value: 4
     default_statistics:
@@ -762,7 +764,7 @@ items:
     tracked_id: UNCOMMON_APPRENTICE_PANTS
     rarity: UNCOMMON
     material: iron_leggings
-    display_name: 'Apprentice Pants'
+    display_name: '学徒长裤'
     item_model: hypixel_ravengard:item/armor/apprentice/leggings/apprentice_pants
     value: 5
     default_statistics:
@@ -776,6 +778,7 @@ items:
   - id: ASH_BOW
     rarity: COMMON
     material: bow
+    display_name: '白蜡木弓'
     item_model: hypixel_ravengard:item/weapons/bows/ash/ash_bow
     default_statistics:
       damage: 34.0
@@ -789,12 +792,12 @@ items:
     tracked_id: COMMON_BANDAGE
     rarity: COMMON
     material: paper
-    display_name: 'Bandage'
+    display_name: '绷带'
     item_model: hypixel_ravengard:item/consumables/bandage
     value: 2
     description:
-      - 'A simple bandage that restores a'
-      - 'small amount of health over time.'
+      - '一条简单的绷带，随时间'
+      - '恢复少量生命值。'
     effect: 'Heals +50 HP over 5 seconds.'
     components:
       - id: STANDARD_ITEM
@@ -803,6 +806,7 @@ items:
   - id: BRONZE_HALBERD
     rarity: COMMON
     material: stick
+    display_name: '青铜戟'
     item_model: hypixel_ravengard:item/weapons/halberds/bronze/bronze_halberd
     value: 5
     default_statistics:
@@ -817,6 +821,7 @@ items:
   - id: BRONZE_MACE
     rarity: COMMON
     material: stick
+    display_name: '青铜钉锤'
     item_model: hypixel_ravengard:item/weapons/maces/bronze/bronze_mace
     value: 4
     default_statistics:
@@ -831,10 +836,11 @@ items:
   - id: BUCKLER
     rarity: COMMON
     material: shield
+    display_name: '圆盾'
     item_model: hypixel_ravengard:item/weapons/shields/buckler/buckler
     description:
-      - 'Mitigates 70% of incoming damage on'
-      - 'successful block.'
+      - '成功格挡时'
+      - '减免 70% 的伤害。'
     components:
       - id: STANDARD_ITEM
         standard_item_type: SHIELD
@@ -844,6 +850,7 @@ items:
   - id: CLOTH_SHIRT
     rarity: COMMON
     material: leather_chestplate
+    display_name: '布衬衫'
     item_model: hypixel_ravengard:item/armor/starter/chestplate/cloth_shirt
     default_statistics:
       defense: 4.0
@@ -856,13 +863,13 @@ items:
   - id: HEALTH_POTION
     rarity: COMMON
     material: paper
-    display_name: 'Health Potion'
+    display_name: '生命药水'
     item_model: hypixel_ravengard:item/consumables/potions/health
     value: 3
     description:
-      - 'A basic alchemical brew that'
-      - 'restores a small amount of health'
-      - 'when consumed.'
+      - '一种基础的炼金药剂，'
+      - '饮用后可恢复少量'
+      - '生命值。'
     effect: 'Heals +75 HP over 2 seconds.'
     components:
       - id: STANDARD_ITEM
@@ -871,6 +878,7 @@ items:
   - id: KNIGHT_SWORD
     rarity: COMMON
     material: stick
+    display_name: '骑士剑'
     item_model: hypixel_ravengard:item/weapons/swords/knights/knights_sword
     value: 4
     default_statistics:
@@ -885,6 +893,7 @@ items:
   - id: LEATHER_LEGGINGS
     rarity: COMMON
     material: leather_leggings
+    display_name: '皮革护腿'
     item_model: hypixel_ravengard:item/armor/leather/leggings/leather_leggings
     value: 2
     default_statistics:
@@ -899,7 +908,7 @@ items:
     tracked_id: UNCOMMON_LEATHER_LEGGINGS
     rarity: UNCOMMON
     material: leather_leggings
-    display_name: 'Leather Leggings'
+    display_name: '皮革护腿'
     item_model: hypixel_ravengard:item/armor/leather/leggings/leather_leggings
     value: 4
     default_statistics:
@@ -914,7 +923,7 @@ items:
     tracked_id: COMMON_LIGHT_LEGGINGS
     rarity: COMMON
     material: leather_leggings
-    display_name: 'Light Leggings'
+    display_name: '轻便护腿'
     item_model: hypixel_ravengard:item/armor/light/leggings/light_leggings
     value: 5
     default_statistics:
@@ -928,6 +937,7 @@ items:
   - id: RUSTY_KNIFE
     rarity: COMMON
     material: stick
+    display_name: '生锈小刀'
     item_model: hypixel_ravengard:item/weapons/knives/rusty/rusty_knife
     default_statistics:
       damage: 10.0
@@ -941,6 +951,7 @@ items:
   - id: RUSTY_SWORD
     rarity: COMMON
     material: stick
+    display_name: '生锈剑'
     item_model: hypixel_ravengard:item/weapons/swords/rusty/rusty_sword
     default_statistics:
       damage: 28.0
@@ -955,7 +966,7 @@ items:
     tracked_id: COMMON_SPIKED_MACE
     rarity: COMMON
     material: stick
-    display_name: 'Spiked Mace'
+    display_name: '尖刺钉锤'
     item_model: hypixel_ravengard:item/weapons/maces/spiked/spiked_mace
     value: 3
     default_statistics:
@@ -970,6 +981,7 @@ items:
   - id: WEATHERED_COAT
     rarity: COMMON
     material: leather_chestplate
+    display_name: '陈旧外套'
     item_model: hypixel_ravengard:item/armor/starter/chestplate/weathered_coat
     default_statistics:
       defense: 4.0
@@ -982,6 +994,7 @@ items:
   - id: WEATHERED_ORB
     rarity: COMMON
     material: stick
+    display_name: '陈旧宝珠'
     item_model: hypixel_ravengard:item/weapons/orbs/weathered/weathered_orb
     value: 4
     default_statistics:
@@ -997,6 +1010,7 @@ items:
   - id: WOODEN_STAFF
     rarity: COMMON
     material: stick
+    display_name: '木法杖'
     item_model: hypixel_ravengard:item/weapons/staves/wooden/wooden_staff
     value: 3
     default_statistics:
@@ -1012,6 +1026,7 @@ items:
   - id: BRONZE_DAGGER
     rarity: UNCOMMON
     material: stick
+    display_name: '青铜匕首'
     item_model: hypixel_ravengard:item/weapons/daggers/bronze/bronze_dagger
     value: 7
     default_statistics:
@@ -1026,7 +1041,7 @@ items:
   - id: BRONZE_GREATSWORD
     rarity: UNCOMMON
     material: stick
-    display_name: 'Bronze Great Sword'
+    display_name: '青铜巨剑'
     item_model: hypixel_ravengard:item/weapons/greatswords/bronze/bronze_greatsword
     value: 8
     default_statistics:
@@ -1041,6 +1056,7 @@ items:
   - id: CHAINMAIL
     rarity: UNCOMMON
     material: chainmail_chestplate
+    display_name: '锁链甲'
     item_model: hypixel_ravengard:item/armor/chainmail/chestplate/chainmail
     value: 6
     default_statistics:
@@ -1054,6 +1070,7 @@ items:
   - id: EMBER_BOOTS
     rarity: UNCOMMON
     material: leather_boots
+    display_name: '余烬靴'
     item_model: hypixel_ravengard:item/armor/ember/boots/ember_boots
     value: 3
     default_statistics:
@@ -1067,6 +1084,7 @@ items:
   - id: EMBER_PANTS
     rarity: UNCOMMON
     material: iron_leggings
+    display_name: '余烬长裤'
     item_model: hypixel_ravengard:item/armor/ember/leggings/ember_pants
     value: 7
     default_statistics:
@@ -1080,6 +1098,7 @@ items:
   - id: EMBER_ROBE
     rarity: UNCOMMON
     material: leather_chestplate
+    display_name: '余烬长袍'
     item_model: hypixel_ravengard:item/armor/ember/chestplate/ember_robe
     value: 9
     default_statistics:
@@ -1093,7 +1112,7 @@ items:
   - id: GOLD_GREATSWORD
     rarity: UNCOMMON
     material: stick
-    display_name: 'Gold Great Sword'
+    display_name: '黄金巨剑'
     item_model: hypixel_ravengard:item/weapons/greatswords/gold/gold_greatsword
     value: 11
     default_statistics:
@@ -1108,6 +1127,7 @@ items:
   - id: GOLD_KNIFE
     rarity: UNCOMMON
     material: stick
+    display_name: '黄金小刀'
     item_model: hypixel_ravengard:item/weapons/knives/gold/gold_knife
     value: 15
     default_statistics:
@@ -1122,6 +1142,7 @@ items:
   - id: GOLD_MACE
     rarity: UNCOMMON
     material: stick
+    display_name: '黄金钉锤'
     item_model: hypixel_ravengard:item/weapons/maces/gold/gold_mace
     value: 12
     default_statistics:
@@ -1136,6 +1157,7 @@ items:
   - id: GOLD_SWORD
     rarity: UNCOMMON
     material: stick
+    display_name: '黄金剑'
     item_model: hypixel_ravengard:item/weapons/swords/gold/gold_sword
     value: 14
     default_statistics:
@@ -1151,13 +1173,13 @@ items:
     tracked_id: UNCOMMON_HEALTH_POTION
     rarity: UNCOMMON
     material: paper
-    display_name: 'Health Potion'
+    display_name: '生命药水'
     item_model: hypixel_ravengard:item/consumables/potions/health
     value: 8
     description:
-      - 'A potent alchemical concoction that'
-      - 'restores a medium amount of health'
-      - 'when consumed.'
+      - '一种强效的炼金药剂，'
+      - '饮用后可恢复中等量'
+      - '生命值。'
     effect: 'Heals +120 HP over 2 seconds.'
     components:
       - id: STANDARD_ITEM
@@ -1167,7 +1189,7 @@ items:
     tracked_id: UNCOMMON_IRON_HALBERD
     rarity: UNCOMMON
     material: stick
-    display_name: 'Iron Halberd'
+    display_name: '铁戟'
     item_model: hypixel_ravengard:item/weapons/halberds/iron/iron_halberd
     value: 7
     default_statistics:
@@ -1183,7 +1205,7 @@ items:
     tracked_id: UNCOMMON_IRON_SWORD
     rarity: UNCOMMON
     material: stick
-    display_name: 'Iron Sword'
+    display_name: '铁剑'
     item_model: hypixel_ravengard:item/weapons/swords/iron/iron_sword
     value: 5
     default_statistics:
@@ -1199,7 +1221,7 @@ items:
     tracked_id: UNCOMMON_LEATHER_HARNESS
     rarity: UNCOMMON
     material: leather_chestplate
-    display_name: 'Leather Harness'
+    display_name: '皮革护甲'
     item_model: hypixel_ravengard:item/armor/leather_harness/chestplate/leather_harness
     value: 7
     default_statistics:
@@ -1214,7 +1236,7 @@ items:
     tracked_id: UNCOMMON_LEATHER_TUNIC
     rarity: UNCOMMON
     material: leather_chestplate
-    display_name: 'Leather Tunic'
+    display_name: '皮革外衣'
     item_model: hypixel_ravengard:item/armor/leather/chestplate/leather_tunic
     value: 3
     default_statistics:
@@ -1228,6 +1250,7 @@ items:
   - id: ONYX_PANTS
     rarity: UNCOMMON
     material: iron_leggings
+    display_name: '玛瑙长裤'
     item_model: hypixel_ravengard:item/armor/onyx/leggings/onyx_pants
     value: 10
     default_statistics:
@@ -1241,6 +1264,7 @@ items:
   - id: PLATE_CUISSES
     rarity: UNCOMMON
     material: iron_leggings
+    display_name: '板甲腿甲'
     item_model: hypixel_ravengard:item/armor/plate/leggings/plate_cuisses
     value: 14
     default_statistics:
@@ -1255,7 +1279,7 @@ items:
     tracked_id: UNCOMMON_RUSTY_HALBERD
     rarity: UNCOMMON
     material: stick
-    display_name: 'Rusty Halberd'
+    display_name: '生锈戟'
     item_model: hypixel_ravengard:item/weapons/halberds/rusty/rusty_halberd
     value: 4
     default_statistics:
@@ -1270,6 +1294,7 @@ items:
   - id: SILVER_DAGGER
     rarity: UNCOMMON
     material: stick
+    display_name: '白银匕首'
     item_model: hypixel_ravengard:item/weapons/daggers/silver/silver_dagger
     value: 12
     default_statistics:
@@ -1285,7 +1310,7 @@ items:
     tracked_id: UNCOMMON_SOLDIERS_SABATONS
     rarity: UNCOMMON
     material: iron_boots
-    display_name: 'Soldier''s Sabatons'
+    display_name: '士兵铁靴'
     item_model: hypixel_ravengard:item/armor/soldier/boots/soldiers_sabatons
     value: 7
     default_statistics:
@@ -1299,6 +1324,7 @@ items:
   - id: STEELBOUND_BOW
     rarity: UNCOMMON
     material: bow
+    display_name: '包钢弓'
     item_model: hypixel_ravengard:item/weapons/bows/steelbound/steelbound_bow
     value: 16
     default_statistics:

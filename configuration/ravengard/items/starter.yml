@@ -5,6 +5,7 @@ items:
   - id: TUNIC
     rarity: COMMON
     material: leather_chestplate
+    display_name: '外衣'
     item_model: hypixel_ravengard:item/armor/starter/chestplate/tunic
     default_statistics:
       defense: 6.0
@@ -19,6 +20,7 @@ items:
   - id: WEATHERED_HARNESS
     rarity: COMMON
     material: leather_chestplate
+    display_name: '陈旧护甲'
     item_model: hypixel_ravengard:item/armor/starter/chestplate/weathered_harness
     default_statistics:
       defense: 4.0
@@ -33,6 +35,7 @@ items:
   - id: REINFORCED_PANTS
     rarity: COMMON
     material: leather_leggings
+    display_name: '加固长裤'
     item_model: hypixel_ravengard:item/armor/starter/leggings/reinforced_pants
     default_statistics:
       defense: 10.0
@@ -47,7 +50,7 @@ items:
   - id: WEATHERED_PANTS
     rarity: COMMON
     material: leather_leggings
-    display_name: 'Weathered Pants'
+    display_name: '陈旧长裤'
     item_model: hypixel_ravengard:item/armor/starter/leggings/weathered_pants
     default_statistics:
       defense: 4.0
@@ -62,6 +65,7 @@ items:
   - id: OLD_BOOTS
     rarity: COMMON
     material: leather_boots
+    display_name: '旧靴子'
     item_model: hypixel_ravengard:item/armor/starter/boots/old_boots
     default_statistics:
       defense: 2.0
@@ -74,6 +78,7 @@ items:
   - id: WEATHERED_ROBE
     rarity: COMMON
     material: leather_chestplate
+    display_name: '陈旧长袍'
     item_model: hypixel_ravengard:item/armor/starter/chestplate/weathered_robe
     default_statistics:
       defense: 4.0
@@ -88,6 +93,7 @@ items:
   - id: APPRENTICE_STAFF
     rarity: COMMON
     material: stick
+    display_name: '学徒法杖'
     item_model: hypixel_ravengard:item/weapons/staves/apprentice/apprentice_staff
     default_statistics:
       ranged_damage: 30.0
@@ -104,10 +110,10 @@ items:
     rarity: COMMON
     material: paper
     item_model: hypixel_ravengard:item/consumables/bandage
-    display_name: Basic Bandage
+    display_name: '基础绷带'
     description:
-      - A basic bandage that restores a
-      - small amount of health over time.
+      - '一条基础的绷带，随时间'
+      - '恢复少量生命值。'
     effect: Heals +35 HP over 6 seconds.
     components:
       - id: STANDARD_ITEM
@@ -115,35 +121,36 @@ items:
 
   - id: NECK_SLOT
     material: white_stained_glass_pane
+    display_name: '项链槽'
     item_model: hypixel_ravengard:gui/sprites/container/slot/slot_brown_necklace
     components:
       - id: PLACEHOLDER_SLOT
-        lore_one: Place a compatible item into this slot
-        lore_two: to equip it.
+        lore_one: '将合适的物品放入此槽位'
+        lore_two: '即可装备。'
 
   - id: EARRING_SLOT
     material: white_stained_glass_pane
-    display_name: Earring Slot
+    display_name: '耳环槽'
     item_model: hypixel_ravengard:gui/sprites/container/slot/slot_brown_earring
     components:
       - id: PLACEHOLDER_SLOT
-        lore_one: Place a compatible item into this slot
-        lore_two: to equip it.
+        lore_one: '将合适的物品放入此槽位'
+        lore_two: '即可装备。'
 
   - id: BELT_SLOT
     material: white_stained_glass_pane
-    display_name: Belt Slot
+    display_name: '腰带槽'
     item_model: hypixel_ravengard:gui/sprites/container/slot/slot_brown_belt
     components:
       - id: PLACEHOLDER_SLOT
-        lore_one: Place a compatible item into this slot
-        lore_two: to equip it.
+        lore_one: '将合适的物品放入此槽位'
+        lore_two: '即可装备。'
 
   - id: RING_SLOT
     material: white_stained_glass_pane
-    display_name: Ring Slot
+    display_name: '戒指槽'
     item_model: hypixel_ravengard:gui/sprites/container/slot/slot_brown_ring
     components:
       - id: PLACEHOLDER_SLOT
-        lore_one: Place a compatible item into this slot
-        lore_two: to equip it.
+        lore_one: '将合适的物品放入此槽位'
+        lore_two: '即可装备。'
