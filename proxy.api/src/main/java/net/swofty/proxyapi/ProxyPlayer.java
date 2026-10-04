@@ -27,6 +27,8 @@ public record ProxyPlayer(UUID uuid) {
     private static volatile Consumer<UUID> transferFailure = player -> {};
 
     public static Map<UUID, CompletableFuture<Void>> waitingForTransferComplete = new ConcurrentHashMap<>();
+    /** The proxy answers only once the player is on the new server, which it allows 15 seconds for. */
+    private static final long TRANSFER_REPLY_TIMEOUT_SECONDS = 25;
 
     public ProxyPlayer(Player player) {
         this(player.getUuid());
@@ -36,6 +38,13 @@ public record ProxyPlayer(UUID uuid) {
         RedisClient.requestProxy(PLAYER_HANDLER,
                 new PlayerHandlerProtocol.Request(uuid.toString(), PlayerHandlerProtocol.Action.MESSAGE,
                         Map.of("message", JSONComponentSerializer.json().serialize(message))));
+    }
+
+    /** A player still on this server hears it from this server, through its own localized packets. */
+    private void tellHere(Text message) {
+        Player local = net.minestom.server.MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(uuid);
+        if (local != null) local.sendMessage(message.asComponent());
+        else sendMessage(message);
     }
 
     public void sendMessage(Text message) {
@@ -119,7 +128,8 @@ public record ProxyPlayer(UUID uuid) {
                         new PlayerHandlerProtocol.Request(uuid.toString(), PlayerHandlerProtocol.Action.TRANSFER_WITH_UUID,
                                 document == null
                                         ? Map.of("server_uuid", serverToTransferTo.toString())
-                                        : Map.of("server_uuid", serverToTransferTo.toString(), "document", document)))
+                                        : Map.of("server_uuid", serverToTransferTo.toString(), "document", document)),
+                        TRANSFER_REPLY_TIMEOUT_SECONDS, java.util.concurrent.TimeUnit.SECONDS)
                 .thenAccept(response -> {
                     if (!response.success()) {
                         failTransfer(future, new IllegalStateException(response.error()));
@@ -135,13 +145,13 @@ public record ProxyPlayer(UUID uuid) {
         waitingForTransferComplete.remove(uuid);
         notifyTransferFailed();
         future.completeExceptionally(error);
-        sendMessage(Text.of("<c>Unable to transfer you: {}", rootMessage(error)));
+        tellHere(Text.of("<c>Unable to transfer you: {}", rootMessage(error)));
     }
 
     public void transferTo(ServerType serverType) {
         resolveServer(serverType).thenAccept(this::transferToWithIndication)
                 .exceptionally(error -> {
-                    sendMessage(Text.of("<c>Unable to transfer you: {}", rootMessage(error)));
+                    tellHere(Text.of("<c>Unable to transfer you: {}", rootMessage(error)));
                     return null;
                 });
     }

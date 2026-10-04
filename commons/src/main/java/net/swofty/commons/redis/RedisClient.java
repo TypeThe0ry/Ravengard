@@ -49,6 +49,12 @@ public final class RedisClient {
         return request(RedisEndpoint.proxy().id(), RedisChannels.protocol(protocol), RedisChannels.protocol(protocol), protocol, message);
     }
 
+    public static <T, R> CompletableFuture<R> requestProxy(RedisProtocol<T, R> protocol, T message,
+                                                           long timeout, TimeUnit unit) {
+        return RedisMessageBus.request(localEndpoint(), RedisEndpoint.proxy().id(), RedisChannels.protocol(protocol),
+                RedisChannels.protocol(protocol), protocol, message, timeout, unit);
+    }
+
     public static <T, R> CompletableFuture<R> requestServer(UUID server, RedisProtocol<T, R> protocol, T message) {
         return request(server.toString(), RedisChannels.protocol(protocol), RedisChannels.protocol(protocol), protocol, message);
     }
@@ -158,6 +164,9 @@ public final class RedisClient {
                 });
     }
 
+    /** A service that is up still answers late while busy; anything shorter turns those into "offline". */
+    private static final long SERVICE_PING_TIMEOUT_MILLIS = 1500;
+
     public static CompletableFuture<Boolean> isServiceOnline(ServiceType service) {
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         AtomicBoolean responded = new AtomicBoolean(false);
@@ -167,7 +176,7 @@ public final class RedisClient {
             future.complete(true);
         });
 
-        CompletableFuture.delayedExecutor(150, TimeUnit.MILLISECONDS).execute(() -> {
+        CompletableFuture.delayedExecutor(SERVICE_PING_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS).execute(() -> {
             if (!responded.get()) {
                 future.complete(false);
             }
