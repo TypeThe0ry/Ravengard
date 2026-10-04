@@ -131,5 +131,5 @@ $([ -n "$removed" ] && printf 'rm -f -- %q\n' $removed)
 docker compose build -q
 docker compose up -d
 for i in \$(seq 1 150); do docker compose logs --since 5m ravengard_dungeon 2>&1 | grep -aq 'Registered static dungeon interactables' && break; sleep 3; done
-docker compose ps --format '{{.Name}} {{.Status}}'"
+docker compose ps --format '{{.Name}} {{.Status}}'" || { echo "applying the changes failed; the upload is kept in ../upload, re-run to apply" >&2; exit 1; }
 echo "== deployed"
