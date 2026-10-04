@@ -174,7 +174,7 @@ public final class DungeonChest extends DungeonInteractable {
 
     @Override
     public String castLabel() {
-        return "Opening Chest";
+        return "正在开启宝箱";
     }
 
     @Override
@@ -237,7 +237,7 @@ public final class DungeonChest extends DungeonInteractable {
         new RavengardMob(clip, spawn, mimicType,
                 defeated -> DungeonSatchel.spawn(instance, defeated.getPosition()))
                 .spawnMob(instance);
-        player.sendActionBar(net.kyori.adventure.text.Component.text("MIMIC!"));
+        player.sendActionBar(net.kyori.adventure.text.Component.text("宝箱怪！"));
         org.tinylog.Logger.info("Ravengard chest mimic revealed: type={} tier={} pos={}",
                 mimicType, tier, spawn);
     }

@@ -63,18 +63,16 @@ public class RavengardProfile {
 
     /**
      * Playtime the way the captured tooltips write it: the two largest relevant units, so
-     * "2 minutes, 16 seconds" below an hour and "3 hours, 12 minutes" above.
+     * "2 分 16 秒" below an hour and "3 小时 12 分钟" above.
      */
     public String playtimeText() {
         long hours = playtimeSeconds / 3600;
         long minutes = (playtimeSeconds % 3600) / 60;
         long seconds = playtimeSeconds % 60;
         if (hours > 0) {
-            return hours + (hours == 1 ? " hour, " : " hours, ")
-                    + minutes + (minutes == 1 ? " minute" : " minutes");
+            return hours + " 小时 " + minutes + " 分钟";
         }
-        return minutes + (minutes == 1 ? " minute, " : " minutes, ")
-                + seconds + (seconds == 1 ? " second" : " seconds");
+        return minutes + " 分 " + seconds + " 秒";
     }
 
     public int experienceForNextLevel() {

@@ -7,7 +7,7 @@ import net.swofty.type.generic.user.categories.Rank;
 import net.swofty.type.ravengardgeneric.queue.RavengardQueue;
 import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
-@CommandParameters(labels = "play", description = "Join Ravengard matchmaking", usage = "/play ravengard", permission = Rank.DEFAULT, allowsConsole = false)
+@CommandParameters(labels = "play", description = "加入天穹余烬匹配", usage = "/play ravengard", permission = Rank.DEFAULT, allowsConsole = false)
 public final class PlayCommand extends HypixelCommand {
     @Override
     public void registerUsage(MinestomCommand command) {

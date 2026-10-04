@@ -49,8 +49,8 @@ public final class AnimReviewService {
             session.spawn();
             ensureTicking();
         }
-        player.sendMessage("<a>Reviewing <f>{}<a> ({} ticks). Swing or use the hotbar controls; "
-                        + "<f>/animreview mark \\<name><a> saves a range.",
+        player.sendMessage("<a>正在审查 <f>{}<a>（{} 刻）。挥手或使用快捷栏控制；"
+                        + "<f>/animreview mark \\<名称><a> 保存一个区间。",
                 clipName, clip.frames().size());
     }
 
@@ -207,15 +207,15 @@ public final class AnimReviewService {
                 savedInventory[i] = inventory.getItemStack(i);
                 inventory.setItemStack(i, ItemStack.AIR);
             }
-            inventory.setItemStack(0, control(Material.CLOCK, "pause", "<e>Pause / Play"));
-            inventory.setItemStack(1, control(Material.ARROW, "back1", "<f>◀ 1 tick"));
-            inventory.setItemStack(2, control(Material.ARROW, "fwd1", "<f>1 tick ▶"));
-            inventory.setItemStack(3, control(Material.SPECTRAL_ARROW, "back10", "<f>◀◀ 10 ticks"));
-            inventory.setItemStack(4, control(Material.SPECTRAL_ARROW, "fwd10", "<f>10 ticks ▶▶"));
-            inventory.setItemStack(5, control(Material.SLIME_BALL, "speed", "<b>Cycle speed"));
-            inventory.setItemStack(6, control(Material.COMPASS, "rotate", "<d>Rotate rig 45°"));
-            inventory.setItemStack(7, control(Material.EMERALD, "markstart", "<a>Set mark start here"));
-            inventory.setItemStack(8, control(Material.NETHER_STAR, "picker", "<d>Pick mob / capture"));
+            inventory.setItemStack(0, control(Material.CLOCK, "pause", "<e>暂停 / 播放"));
+            inventory.setItemStack(1, control(Material.ARROW, "back1", "<f>◀ 1 刻"));
+            inventory.setItemStack(2, control(Material.ARROW, "fwd1", "<f>1 刻 ▶"));
+            inventory.setItemStack(3, control(Material.SPECTRAL_ARROW, "back10", "<f>◀◀ 10 刻"));
+            inventory.setItemStack(4, control(Material.SPECTRAL_ARROW, "fwd10", "<f>10 刻 ▶▶"));
+            inventory.setItemStack(5, control(Material.SLIME_BALL, "speed", "<b>切换速度"));
+            inventory.setItemStack(6, control(Material.COMPASS, "rotate", "<d>旋转模型 45°"));
+            inventory.setItemStack(7, control(Material.EMERALD, "markstart", "<a>在此设置标记起点"));
+            inventory.setItemStack(8, control(Material.NETHER_STAR, "picker", "<d>选择怪物 / 录制片段"));
         }
 
         private static ItemStack control(Material material, String action, String markup) {
@@ -238,8 +238,8 @@ public final class AnimReviewService {
                 }
                 case "markstart" -> {
                     markStart = tick;
-                    player.sendMessage("<a>Mark start set at tick <f>{}<a>. Scrub to the end and run "
-                                    + "<f>/animreview mark \\<name><a>.",
+                    player.sendMessage("<a>标记起点已设在第 <f>{}<a> 刻。拖到终点后执行 "
+                                    + "<f>/animreview mark \\<名称><a>。",
                             tick);
                 }
                 case "marks" -> listMarks();
@@ -250,7 +250,7 @@ public final class AnimReviewService {
 
         public void listMarks() {
             if (marks.isEmpty()) {
-                player.sendMessage("<7>No marks yet on {}.", clip.name());
+                player.sendMessage("<7>{} 还没有任何标记。", clip.name());
                 return;
             }
             marks.forEach((name, range) -> player.sendMessage(
@@ -259,20 +259,20 @@ public final class AnimReviewService {
 
         public void mark(String name) {
             if (markStart < 0) {
-                player.sendMessage("<c>Set a mark start first (emerald or /animreview markstart).");
+                player.sendMessage("<c>请先设置标记起点（绿宝石或 /animreview markstart）。");
                 return;
             }
             int from = Math.min(markStart, tick), to = Math.max(markStart, tick);
             marks.put(name, new int[]{from, to});
             markStart = -1;
             save();
-            player.sendMessage("<a>Marked <f>{}<a> as {} - {} and saved.", name, from, to);
+            player.sendMessage("<a>已将 <f>{}<a> 标记为 {} - {} 并保存。", name, from, to);
         }
 
         public void unmark(String name) {
             if (marks.remove(name) != null) {
                 save();
-                player.sendMessage("<a>Removed mark <f>{}<a>.", name);
+                player.sendMessage("<a>已移除标记 <f>{}<a>。", name);
             }
         }
 
@@ -298,7 +298,7 @@ public final class AnimReviewService {
             try (FileWriter writer = new FileWriter(new File(MARKS_DIR, clip.name() + ".json"))) {
                 writer.write(json.toString());
             } catch (Exception exception) {
-                player.sendMessage("<c>Failed to save marks: {}", exception.getMessage());
+                player.sendMessage("<c>保存标记失败：{}", exception.getMessage());
             }
         }
 
@@ -437,12 +437,12 @@ public final class AnimReviewService {
                     .append(paused ? " <c>⏸" : " <a>▶")
                     .append(" <b>x{}", speed);
             if (markStart >= 0) {
-                bar = bar.append(" <a>start={}", markStart);
+                bar = bar.append(" <a>起点={}", markStart);
             }
             List<Integer> flashes = clip.flashes();
             for (int flash : flashes) {
                 if (Math.abs(flash - tick) <= 2) {
-                    bar = bar.append(" <c>[hit]");
+                    bar = bar.append(" <c>[命中]");
                     break;
                 }
             }

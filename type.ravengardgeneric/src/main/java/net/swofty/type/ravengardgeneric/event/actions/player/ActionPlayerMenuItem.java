@@ -40,12 +40,12 @@ public class ActionPlayerMenuItem implements HypixelEventClass {
 
         if (net.swofty.type.generic.HypixelConst.getTypeLoader().getType()
                 == net.swofty.commons.ServerType.RAVENGARD_DUNGEON) {
-            player.sendMessage("<c>The Ravengard Menu is sealed during a dungeon run.");
+            player.sendMessage("<c>地牢进行中无法打开天穹余烬菜单。");
             return;
         }
 
         if (player.isTutorial() || player.getRavengardClass() == null) {
-            player.sendMessage("<c>You must select a class to use this menu!");
+            player.sendMessage("<c>你必须先选择职业才能使用此菜单！");
             return;
         }
 

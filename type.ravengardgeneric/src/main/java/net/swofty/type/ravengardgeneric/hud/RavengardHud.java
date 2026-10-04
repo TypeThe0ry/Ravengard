@@ -248,7 +248,7 @@ public final class RavengardHud {
             net.swofty.type.ravengardgeneric.region.RavengardRegion region =
                     ravengardPlayer.getRegion();
             if (!dungeon) {
-                state.setLocation(region != null ? region.getType().getDisplayName() : "Ravenport");
+                state.setLocation(region != null ? region.getType().getDisplayName() : "渡鸦港");
             }
         }
 

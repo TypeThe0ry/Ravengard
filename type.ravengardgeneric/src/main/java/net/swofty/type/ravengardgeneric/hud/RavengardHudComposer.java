@@ -119,7 +119,7 @@ public final class RavengardHudComposer {
                 new String[]{"\uE00E", String.valueOf(state.getPortalCount())}));
         if (state.isSpectating()) {
             result = result.append(tripledRuns(TextColor.color(0xFEFD0A),
-                    new String[]{"\uE00F", "SPECTATING"}));
+                    new String[]{"\uE00F", "观战中"}));
         }
         Component date = Component.text(state.getDate() + " ", TextColor.color(0xFEFD10))
                 .append(Component.text(state.getServerId(), TextColor.color(0xFEFD12)));

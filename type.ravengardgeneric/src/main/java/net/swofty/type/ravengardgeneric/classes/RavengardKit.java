@@ -64,12 +64,12 @@ public record RavengardKit(String chestId, String legsId, String bootsId,
         boolean first = slot == SLOT_ABILITY_ONE;
         return RavengardItems.button(value)
                 .hoverColor(first ? OFFSET_ABILITY_ONE : OFFSET_ABILITY_TWO)
-                .label(Text.of("Ability: {}", value.getDisplayName()))
+                .label(Text.of("技能：{}", value.getDisplayName()))
                 .lore(value.getHighlightedDescription())
                 .blankLine()
-                .lore(Text.of("<7>Cooldown: <e>{}", value.getCooldownText()))
+                .lore(Text.of("<7>冷却：<e>{}", value.getCooldownText()))
                 .blankLine()
-                .lore(Text.of("<#f0f05c>Press {} to use!",
+                .lore(Text.of("<#f0f05c>按 {} 使用！",
                         Component.keybind(first ? "key.drop" : "key.swapOffhand")))
                 .build()
                 .with(DataComponents.CUSTOM_DATA, new CustomData(CompoundBinaryTag.builder()

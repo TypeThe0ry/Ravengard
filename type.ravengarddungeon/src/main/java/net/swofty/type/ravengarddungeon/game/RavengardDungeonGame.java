@@ -96,8 +96,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         int seconds = tick.remainingSeconds();
         for (RavengardDungeonPlayer player : game.players.values()) {
             if (!isPlayReady(player)) continue;
-            player.sendMessage("<7>The game starts in <e>{}<7> {}!", seconds,
-                    seconds == 1 ? "second" : "seconds");
+            player.sendMessage("<7>游戏将在 <e>{}<7> 秒后开始！", seconds);
             RavengardSounds.play(player, RavengardSounds.Cue.MATCH_COUNTDOWN);
         }
     }
@@ -121,7 +120,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
     @Override
     public Game.JoinResult join(RavengardDungeonPlayer player) {
         if (!isPlayReady(player)) {
-            return new Game.JoinResult.Denied("Player connection is not ready");
+            return new Game.JoinResult.Denied("玩家连接尚未就绪");
         }
         Game.JoinResult result = super.join(player);
         if (result instanceof Game.JoinResult.Success) {
@@ -230,7 +229,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             for (RavengardDungeonPlayer viewer : players.values()) {
                 String victimColor = viewer.getDungeonTeam() == player.getDungeonTeam()
                         ? "<e>" : "<f>";
-                viewer.sendMessage(victimColor + "{} <7>was defeated by <f>{}<7>!",
+                viewer.sendMessage(victimColor + "{} <7>被 <f>{}<7> 击败！",
                         player.getUsername(), killer);
             }
         }
@@ -265,7 +264,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             revived.teleport(at);
             RavengardSounds.play(revived, RavengardSounds.Cue.REVIVE);
             for (RavengardDungeonPlayer teammate : teammatesOf(reviver)) {
-                teammate.sendMessage("<a>{} <a>revived <f>{}<a>!", reviver.getUsername(), revived.getUsername());
+                teammate.sendMessage("<a>{} <a>复活了 <f>{}<a>！", reviver.getUsername(), revived.getUsername());
             }
         }
         if (!fallen.isEmpty()) {
@@ -357,10 +356,10 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
 
     public String getDeathWallStatus() {
         return switch (state) {
-            case WAITING -> "Waiting for game start";
-            case COUNTDOWN -> "Game starting soon";
+            case WAITING -> "等待游戏开始";
+            case COUNTDOWN -> "游戏即将开始";
             case IN_PROGRESS -> RavengardDeathWall.status(getDeathWallState());
-            default -> "Dungeon ended";
+            default -> "地牢已结束";
         };
     }
 
@@ -437,7 +436,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         resetDeathWall();
         for (RavengardDungeonPlayer player : remainingPlayers) {
             if (!player.isDungeonDead()) {
-                player.sendMessage("<c>The death wall consumed the dungeon. You failed to extract in time.");
+                player.sendMessage("<c>死亡之墙吞没了地牢。你没有及时撤离。");
             }
         }
         routePlayersToLobby(remainingPlayers);
@@ -462,7 +461,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             if (phase == RavengardDeathWall.Phase.WARNING) {
                 syncWorldBorder(wall);
                 players.values().forEach(player -> {
-                    player.sendMessage("<e>Death Wall stage {}/{} moves in {} seconds!",
+                    player.sendMessage("<e>死亡之墙第 {}/{} 阶段将在 {} 秒后移动！",
                             wall.stage(), RavengardDeathWall.STAGE_COUNT, wall.phaseRemainingSeconds());
                     player.showBossBar(deathWallProgress);
                     RavengardSounds.play(player, RavengardSounds.Cue.DEATH_WALL_WARNING);
@@ -484,7 +483,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             boolean outside = RavengardDeathWall.isOutside(player.getPosition().x(), player.getPosition().z(),
                     wall.currentCenter().x(), wall.currentCenter().z(), radius);
             if (!outside) continue;
-            player.sendActionBar(net.swofty.commons.text.Text.of("<c>Death Wall: return inside the safe zone"));
+            player.sendActionBar(net.swofty.commons.text.Text.of("<c>死亡之墙：请回到安全区内"));
             float before = player.getHealth();
             boolean applied = RavengardDeathWall.applyUnmitigatedDamage(player, wall.damageAmount());
             org.tinylog.Logger.debug("Ravengard wall damage: game={} player={} elapsed={} progress={} amount={} position=({}, {}) bounds=[{}, {}]x[{}, {}] outside={} applied={} health={}->{}",
@@ -577,23 +576,23 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
     public void extract(RavengardDungeonPlayer player) {
         if (state != GameState.IN_PROGRESS || player.isDungeonDead()
                 || !players.containsKey(player.getUuid())) {
-            rejectExtraction(player, "you are not in an active dungeon run");
+            rejectExtraction(player, "你不在进行中的地牢探险里");
             return;
         }
         if (!RavengardRunState.isActive(player.getUuid(), getGameId())) {
-            rejectExtraction(player, "the server could not verify your active run");
+            rejectExtraction(player, "服务器无法确认你的探险状态");
             return;
         }
         try {
             if (!RavengardProfiles.secureExtraction(player)) {
-                rejectExtraction(player, "your Ravengard profile could not be secured");
+                rejectExtraction(player, "无法保存你的天穹余烬存档");
                 return;
             }
         } catch (RuntimeException exception) {
             org.tinylog.Logger.error(exception,
                     "Ravengard extraction save failed: game={} player={}",
                     getGameId(), player.getUsername());
-            rejectExtraction(player, "your loot could not be saved");
+            rejectExtraction(player, "无法保存你的战利品");
             return;
         }
         RavengardSounds.stop(player, RavengardSounds.Cue.DUNGEON_AMBIENCE);
@@ -601,7 +600,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         RavengardRunState.finish(player.getUuid(), getGameId());
         removePlayerFromDungeon(player);
         resetDungeonState(player);
-        player.sendMessage("<a>Extraction successful! Your loot has been secured.");
+        player.sendMessage("<a>撤离成功！你的战利品已保存。");
         org.tinylog.Logger.info("Ravengard extraction successful: game={} player={} remainingPlayers={}",
                 getGameId(), player.getUsername(), players.size());
         player.sendTo(ServerType.RAVENGARD_LOBBY);
@@ -614,7 +613,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
     private void rejectExtraction(RavengardDungeonPlayer player, String reason) {
         RavengardSounds.stop(player, RavengardSounds.Cue.EXTRACTION_CHANNEL);
         RavengardSounds.play(player, RavengardSounds.Cue.EXTRACTION_FAIL);
-        player.sendMessage("<c>Extraction failed: {}.", reason);
+        player.sendMessage("<c>撤离失败：{}。", reason);
         org.tinylog.Logger.warn("Ravengard extraction rejected: game={} player={} state={} dead={} member={} activeRun={} reason={}",
                 getGameId(), player.getUsername(), state, player.isDungeonDead(),
                 players.containsKey(player.getUuid()),

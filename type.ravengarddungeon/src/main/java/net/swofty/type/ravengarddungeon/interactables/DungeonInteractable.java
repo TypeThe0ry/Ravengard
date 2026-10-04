@@ -56,7 +56,7 @@ public abstract class DungeonInteractable {
     }
 
     public String castLabel() {
-        return "Opening";
+        return "正在开启";
     }
 
     public boolean allowReactivation() {

@@ -1,7 +1,5 @@
 package net.swofty.type.ravengardgeneric.gui;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.item.ItemStack;
 import net.swofty.commons.text.Text;
 import net.swofty.type.generic.gui.inventory.ItemStacks;
@@ -64,35 +62,35 @@ public class GUIShopSell extends RavengardView {
     protected void content(ViewLayout<DefaultState> layout, DefaultState state, ViewContext ctx) {
         place(layout, GUIShop.SLOT_BANNER, RavengardItems.button(GUIShop.banner(shop))
                 .label(Text.literal(shop.title()))
-                .lore("<7>Buy and sell items to help you on.",
-                        "<7>your adventures!"));
+                .lore("<7>买卖物品，助你",
+                        "<7>一路冒险！"));
 
         interactive(layout, GUIShop.SLOT_BUY, RavengardItems.button(RavengardButton.BUY)
-                        .label("Buy")
-                        .lore("<7>Purchase items from this shop to",
-                                "<7>help you on your adventures!")
+                        .label("购买")
+                        .lore("<7>从此商店购买物品，",
+                                "<7>助你一路冒险！")
                         .blankLine()
-                        .lore("<e>Click to buy!"),
+                        .lore("<e>点击购买！"),
                 (click, viewContext) -> {
                     returnStaged(viewContext);
                     ViewNavigator.get(viewContext.player()).push(new GUIShop(shop));
                 });
 
         place(layout, GUIShop.SLOT_SELL, RavengardItems.button(RavengardButton.SELL)
-                .label("Sell")
-                .lore("<7>Sell items from your inventory for",
-                        "<7>some extra cash!")
+                .label("出售")
+                .lore("<7>出售背包里的物品，",
+                        "<7>赚点外快！")
                 .blankLine()
-                .lore("<a>You are here!"));
+                .lore("<a>你在这里！"));
 
         for (int index = 0; index < GRID.length && index < staged.size(); index++) {
             placeStaged(layout, GRID[index], index);
         }
 
         interactive(layout, SLOT_TEXT_SELL, RavengardItems.button(RavengardButton.TEXT_SELL)
-                        .label("Sell Items")
+                        .label("出售物品")
                         .blankLine()
-                        .lore("<e>Click to sell everything above!"),
+                        .lore("<e>点击出售上方所有物品！"),
                 (click, viewContext) -> sellStaged(viewContext));
     }
 
@@ -144,7 +142,7 @@ public class GUIShopSell extends RavengardView {
                 return;
             }
             if (!RavengardItems.hasFreeSlot(player)) {
-                player.sendMessage("<c>Your inventory is full!");
+                player.sendMessage("<c>你的背包已满！");
                 return;
             }
             List<ItemStack> next = new ArrayList<>(staged);
@@ -170,9 +168,7 @@ public class GUIShopSell extends RavengardView {
         staged.clear();
         if (total > 0) {
             RavengardProfiles.addCrowns(player, total);
-            player.sendMessage(Component.text("You sold your items for ").color(NamedTextColor.GREEN)
-                    .append(RavengardItem.crowns(total, ""))
-                    .append(Component.text("!").color(NamedTextColor.GREEN)));
+            player.sendMessage(Text.of("<a>你的物品卖出了 {}<a>！", RavengardItem.crowns(total, "")));
         }
         handedOver = true;
         ViewNavigator.get(player).push(new GUIShopSell(shop));

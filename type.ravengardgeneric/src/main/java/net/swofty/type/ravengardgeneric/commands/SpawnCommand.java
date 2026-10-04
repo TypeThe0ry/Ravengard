@@ -13,8 +13,8 @@ import java.util.List;
 
 @CommandParameters(
         labels = "spawn",
-        description = "Spawns a Ravengard mob at your position",
-        usage = "/spawn <mob>",
+        description = "在你的位置生成一只天穹余烬怪物",
+        usage = "/spawn <怪物>",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class SpawnCommand extends HypixelCommand {
@@ -29,13 +29,13 @@ public class SpawnCommand extends HypixelCommand {
             String name = context.get(mobArg);
             List<String> available = RavengardMobClip.available();
             if (!available.contains(name)) {
-                player.sendMessage("<c>Unknown mob. Options: {}", String.join(", ", available));
+                player.sendMessage("<c>未知怪物。可选：{}", String.join(", ", available));
                 return;
             }
             RavengardMobClip clip = RavengardMobClip.load(name);
             RavengardMob mob = new RavengardMob(clip, player.getPosition());
             mob.spawnMob(player.getInstance());
-            player.sendMessage("<a>Spawned <f>{}<a>.", name);
+            player.sendMessage("<a>已生成 <f>{}<a>。", name);
         }, mobArg);
 
         var appearanceArg = ArgumentType.Word("appearance");
@@ -45,7 +45,7 @@ public class SpawnCommand extends HypixelCommand {
             String name = context.get(mobArg);
             List<String> available = RavengardMobClip.available();
             if (!available.contains(name)) {
-                player.sendMessage("<c>Unknown mob. Options: {}", String.join(", ", available));
+                player.sendMessage("<c>未知怪物。可选：{}", String.join(", ", available));
                 return;
             }
             String appearance = context.get(appearanceArg);
@@ -56,7 +56,7 @@ public class SpawnCommand extends HypixelCommand {
                     .withView(view.yaw() + 180, 0);
             new RavengardMob(RavengardMobClip.load(name), ahead, appearance)
                     .spawnMob(player.getInstance());
-            player.sendMessage("<a>Spawned <f>{}<a>.", appearance);
+            player.sendMessage("<a>已生成 <f>{}<a>。", appearance);
         }, mobArg, appearanceArg);
     }
 }

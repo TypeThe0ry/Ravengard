@@ -494,7 +494,7 @@ class RavengardMobCombatTest {
                 "skeleton_archer_elite");
 
         assertEquals("skeleton_archer_elite", mob.appearanceType());
-        assertEquals("Skeleton Archer Elite", mob.displayName());
+        assertEquals("精英骷髅弓箭手", mob.displayName());
     }
 
     @Test

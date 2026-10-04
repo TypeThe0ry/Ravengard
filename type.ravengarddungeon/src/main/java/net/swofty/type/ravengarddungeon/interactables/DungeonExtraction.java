@@ -76,7 +76,7 @@ public final class DungeonExtraction extends DungeonInteractable {
 
     @Override
     public String castLabel() {
-        return "Extracting";
+        return "正在撤离";
     }
 
     @Override

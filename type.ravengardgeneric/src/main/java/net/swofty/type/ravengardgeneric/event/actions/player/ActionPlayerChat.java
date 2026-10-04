@@ -41,7 +41,7 @@ public class ActionPlayerChat implements HypixelEventClass {
         DatapointChatType.Chats chatType = player.getChatType().currentChatType;
         if (chatType == DatapointChatType.Chats.STAFF) {
             if (!rank.isStaff()) {
-                player.sendMessage("<c>Unknown chat type.");
+                player.sendMessage("<c>未知的聊天类型。");
                 player.getChatType().switchTo(DatapointChatType.Chats.ALL);
                 return;
             }
@@ -51,7 +51,7 @@ public class ActionPlayerChat implements HypixelEventClass {
 
         if (chatType == DatapointChatType.Chats.PARTY) {
             if (!PartyManager.isInParty(player)) {
-                player.sendMessage("<c>You are not in a party and were moved to the ALL channel.");
+                player.sendMessage("<c>你不在队伍中，已切换到全体频道。");
                 player.getChatType().switchTo(DatapointChatType.Chats.ALL);
                 return;
             }

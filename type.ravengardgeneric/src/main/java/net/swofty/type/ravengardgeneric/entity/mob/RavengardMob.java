@@ -99,6 +99,50 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final Map<String, Float> DEMON_EAR_YAW = Map.of("ear", -47.5f, "ear2", 47.5f);
     // captured lying dormant on the ground; once woken they stay on their feet
     private static final Set<String> DORMANT_IDLE_CLIPS = Set.of("zombie_knight");
+    private static final Map<String, String> DISPLAY_NAMES = Map.ofEntries(
+            Map.entry("zombie_knight", "僵尸骑士"),
+            Map.entry("zombie_knight_elite", "精英僵尸骑士"),
+            Map.entry("skeleton_knight", "骷髅骑士"),
+            Map.entry("skeleton_knight_elite", "精英骷髅骑士"),
+            Map.entry("skeleton_warrior", "骷髅战士"),
+            Map.entry("skeleton_warrior_elite", "精英骷髅战士"),
+            Map.entry("skeleton_archer", "骷髅弓箭手"),
+            Map.entry("skeleton_archer_elite", "精英骷髅弓箭手"),
+            Map.entry("demon_grunt", "恶魔步兵"),
+            Map.entry("demon_grunt_elite", "精英恶魔步兵"),
+            Map.entry("demon_imp", "恶魔小鬼"),
+            Map.entry("demon_imp_elite", "精英恶魔小鬼"),
+            Map.entry("demon_archer", "恶魔弓箭手"),
+            Map.entry("demon_archer_elite", "精英恶魔弓箭手"),
+            Map.entry("cursed_knight", "被诅咒的骑士"),
+            Map.entry("guardian", "守护者"),
+            Map.entry("warden", "监守者"),
+            Map.entry("oculus", "魔眼"),
+            Map.entry("oculus_elite", "精英魔眼"),
+            Map.entry("commander", "指挥官"),
+            Map.entry("guard_archer", "卫兵弓箭手"),
+            Map.entry("guard_spear", "长矛卫兵"),
+            Map.entry("guard_warrior", "卫兵战士"),
+            Map.entry("silver_mimic", "银色宝箱怪"),
+            Map.entry("mini_mimic", "小宝箱怪"),
+            Map.entry("normal_mimic", "宝箱怪"),
+            Map.entry("bottle_mimic_short_yellow", "矮黄瓶怪"),
+            Map.entry("bottle_mimic_short_green", "矮绿瓶怪"),
+            Map.entry("bottle_mimic_short_red", "矮红瓶怪"),
+            Map.entry("bottle_mimic_tall_green", "高绿瓶怪"),
+            Map.entry("bottle_mimic_tall_aqua", "高青瓶怪"),
+            Map.entry("bottle_mimic_tall_pink", "高粉瓶怪"),
+            Map.entry("training_dummy", "训练假人"),
+            Map.entry("statue_knight", "骑士雕像"),
+            Map.entry("statue_warrior", "战士雕像"),
+            Map.entry("statue_hunter", "猎人雕像"),
+            Map.entry("statue_assassin", "刺客雕像"),
+            Map.entry("statue_sorcerer", "术士雕像"),
+            Map.entry("statue_default", "雕像"),
+            Map.entry("wraith", "幽魂"),
+            Map.entry("wraith_boss", "幽魂首领"),
+            Map.entry("mini_eye", "小魔眼"),
+            Map.entry("mimic", "宝箱怪"));
     private static final float CASTER_DAMAGE_PER_HIT = 1.5f;
     private static final double CASTER_RANGE = 11.0;
     private static final int CASTER_COOLDOWN_TICKS = 45;
@@ -236,6 +280,10 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     }
 
     public String displayName() {
+        String translated = DISPLAY_NAMES.get(appearanceType);
+        if (translated != null) {
+            return translated;
+        }
         StringBuilder name = new StringBuilder();
         for (String word : appearanceType.split("_")) {
             if (word.isBlank()) {

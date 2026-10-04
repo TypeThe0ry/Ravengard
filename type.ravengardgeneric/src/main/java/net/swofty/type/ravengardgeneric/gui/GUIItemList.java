@@ -43,7 +43,7 @@ public class GUIItemList extends RavengardView {
 
     @Override
     protected String title() {
-        return filter == null ? "Items" : "Items: " + filter;
+        return filter == null ? "物品" : "物品：" + filter;
     }
 
     @Override
@@ -64,13 +64,13 @@ public class GUIItemList extends RavengardView {
             layout.slot(index - from, RavengardItem.displayBuilder(type), (click, viewContext) -> {
                 if (viewContext.player() instanceof RavengardPlayer player) {
                     player.getInventory().addItemStack(RavengardItem.of(type, player));
-                    player.sendMessage("<a>Gave you <f>{}<a>.", type.getId());
+                    player.sendMessage("<a>已给你 <f>{}<a>。", type.getId());
                 }
             });
         }
 
         if (current > 0) {
-            layout.slot(SLOT_PREVIOUS, arrow("<a>Previous Page", current, pages),
+            layout.slot(SLOT_PREVIOUS, arrow("<a>上一页", current, pages),
                     (click, viewContext) -> {
                         if (viewContext.player() instanceof RavengardPlayer player) {
                             ViewNavigator.get(player).push(new GUIItemList(filter, current - 1));
@@ -78,7 +78,7 @@ public class GUIItemList extends RavengardView {
                     });
         }
         if (current < pages - 1) {
-            layout.slot(SLOT_NEXT, arrow("<a>Next Page", current + 2, pages),
+            layout.slot(SLOT_NEXT, arrow("<a>下一页", current + 2, pages),
                     (click, viewContext) -> {
                         if (viewContext.player() instanceof RavengardPlayer player) {
                             ViewNavigator.get(player).push(new GUIItemList(filter, current + 1));
@@ -88,6 +88,6 @@ public class GUIItemList extends RavengardView {
     }
 
     private static ItemStack.Builder arrow(String label, int page, int pages) {
-        return ItemStacks.raw(Material.ARROW, Text.of(label), List.of(Text.of("<e>Page {} of {}", page, pages)));
+        return ItemStacks.raw(Material.ARROW, Text.of(label), List.of(Text.of("<e>第 {} 页，共 {} 页", page, pages)));
     }
 }

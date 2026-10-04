@@ -33,7 +33,7 @@ public final class RavengardShopStock {
 
     public static String refreshText() {
         long millis = untilRefreshMillis();
-        return (millis / 60000) + "m " + (millis / 1000 % 60) + "s";
+        return (millis / 60000) + " 分 " + (millis / 1000 % 60) + " 秒";
     }
 
     public static synchronized Shelf shelf(RavengardShop shop) {

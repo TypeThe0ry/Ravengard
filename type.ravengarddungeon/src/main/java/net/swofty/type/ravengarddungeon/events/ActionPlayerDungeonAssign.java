@@ -27,7 +27,7 @@ public class ActionPlayerDungeonAssign implements HypixelEventClass {
                 DungeonInstanceRegistry.sendPlayerIn(player, configured);
                 return;
             }
-            player.sendMessage("<c>No dungeon assignment was found. Returning to Ravengard Lobby.");
+            player.sendMessage("<c>未找到地牢分配，正在返回天穹余烬大厅。");
             player.sendTo(net.swofty.commons.ServerType.RAVENGARD_LOBBY);
             return;
         }
@@ -35,12 +35,12 @@ public class ActionPlayerDungeonAssign implements HypixelEventClass {
         try {
             instance = DungeonInstanceRegistry.get(UUID.fromString(assignedGameId));
         } catch (IllegalArgumentException exception) {
-            player.sendMessage("<c>Your dungeon assignment was invalid. Returning to Ravengard Lobby.");
+            player.sendMessage("<c>地牢分配无效，正在返回天穹余烬大厅。");
             player.sendTo(net.swofty.commons.ServerType.RAVENGARD_LOBBY);
             return;
         }
         if (instance == null) {
-            player.sendMessage("<c>Your dungeon instance no longer exists.");
+            player.sendMessage("<c>你的地牢实例已不存在。");
             player.sendTo(net.swofty.commons.ServerType.RAVENGARD_LOBBY);
             return;
         }

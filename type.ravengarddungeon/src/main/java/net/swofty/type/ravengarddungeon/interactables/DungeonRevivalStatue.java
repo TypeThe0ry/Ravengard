@@ -72,7 +72,7 @@ public final class DungeonRevivalStatue extends DungeonInteractable {
 
     @Override
     public String castLabel() {
-        return "Reviving";
+        return "正在复活";
     }
 
     @Override
@@ -88,7 +88,7 @@ public final class DungeonRevivalStatue extends DungeonInteractable {
     @Override
     public void channelRejected(Player player) {
         if (player instanceof RavengardDungeonPlayer mercenary) {
-            mercenary.sendMessage("<c>None of your teammates need reviving.");
+            mercenary.sendMessage("<c>没有需要复活的队友。");
         }
     }
 

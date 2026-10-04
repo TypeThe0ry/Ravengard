@@ -9,14 +9,14 @@ import lombok.Getter;
  */
 @Getter
 public enum RavengardItemStatistic {
-    DAMAGE("Damage", 0xE22F, true),
-    RANGED_DAMAGE("Ranged Attack Damage", 0xE230, true),
-    ATTACK_SPEED("Attack Speed", 0xE233, false),
-    RANGED_ATTACK_SPEED("Ranged Attack Speed", 0xE233, false),
-    ABILITY_DAMAGE_BOOST("Ability Damage Boost", 0xE22F, false, true),
-    DEFENSE("Defense", 0xE231, true),
-    RELOAD("Reload", 0xE232, false),
-    COOLDOWN("Cooldown", 0xE22E, false);
+    DAMAGE("伤害", 0xE22F, true),
+    RANGED_DAMAGE("远程攻击伤害", 0xE230, true),
+    ATTACK_SPEED("攻击速度", 0xE233, false),
+    RANGED_ATTACK_SPEED("远程攻击速度", 0xE233, false),
+    ABILITY_DAMAGE_BOOST("技能伤害加成", 0xE22F, false, true),
+    DEFENSE("防御", 0xE231, true),
+    RELOAD("装填", 0xE232, false),
+    COOLDOWN("冷却", 0xE22E, false);
 
     private final String displayName;
     private final int iconGlyph;

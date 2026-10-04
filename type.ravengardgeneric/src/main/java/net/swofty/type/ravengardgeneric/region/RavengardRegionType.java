@@ -6,8 +6,8 @@ import net.kyori.adventure.text.format.TextColor;
 
 @Getter
 public enum RavengardRegionType {
-    NEVERMORE("The Nevermore", NamedTextColor.AQUA),
-    RAVENPORT("Ravenport", NamedTextColor.YELLOW);
+    NEVERMORE("永夜号", NamedTextColor.AQUA),
+    RAVENPORT("渡鸦港", NamedTextColor.YELLOW);
 
     private final String displayName;
     private final TextColor color;

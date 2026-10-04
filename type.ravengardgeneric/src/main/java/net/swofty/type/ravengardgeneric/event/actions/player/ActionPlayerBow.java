@@ -78,7 +78,7 @@ public class ActionPlayerBow implements HypixelEventClass {
         RavengardItemType type = handler.getType();
         if (type == null || !type.usableBy(player.getRavengardClass())) {
             if (type != null) {
-                player.sendMessage("<c>Your class cannot use this item!");
+                player.sendMessage("<c>你的职业无法使用该物品！");
             }
             return;
         }

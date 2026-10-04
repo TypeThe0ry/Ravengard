@@ -10,81 +10,81 @@ import java.util.List;
 @Getter
 public enum RavengardAbility implements RavengardSprite {
     // cooldowns marked (capture) come from the live tooltips, which disagree with the wiki
-    SENTINEL(RavengardClass.KNIGHT, "Sentinel", '\uF106', 100,   // capture; wiki says 1m 28s
-            "Increases physical defense by 30% for 10 seconds."),
-    PROVOKE(RavengardClass.KNIGHT, "Provoke", '\uF112', 26,
-            "Taunts enemies within a 7-block radius to target you."),
-    SHIELD_BASH(RavengardClass.KNIGHT, "Shield Bash", '\uF117', 26,
-            "Pushes back all enemies within a 5-block radius."),
-    RALLY(RavengardClass.KNIGHT, "Rally", '\uF10B', 79,
-            "Temporarily boosts the damage dealt by all team members within a 6-block radius by 20%."),
-    WOUND(RavengardClass.KNIGHT, "Wound", '\uF11B', 17,
-            "Applies a bleed that deals 10 HP of damage every second for 5 seconds."),
-    RECOVERY(RavengardClass.KNIGHT, "Recovery", '\uF115', 120,   // capture; wiki says 1m 45s
-            "Instantly heals +30 HP."),
-    DIRECT_HIT(RavengardClass.KNIGHT, "Direct Hit", '\uF103', 35,
-            "Attacks deal 20% more damage for 5 seconds."),
+    SENTINEL(RavengardClass.KNIGHT, "哨卫", '\uF106', 100,   // capture; wiki says 1m 28s
+            "在 <e>10 秒</e>内提升 <a>30%</a> 物理防御。"),
+    PROVOKE(RavengardClass.KNIGHT, "挑衅", '\uF112', 26,
+            "嘲讽 <a>7 格</a>范围内的敌人，使其以你为目标。"),
+    SHIELD_BASH(RavengardClass.KNIGHT, "盾击", '\uF117', 26,
+            "击退 <a>5 格</a>范围内的所有敌人。"),
+    RALLY(RavengardClass.KNIGHT, "集结", '\uF10B', 79,
+            "暂时提升 <a>6 格</a>范围内\n所有队友 <a>20%</a> 的伤害。"),
+    WOUND(RavengardClass.KNIGHT, "创伤", '\uF11B', 17,
+            "造成流血效果，<e>5 秒</e>内\n每秒造成 <c>10 HP</c> 伤害。"),
+    RECOVERY(RavengardClass.KNIGHT, "恢复", '\uF115', 120,   // capture; wiki says 1m 45s
+            "立即恢复 <c>+30 HP</c>。"),
+    DIRECT_HIT(RavengardClass.KNIGHT, "直击", '\uF103', 35,
+            "<e>5 秒</e>内攻击伤害提高 <a>20%</a>。"),
 
-    WAR_CRY(RavengardClass.WARRIOR, "War Cry", '\uF11A', 40,
-            "Increases damage by 20% on your next attack."),
-    ARMOR_BREAK(RavengardClass.WARRIOR, "Armor Break", '\uF100', 50,
-            "Reduces the defense of the enemy by 10% for 5 seconds."),
-    BOLSTER(RavengardClass.WARRIOR, "Bolster", '\uF102', 60,
-            "Incoming damage is reduced by 20% for 10 seconds."),
-    COOL_OFF(RavengardClass.WARRIOR, "Cool Off", '\uF101', 80,
-            "Heals +35 HP over 10 seconds."),
-    RUSH(RavengardClass.WARRIOR, "Rush", '\uF116', 20,
-            "No stamina loss for 5 seconds."),
-    OVERPOWER(RavengardClass.WARRIOR, "Overpower", '\uF10E', 10,
-            "Knocks back all mobs within a radius of 5 blocks."),
-    CARNAGE(RavengardClass.WARRIOR, "Carnage", '\uF113', 40,
-            "Increases knockback for 5 seconds."),
+    WAR_CRY(RavengardClass.WARRIOR, "战吼", '\uF11A', 40,
+            "下一次攻击的伤害提高 <a>20%</a>。"),
+    ARMOR_BREAK(RavengardClass.WARRIOR, "破甲", '\uF100', 50,
+            "<e>5 秒</e>内降低敌人 <a>10%</a> 防御。"),
+    BOLSTER(RavengardClass.WARRIOR, "坚守", '\uF102', 60,
+            "<e>10 秒</e>内受到的伤害降低 <a>20%</a>。"),
+    COOL_OFF(RavengardClass.WARRIOR, "冷静", '\uF101', 80,
+            "在 <e>10 秒</e>内恢复 <c>+35 HP</c>。"),
+    RUSH(RavengardClass.WARRIOR, "冲锋", '\uF116', 20,
+            "<e>5 秒</e>内不消耗体力。"),
+    OVERPOWER(RavengardClass.WARRIOR, "压制", '\uF10E', 10,
+            "击退 <a>5 格</a>范围内的所有怪物。"),
+    CARNAGE(RavengardClass.WARRIOR, "屠戮", '\uF113', 40,
+            "<e>5 秒</e>内提高击退力度。"),
 
-    EAGLE_EYE(RavengardClass.HUNTER, "Eagle Eye", '\uF105', 40,
-            "Increases arrow damage by 20% for 10 seconds."),
-    RAPID_FIRE(RavengardClass.HUNTER, "Rapid Fire", '\uF114', 40,
-            "Loose your next 3 arrows instantly."),
-    POISON_ARROW(RavengardClass.HUNTER, "Poison Arrow", '\uF231', 30,
-            "Your next arrow will poison its target for 6 seconds."),
-    IMMOBILIZE(RavengardClass.HUNTER, "Immobilize", '\uF109', 30,
-            "Your next arrow will slow its target for 2 seconds."),
-    MED_KIT(RavengardClass.HUNTER, "Med Kit", '\uF10D', 120,
-            "Heals +30 HP."),
-    DOUBLE_SHOT(RavengardClass.HUNTER, "Double Shot", '\uF104', 40,
-            "Loose two arrows simultaneously."),
-    POWER_SHOT(RavengardClass.HUNTER, "Power Shot", '\uF110', 40,
-            "Loose your next arrow instantly."),
+    EAGLE_EYE(RavengardClass.HUNTER, "鹰眼", '\uF105', 40,
+            "<e>10 秒</e>内箭矢伤害提高 <a>20%</a>。"),
+    RAPID_FIRE(RavengardClass.HUNTER, "速射", '\uF114', 40,
+            "接下来的 3 支箭瞬间射出。"),
+    POISON_ARROW(RavengardClass.HUNTER, "毒箭", '\uF231', 30,
+            "下一支箭会使目标中毒 <e>6 秒</e>。"),
+    IMMOBILIZE(RavengardClass.HUNTER, "定身", '\uF109', 30,
+            "下一支箭会使目标减速 <e>2 秒</e>。"),
+    MED_KIT(RavengardClass.HUNTER, "医疗包", '\uF10D', 120,
+            "恢复 <c>+30 HP</c>。"),
+    DOUBLE_SHOT(RavengardClass.HUNTER, "双重射击", '\uF104', 40,
+            "同时射出两支箭。"),
+    POWER_SHOT(RavengardClass.HUNTER, "强力射击", '\uF110', 40,
+            "下一支箭瞬间射出。"),
 
-    PRECISE_ACCURACY(RavengardClass.ASSASSIN, "Precise Accuracy", '\uF111', 40,
-            "Attacks deal 30% more damage for 10 seconds."),
-    SHADOW_STEP(RavengardClass.ASSASSIN, "Shadow Step", '\uF118', 25,
-            "Dashes forward 6 blocks."),
-    HEAL_WOUNDS(RavengardClass.ASSASSIN, "Heal Wounds", '\uF108', 120,
-            "Heals +35 HP over 10 seconds."),
-    LACERATE(RavengardClass.ASSASSIN, "Lacerate", '\uF10C', 60,
-            "Your next attack will deal 80% more damage."),
-    SHADOWS(RavengardClass.ASSASSIN, "Shadows", '\uF10A', 100,
-            "Become invisible for 25 seconds, but movement speed is reduced.",
-            "Attacking or being attacked cancels the invisibility."),
-    SWIFT(RavengardClass.ASSASSIN, "Swift", '\uF119', 180,
-            "Increases movement speed by 50% with no stamina loss."),
-    POISON_DAGGER(RavengardClass.ASSASSIN, "Poison Dagger", '\uF10F', 30,
-            "Applies 7 damage every 6 seconds to the target."),
+    PRECISE_ACCURACY(RavengardClass.ASSASSIN, "精准", '\uF111', 40,
+            "<e>10 秒</e>内攻击伤害提高 <a>30%</a>。"),
+    SHADOW_STEP(RavengardClass.ASSASSIN, "影步", '\uF118', 25,
+            "向前冲刺 <a>6 格</a>。"),
+    HEAL_WOUNDS(RavengardClass.ASSASSIN, "疗伤", '\uF108', 120,
+            "在 <e>10 秒</e>内恢复 <c>+35 HP</c>。"),
+    LACERATE(RavengardClass.ASSASSIN, "撕裂", '\uF10C', 60,
+            "下一次攻击造成额外 <a>80%</a> 伤害。"),
+    SHADOWS(RavengardClass.ASSASSIN, "暗影", '\uF10A', 100,
+            "隐身 <e>25 秒</e>，但移动速度降低。",
+            "攻击或受到攻击会解除隐身。"),
+    SWIFT(RavengardClass.ASSASSIN, "迅捷", '\uF119', 180,
+            "移动速度提高 <a>50%</a> 且不消耗体力。"),
+    POISON_DAGGER(RavengardClass.ASSASSIN, "毒匕", '\uF10F', 30,
+            "每 <e>6 秒</e>对目标造成 <a>7</a> 点伤害。"),
 
-    LIGHTNING_STRIKE(RavengardClass.SORCERER, "Lightning Strike", '\uF240', 40,
-            "Fires an electric strike towards players. On impact causes 40 damage to target and damages others close by."),
-    FIREBALL(RavengardClass.SORCERER, "Fireball", '\uF241', 25,
-            "Spawn a small moving fireball that deals 60 damage on impact."),
-    ICE_SHARDS(RavengardClass.SORCERER, "Ice Shards", '\uF242', 40,
-            "Fires a continuous stream of ice that deals 10 damage and knockbacks on each hit."),
-    RUMBLE(RavengardClass.SORCERER, "Rumble", '\uF243', 30,
-            "Rips up the earth around its user, dealing 20 damage to any enemy within its radius."),
-    SPRING_HEALING(RavengardClass.SORCERER, "Spring Healing", '\uF244', 40,
-            "Heals +45 HP over 10 seconds."),
-    WIND_CUTTER(RavengardClass.SORCERER, "Wind Cutter", '\uF245', 60,
-            "Spawns 3 powerful air slashes through the air, dealing 50 damage and pushing enemies back."),
-    ACCELERATE(RavengardClass.SORCERER, "Accelerate", '\uF23F', 40,
-            "Temporarily reduces the cooldown on Magical Items by 50%!");
+    LIGHTNING_STRIKE(RavengardClass.SORCERER, "雷击", '\uF240', 40,
+            "向玩家射出一道电击，命中时\n对目标造成 <a>40</a> 点伤害并波及周围。"),
+    FIREBALL(RavengardClass.SORCERER, "火球", '\uF241', 25,
+            "发射一枚小型火球，\n命中时造成 <a>60</a> 点伤害。"),
+    ICE_SHARDS(RavengardClass.SORCERER, "冰刺", '\uF242', 40,
+            "持续射出冰流，每次命中\n造成 <a>10</a> 点伤害并击退。"),
+    RUMBLE(RavengardClass.SORCERER, "地裂", '\uF243', 30,
+            "撕裂周围的大地，对范围内\n所有敌人造成 <a>20</a> 点伤害。"),
+    SPRING_HEALING(RavengardClass.SORCERER, "泉愈", '\uF244', 40,
+            "在 <e>10 秒</e>内恢复 <c>+45 HP</c>。"),
+    WIND_CUTTER(RavengardClass.SORCERER, "风刃", '\uF245', 60,
+            "释放 3 道强力风刃，\n造成 <a>50</a> 点伤害并击退敌人。"),
+    ACCELERATE(RavengardClass.SORCERER, "加速", '\uF23F', 40,
+            "暂时将<d>魔法物品</d>的冷却缩短 <a>50%</a>！");
 
     private final RavengardClass owner;
     private final String displayName;
@@ -139,27 +139,14 @@ public enum RavengardAbility implements RavengardSprite {
 
     /**
      * The live tooltips highlight the numbers in a description rather than printing it flat:
-     * percentages green, HP amounts red, durations yellow. Inferred from the captured War Cry,
-     * Cool Off, Shadows and Heal Wounds tooltips, which agree on all three.
+     * percentages green, HP amounts red, durations yellow. The descriptions carry that markup.
      */
     public List<Text> getHighlightedDescription() {
         List<Text> lines = new ArrayList<>(description.length);
         for (String line : description) {
-            String localized = net.swofty.type.ravengardgeneric.i18n.RavengardLocalization.localize(line);
-            if (localized != null) {
-                for (String translatedLine : localized.split("\n")) {
-                    lines.add(Text.of("<7>" + translatedLine));
-                }
-                continue;
+            for (String part : line.split("\n")) {
+                lines.add(Text.of("<7>" + part));
             }
-            String highlighted = line
-                    .replaceAll("([+-]?\\d+(?:\\.\\d+)? ?HP)", "<c>$1</c>")
-                    .replaceAll("(\\d+(?:\\.\\d+)?%)", "<a>$1</a>")
-                    .replaceAll("(\\d+ seconds?)", "<e>$1</e>")
-                    .replaceAll("(\\d+(?:-block| blocks?))", "<a>$1</a>")
-                    .replaceAll("(\\d+)(?= damage)", "<a>$1</a>")
-                    .replaceAll("(Magical Items)", "<d>$1</d>");
-            lines.add(Text.of("<7>" + highlighted));
         }
         return lines;
     }
@@ -202,9 +189,9 @@ public enum RavengardAbility implements RavengardSprite {
         int minutes = cooldownSeconds / 60;
         int seconds = cooldownSeconds % 60;
         if (minutes == 0) {
-            return seconds + "s";
+            return seconds + " 秒";
         }
-        return seconds == 0 ? minutes + "m" : minutes + "m " + seconds + "s";
+        return seconds == 0 ? minutes + " 分钟" : minutes + " 分 " + seconds + " 秒";
     }
 
     public static RavengardAbility fromKey(String key) {

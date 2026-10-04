@@ -681,7 +681,7 @@ public final class DungeonDoor extends DungeonInteractable {
 
     @Override
     public String castLabel() {
-        return opened ? "Closing Door" : "Opening Door";
+        return opened ? "正在关门" : "正在开门";
     }
 
     @Override

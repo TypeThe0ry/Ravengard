@@ -5,7 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 
 public final class RavengardSidebarTitle {
-    private static final String TEXT = "PROTOTYPE";
+    private static final String TEXT = "原型测试";
     private static final int TICKS_PER_STEP = 2;
     private static final int IDLE_STEPS = 12;
 

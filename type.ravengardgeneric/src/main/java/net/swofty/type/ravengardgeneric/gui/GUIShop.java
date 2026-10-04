@@ -1,7 +1,5 @@
 package net.swofty.type.ravengardgeneric.gui;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.component.DataComponents;
 import net.minestom.server.item.ItemStack;
 import net.swofty.commons.text.Text;
@@ -50,8 +48,8 @@ public class GUIShop extends RavengardView {
     protected void content(ViewLayout<DefaultState> layout, DefaultState state, ViewContext ctx) {
         place(layout, SLOT_BANNER, RavengardItems.button(banner(shop))
                 .label(Text.literal(shop.title()))
-                .lore("<7>Buy and sell items to help you on.",
-                        "<7>your adventures!"));
+                .lore("<7>买卖物品，助你",
+                        "<7>一路冒险！"));
 
         for (int slot : shop.shelfSlots()) {
             placeStock(layout, slot);
@@ -59,26 +57,26 @@ public class GUIShop extends RavengardView {
 
         layout.autoUpdating(SLOT_HOURGLASS,
                 (state2, ctx2) -> RavengardItems.button(RavengardButton.HOURGLASS)
-                        .label("Stock Refresh")
-                        .lore("<7>This shop's stock will refresh in:")
+                        .label("库存刷新")
+                        .lore("<7>此商店的库存将在以下时间后刷新：")
                         .lore(Text.of("<e>{}", net.swofty.type.ravengardgeneric.shop.RavengardShopStock.refreshText()))
                         .origin(SLOT_HOURGLASS)
                         .toBuilder(),
                 java.time.Duration.ofSeconds(1));
 
         place(layout, SLOT_BUY, RavengardItems.button(RavengardButton.BUY)
-                .label("Buy")
-                .lore("<7>Purchase items from this shop to",
-                        "<7>help you on your adventures!")
+                .label("购买")
+                .lore("<7>从此商店购买物品，",
+                        "<7>助你一路冒险！")
                 .blankLine()
-                .lore("<a>You are here!"));
+                .lore("<a>你在这里！"));
 
         interactive(layout, SLOT_SELL, RavengardItems.button(RavengardButton.SELL)
-                        .label("Sell")
-                        .lore("<7>Sell items from your inventory for",
-                                "<7>some extra cash!")
+                        .label("出售")
+                        .lore("<7>出售背包里的物品，",
+                                "<7>赚点外快！")
                         .blankLine()
-                        .lore("<e>Click to sell!"),
+                        .lore("<e>点击出售！"),
                 (click, viewContext) -> ViewNavigator.get(viewContext.player()).push(new GUIShopSell(shop)));
     }
 
@@ -104,12 +102,12 @@ public class GUIShop extends RavengardView {
         lore.add(Text.empty());
         if (!entry.inStock()) {
             display.set(DataComponents.ITEM_MODEL, type.getItemModel() + "_greyed");
-            lore.add(Text.of("<c>Out of stock!"));
+            lore.add(Text.of("<c>缺货！"));
         } else if (wrongClass) {
             display.set(DataComponents.ITEM_MODEL, type.getItemModel() + "_greyed");
-            lore.add(Text.of("<c>Your class cannot use this item!"));
+            lore.add(Text.of("<c>你的职业无法使用该物品！"));
         } else if (entry.price() == 0) {
-            lore.add(Text.of("<e>Click to get for FREE!"));
+            lore.add(Text.of("<e>点击免费领取！"));
         } else {
             lore.add(Text.of("<e>Click to buy for <f>\uD83D\uDC51<#FFCE47>{}<e>!", entry.price()));
         }
@@ -127,34 +125,30 @@ public class GUIShop extends RavengardView {
             return;
         }
         if (!entry.inStock()) {
-            player.sendMessage("<c>That item is out of stock!");
+            player.sendMessage("<c>该物品已缺货！");
             return;
         }
         if (!type.usableBy(player.getRavengardClass())) {
-            player.sendMessage("<c>Your class cannot use this item!");
+            player.sendMessage("<c>你的职业无法使用该物品！");
             return;
         }
         if (!RavengardItems.hasFreeSlot(player)) {
-            player.sendMessage("<c>Your inventory is full!");
+            player.sendMessage("<c>你的背包已满！");
             return;
         }
         if (!RavengardProfiles.tryPurchase(player, entry.price())) {
-            player.sendMessage("<c>You don't have enough Crowns!");
+            player.sendMessage("<c>你的王冠不足！");
             return;
         }
         if (!entry.take()) {
             player.setCrowns(player.getCrowns() + entry.price());
-            player.sendMessage("<c>That item is out of stock!");
+            player.sendMessage("<c>该物品已缺货！");
             return;
         }
         player.getInventory().addItemStack(RavengardItem.of(type, player, entry.boost()));
         RavengardProfiles.saveActive(player);
-        player.sendMessage(Component.text("You bought ").color(NamedTextColor.GREEN)
-                .append(Component.text(RavengardItem.displayName(type))
-                        .color(NamedTextColor.WHITE))
-                .append(Component.text(" for ").color(NamedTextColor.GREEN))
-                .append(RavengardItem.crowns(entry.price(), ""))
-                .append(Component.text("!").color(NamedTextColor.GREEN)));
+        player.sendMessage(Text.of("<a>你花费 {} 购买了 <f>{}<a>！",
+                RavengardItem.crowns(entry.price(), ""), RavengardItem.displayName(type)));
     }
 
     static RavengardButton banner(RavengardShop shop) {

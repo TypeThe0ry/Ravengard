@@ -79,7 +79,7 @@ public final class RavengardProfiles {
         UUID profileId = ensure(player);
         if (profileId == null) return;
 
-        player.sendMessage("<8>Profile ID: {}", profileId);
+        player.sendMessage("<8>存档 ID：{}", profileId);
         player.sendMessage(net.swofty.type.ravengardgeneric.hud.ClientMinimapSuppressor.joinSpacer());
         restoreInventory(player, profileId);
     }
@@ -99,17 +99,17 @@ public final class RavengardProfiles {
     private static void createLocked(RavengardPlayer player) {
         RavengardProfileIndex index = RavengardProfileIndex.read(player.getUuid());
         if (index.profiles().size() >= MAX_PROFILES) {
-            player.sendMessage("<c>You already have the maximum number of profiles!");
+            player.sendMessage("<c>你的存档数量已达上限！");
             return;
         }
 
         saveActive(player);
-        player.sendMessage("<7>Creating profile...");
+        player.sendMessage("<7>正在创建存档……");
 
         UUID profileId = createProfile(player, index);
 
-        player.sendMessage("<7>Successfully created profile!");
-        player.sendMessage("<8>Profile ID: {}", profileId);
+        player.sendMessage("<7>存档创建成功！");
+        player.sendMessage("<8>存档 ID：{}", profileId);
         player.sendMessage("       ");
 
         activate(player, profileId);
@@ -118,7 +118,7 @@ public final class RavengardProfiles {
     private static void selectLocked(RavengardPlayer player, UUID profileId) {
         RavengardProfileIndex index = RavengardProfileIndex.read(player.getUuid());
         if (!index.contains(profileId) || !player.getUuid().equals(RavengardProfileStorage.owner(profileId))) {
-            player.sendMessage("<c>That profile no longer exists.");
+            player.sendMessage("<c>该存档已不存在。");
             return;
         }
         if (profileId.equals(player.getSelectedProfile())) {
@@ -126,7 +126,7 @@ public final class RavengardProfiles {
         }
 
         saveActive(player);
-        player.sendMessage("<8>Profile ID: {}", profileId);
+        player.sendMessage("<8>存档 ID：{}", profileId);
         player.sendMessage("       ");
         activate(player, profileId);
     }
@@ -144,7 +144,7 @@ public final class RavengardProfiles {
         RavengardProfileIndex remaining = index.without(profileId);
         RavengardProfileIndex.write(player.getUuid(), remaining);
         RavengardProfileStorage.delete(profileId);
-        player.sendMessage("<7>Successfully deleted profile!");
+        player.sendMessage("<7>存档删除成功！");
 
         if (!wasSelected) {
             return;
@@ -156,7 +156,7 @@ public final class RavengardProfiles {
         }
 
         UUID next = remaining.profiles().getFirst();
-        player.sendMessage("<8>Profile ID: {}", next);
+        player.sendMessage("<8>存档 ID：{}", next);
         player.sendMessage("       ");
         activate(player, next);
     }
@@ -315,7 +315,7 @@ public final class RavengardProfiles {
             return;
         }
 
-        player.sendMessage("<7>Restoring default equipment...");
+        player.sendMessage("<7>正在恢复默认装备……");
         RavengardClass profileClass = player.getRavengardClass();
         if (profileClass != null) {
             RavengardSelection.giveKit(player, profileClass);

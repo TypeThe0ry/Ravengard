@@ -24,8 +24,8 @@ import java.util.stream.Stream;
 
 @CommandParameters(
         labels = "switch",
-        description = "Switches between captured polar worlds",
-        usage = "/switch <world>",
+        description = "在录制的 polar 世界之间切换",
+        usage = "/switch <世界>",
         permission = Rank.STAFF,
         allowsConsole = false
 )
@@ -52,13 +52,13 @@ public class SwitchCommand extends HypixelCommand {
                 String options = available().stream()
                         .map(option -> "<f>" + option)
                         .collect(Collectors.joining("<7>, "));
-                player.sendMessage("<c>No capture named <f>{}<c>. Available: " + options, name);
+                player.sendMessage("<c>没有名为 <f>{}<c> 的录制片段。可用：" + options, name);
                 return;
             }
 
             Instance instance = loaded.get(name);
             if (instance == null) {
-                player.sendMessage("<7>Loading <f>{}<7>...", name);
+                player.sendMessage("<7>正在加载 <f>{}<7>……", name);
                 try {
                     InstanceContainer source = MinecraftServer.getInstanceManager().createInstanceContainer();
                     instance = HypixelWorldLoader.loadFrom(CAPTURES.resolve(name + EXTENSION),
@@ -66,31 +66,31 @@ public class SwitchCommand extends HypixelCommand {
                     loaded.put(name, instance);
                 } catch (IOException exception) {
                     Logger.error(exception, "Failed to load capture {}", name);
-                    player.sendMessage("<c>Failed to load <f>{}<c>: {}", name, exception.getMessage());
+                    player.sendMessage("<c>加载 <f>{}<c> 失败：{}", name, exception.getMessage());
                     return;
                 }
             }
 
             if (player.getInstance() == instance) {
-                player.sendMessage("<7>You are already in <f>{}<7>.", name);
+                player.sendMessage("<7>你已经在 <f>{}<7> 中了。", name);
                 return;
             }
 
             player.setInstance(instance, player.getPosition()).thenRun(() ->
-                    player.sendMessage("<a>Switched to <f>{}<a>.", name));
+                    player.sendMessage("<a>已切换到 <f>{}<a>。", name));
         }, worldArg);
 
         command.addSyntax((sender, context) -> {
             HypixelPlayer player = (HypixelPlayer) sender;
             List<String> names = available();
             if (names.isEmpty()) {
-                player.sendMessage("<c>No captures found in {}.", CAPTURES);
+                player.sendMessage("<c>在 {} 中没有找到录制片段。", CAPTURES);
                 return;
             }
             String list = names.stream()
                     .map(option -> "<f>" + option)
                     .collect(Collectors.joining("<7>, "));
-            player.sendMessage("<7>Captures: " + list);
+            player.sendMessage("<7>录制片段：" + list);
         });
     }
 

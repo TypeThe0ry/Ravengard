@@ -20,7 +20,8 @@ import java.util.regex.Pattern;
  * read straight from the item's effect text, so a new potion works by existing in the config.
  */
 public class ActionPlayerConsumables implements HypixelEventClass {
-    private static final Pattern EFFECT = Pattern.compile("\\+?(\\d+) HP(?: over (\\d+) seconds?)?");
+    private static final Pattern AMOUNT = Pattern.compile("\\+?(\\d+) ?HP");
+    private static final Pattern DURATION = Pattern.compile("(\\d+) ?(?:seconds?|秒)");
 
     @PhasedEvent(node = EventNodes.PLAYER, requireDataLoaded = true, phase = EventPhase.GAMEPLAY)
     public void onUse(PlayerUseItemEvent event) {
@@ -39,12 +40,13 @@ public class ActionPlayerConsumables implements HypixelEventClass {
         }
 
         event.setCancelled(true);
-        Matcher matcher = EFFECT.matcher(type.getEffect());
-        if (!matcher.find()) {
+        Matcher amountMatcher = AMOUNT.matcher(type.getEffect());
+        if (!amountMatcher.find()) {
             return;
         }
-        int amount = Integer.parseInt(matcher.group(1));
-        int seconds = matcher.group(2) == null ? 0 : Integer.parseInt(matcher.group(2));
+        int amount = Integer.parseInt(amountMatcher.group(1));
+        Matcher durationMatcher = DURATION.matcher(type.getEffect());
+        int seconds = durationMatcher.find() ? Integer.parseInt(durationMatcher.group(1)) : 0;
         RavengardAbilityService.consumeHeal(player, amount, seconds);
 
         ItemStack held = player.getItemInHand(event.getHand());

@@ -24,7 +24,7 @@ public class GUIRavengardMenu extends RavengardView {
 
     @Override
     protected String title() {
-        return "Main Menu";
+        return "主菜单";
     }
 
     @Override
@@ -53,17 +53,17 @@ public class GUIRavengardMenu extends RavengardView {
         RavengardButton statue = playerClass == null ? null : RavengardButton.statueFor(playerClass);
         if (statue != null) {
             RavengardItems.Builder profile = RavengardItems.button(statue)
-                    .label(Text.of("Profiles<7> - <f>{}", playerClass.getDisplayName()))
+                    .label(Text.of("存档<7> - <f>{}", playerClass.getDisplayName()))
                     .blankLine()
                     .lore(playerClass.selectLore())
                     .blankLine();
 
             int[] stats = playerClass.baseStats();
             if (stats != null) {
-                profile.lore(Text.of("<7>Stats:"),
-                                Text.of("<f> ◦ <7>Health: <c>{} ❤", stats[0]),
-                                Text.of("<f> ◦ <7>Protection: <b>{} ⛊", stats[1]),
-                                Text.of("<f> ◦ <7>Damage: <4>{} ⚔", stats[2]))
+                profile.lore(Text.of("<7>属性："),
+                                Text.of("<f> ◦ <7>生命：<c>{} ❤", stats[0]),
+                                Text.of("<f> ◦ <7>护甲：<b>{} ⛊", stats[1]),
+                                Text.of("<f> ◦ <7>伤害：<4>{} ⚔", stats[2]))
                         .blankLine();
             }
 
@@ -73,23 +73,23 @@ public class GUIRavengardMenu extends RavengardView {
                                     .byId(player.getSelectedProfile())
                             : null;
             if (active != null) {
-                profile.lore(Text.of("<7>Progression:"),
-                                Text.of("<f> ◦ <7>Level: <6>{}", active.getLevel()),
-                                Text.of("<f> ◦ <7>Experience: <e>{}<7>/<e>{}",
+                profile.lore(Text.of("<7>进度："),
+                                Text.of("<f> ◦ <7>等级：<6>{}", active.getLevel()),
+                                Text.of("<f> ◦ <7>经验：<e>{}<7>/<e>{}",
                                         active.getExperience(), active.experienceForNextLevel()))
                         .blankLine();
             }
 
-            interactive(layout, SLOT_STATUE, profile.lore("<e>Click to change profile!"),
+            interactive(layout, SLOT_STATUE, profile.lore("<e>点击切换存档！"),
                     (click, viewCtx) -> net.swofty.type.generic.gui.v2.ViewNavigator
                             .get(viewCtx.player()).push(new GUIProfiles()));
         }
 
         interactive(layout, SLOT_LOCKBOX, RavengardItems.button(RavengardButton.CHEST)
-                        .label("Lock Box")
-                        .lore("<7>Safely store your items here!")
+                        .label("保险箱")
+                        .lore("<7>在这里安全存放你的物品！")
                         .blankLine()
-                        .lore("<e>Click to open!"),
+                        .lore("<e>点击打开！"),
                 (click, viewCtx) -> net.swofty.type.generic.gui.v2.ViewNavigator
                         .get(viewCtx.player()).push(new GUILockBox()));
 
@@ -144,11 +144,11 @@ public class GUIRavengardMenu extends RavengardView {
             }
             final int page = index + 1;
             RavengardItems.Builder button = RavengardItems.button(ability)
-                    .label(Text.of((page == 1 ? "First" : "Second") + " Ability<7> - <f>{}",
+                    .label(Text.of((page == 1 ? "第一技能" : "第二技能") + "<7> - <f>{}",
                             ability.getDisplayName()))
                     .lore(ability.getWrappedDescription())
                     .blankLine()
-                    .lore("<e>Click to change!")
+                    .lore("<e>点击更换！")
                     .origin(slots[index]);
             interactive(layout, slots[index], button, (click, viewCtx) ->
                     net.swofty.type.generic.gui.v2.ViewNavigator.get(viewCtx.player())
@@ -161,24 +161,24 @@ public class GUIRavengardMenu extends RavengardView {
                 && net.swofty.type.ravengardgeneric.queue.RavengardQueue.isQueued(player);
         if (queued) {
             return RavengardItems.button(RavengardButton.TEXT_LEAVE)
-                    .label("Leave Queue!")
-                    .lore("<7>Decided you don't want to fight?")
+                    .label("离开队列！")
+                    .lore("<7>不想战斗了？")
                     .blankLine()
-                    .lore("<e>Click to leave the queue!");
+                    .lore("<e>点击离开队列！");
         }
         return RavengardItems.button(RavengardButton.TEXT_FIGHT)
-                .label("Join the Fight!")
-                .lore("<7>Jump into the action and fight",
-                        "<7>against other players and monsters!")
+                .label("加入战斗！")
+                .lore("<7>投身战斗，",
+                        "<7>与其他玩家和怪物一决高下！")
                 .blankLine()
-                .lore("<e>Click to join!");
+                .lore("<e>点击加入！");
     }
 
     @Override
     public void onOpen(DefaultState state, ViewContext ctx) {
         RavengardPlayer player = (RavengardPlayer) ctx.player();
         if (player.isTutorial() || player.getRavengardClass() == null) {
-            ctx.player().sendMessage("<c>You must select a class to open this menu!");
+            ctx.player().sendMessage("<c>你必须先选择职业才能打开此菜单！");
             ctx.backOrClose();
             return;
         }

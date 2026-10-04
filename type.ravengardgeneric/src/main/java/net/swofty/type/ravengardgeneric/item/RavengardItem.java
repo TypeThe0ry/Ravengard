@@ -59,7 +59,7 @@ public final class RavengardItem {
             DataComponents.DYED_COLOR);
 
     private static final Pattern EFFECT_HIGHLIGHT = Pattern.compile(
-            "(?<hp>[+-]?\\d+(?:\\.\\d+)? ?HP(?: over)?)|(?<seconds>\\d+ seconds?)");
+            "(?<hp>[+-]?\\d+(?:\\.\\d+)? ?HP(?: over)?)|(?<seconds>\\d+ ?(?:seconds?|秒))");
 
     private static final Text BLANK = Text.empty();
 
@@ -223,7 +223,7 @@ public final class RavengardItem {
         }
 
         if (type.getValue() > 0) {
-            lore.add(crowns(type.getValue(), type.getValue() == 1 ? " Crown" : " Crowns"));
+            lore.add(crowns(type.getValue(), " 王冠"));
             lore.add(BLANK);
         }
 
@@ -278,10 +278,13 @@ public final class RavengardItem {
         return line
                 .replaceAll("([+-]?\\d+(?:\\.\\d+)? ?HP)", "<c>$1</c>")
                 .replaceAll("(\\d+(?:\\.\\d+)?%)", "<a>$1</a>")
-                .replaceAll("(\\d+ seconds?)", "<e>$1</e>");
+                .replaceAll("(\\d+ ?(?:seconds?|秒))", "<e>$1</e>");
     }
 
     private static Text highlightEffect(String effect) {
+        if (effect.indexOf('<') >= 0) {
+            return Text.of("<7>" + effect);
+        }
         Matcher matcher = EFFECT_HIGHLIGHT.matcher(effect);
         StringBuilder markup = new StringBuilder("<7>");
         List<Object> arguments = new ArrayList<>();
