@@ -86,6 +86,53 @@ class DungeonSpawnReachabilityTest {
         assertEquals(List.of(), stranded);
     }
 
+    @Test
+    void roomTopUpsLandWherePlayersCanWalkAndLeaveFewRoomsEmpty() {
+        var markers = config.objects().stream()
+                .filter(object -> object.category().equals("entity_spawn")).toList();
+        Set<String> available = Set.of("skeleton_knight", "zombie_knight");
+        var official = DungeonInstanceRegistry.planEncounterMobs(
+                DungeonInstanceRegistry.clusterMarkers(markers, 6.0), available, 1L);
+        var units = RoomEncounters.units(
+                net.swofty.type.ravengarddungeon.generator.RavengardDungeonGenerator.getCatalog());
+        var topUps = RoomEncounters.plan(units, official, available, 1L, 10_000,
+                RavengardDungeonGame.SPAWN_POINTS, map::blockAt,
+                WalkableFloor.from(RavengardDungeonGame.SPAWN_POINTS, config.objects(), map::blockAt));
+
+        var stranded = new ArrayList<String>();
+        for (var plan : topUps) {
+            var resolved = DungeonInstanceRegistry.resolveSpawnMarker(plan.marker(), map::blockAt);
+            if (resolved == null || !reached(resolved.x(), resolved.y(), resolved.z())) {
+                stranded.add(plan.marker().x() + "," + plan.marker().y() + "," + plan.marker().z());
+            }
+        }
+        assertEquals(List.of(), stranded);
+
+        var all = new ArrayList<>(official);
+        all.addAll(topUps);
+        int rooms = 0, emptyRooms = 0, mobs = 0;
+        var empty = new ArrayList<String>();
+        for (var unit : units) {
+            if (unit.quota() == 0) continue;
+            Set<Long> footprint = new HashSet<>();
+            unit.cells().forEach(cell -> footprint.add(column((int) cell[0], (int) cell[1])));
+            if (RavengardDungeonGame.SPAWN_POINTS.stream()
+                    .anyMatch(pad -> footprint.contains(column(pad.blockX(), pad.blockZ())))) continue;
+            long count = all.stream().filter(plan -> footprint.contains(column(
+                    (int) Math.floor(plan.marker().x()), (int) Math.floor(plan.marker().z())))).count();
+            rooms++;
+            mobs += (int) count;
+            if (count == 0) {
+                emptyRooms++;
+                empty.add(unit.id());
+            }
+        }
+        System.out.println("room top-ups=" + topUps.size() + " rooms=" + rooms + " empty=" + emptyRooms
+                + " mobsInRooms=" + mobs + " empty rooms " + empty);
+        assertTrue(emptyRooms * 10 <= rooms, "too many rooms without a mob: " + empty);
+        assertTrue(mobs * 2 >= rooms * 2, "fewer than two mobs per two rooms");
+    }
+
     private static boolean reached(double x, double y, double z) {
         int blockX = (int) Math.floor(x), blockY = (int) Math.floor(y), blockZ = (int) Math.floor(z);
         for (int dy = -1; dy <= 1; dy++) {

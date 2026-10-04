@@ -536,6 +536,21 @@ public final class DungeonInstanceRegistry {
             "zombie_knight", "zombie_knight_elite", "skeleton_knight", "skeleton_knight_elite",
             "demon_grunt", "demon_grunt_elite");
 
+    private static volatile WalkableFloor walkableFloor;
+
+    /** The city's walkable floor, worked out once: every dungeon is built on the same map. */
+    private static WalkableFloor walkableFloor(List<RavengardDungeonConfig.DungeonObject> doors) {
+        WalkableFloor floor = walkableFloor;
+        if (floor != null) return floor;
+        synchronized (DungeonInstanceRegistry.class) {
+            if (walkableFloor == null) {
+                walkableFloor = WalkableFloor.from(RavengardDungeonGame.SPAWN_POINTS, doors,
+                        net.swofty.type.ravengarddungeon.generator.DungeonTemplate.get()::blockAt);
+            }
+            return walkableFloor;
+        }
+    }
+
     private static int registerEncounters(net.minestom.server.instance.Instance instance,
                                           List<RavengardDungeonConfig.DungeonObject> objects,
                                           long seed,
@@ -557,7 +572,13 @@ public final class DungeonInstanceRegistry {
         var plans = new ArrayList<MobSpawnPlan>();
         int nextEncounterId = 0;
         for (var object : direct) plans.add(new MobSpawnPlan(object.type(), object, nextEncounterId++));
-        plans.addAll(planEncounterMobs(clusterMarkers(markers, 6.0), available, seed, nextEncounterId));
+        var clusters = clusterMarkers(markers, 6.0);
+        plans.addAll(planEncounterMobs(clusters, available, seed, nextEncounterId));
+        nextEncounterId += clusters.size();
+        var roomFill = RoomEncounters.plan(RoomEncounters.units(RavengardDungeonGenerator.getCatalog()), plans,
+                available, seed, nextEncounterId, initialSpawnPoints,
+                net.swofty.type.ravengarddungeon.generator.DungeonTemplate.get()::blockAt, walkableFloor(objects));
+        plans.addAll(roomFill);
         SpawnResolution resolution = resolveSpawnPlans(instance, plans);
         List<Integer> opening = openingEncounterIndexes(
                 resolution.plans(), initialSpawnPoints, OPENING_ENCOUNTERS_PER_REGION);
@@ -568,10 +589,10 @@ public final class DungeonInstanceRegistry {
         var distribution = encounterDistribution(resolution.plans());
         var activation = encounterActivationDiagnostics(resolution.plans(), initialSpawnPoints, opening);
         org.tinylog.Logger.info(
-                "Registered {} captured encounter markers as grounded proximity spawns; "
+                "Registered {} captured encounter markers and {} room top-ups as grounded proximity spawns; "
                         + "planned={} opening={} openingTypes={} initialProximityEligible={} dormant={} "
                         + "relocated={} unresolved={} spawnCoverage={} types={} distribution={}",
-                markers.size() + direct.size(), activation.planned(), activation.opening(),
+                markers.size() + direct.size(), roomFill.size(), activation.planned(), activation.opening(),
                 activation.openingTypes(), activation.initialNearby(), activation.dormant(),
                 resolution.relocated(), resolution.unresolved(),
                 encounterSpawnCoverage(resolution.plans(), opening, initialSpawnPoints),
@@ -1652,7 +1673,7 @@ public final class DungeonInstanceRegistry {
         return null;
     }
 
-    private static boolean standable(BlockLookup blocks, int blockX, int feetY, int blockZ) {
+    static boolean standable(BlockLookup blocks, int blockX, int feetY, int blockZ) {
         return supports(blocks.blockAt(blockX, feetY - 1, blockZ))
                 && passable(blocks.blockAt(blockX, feetY, blockZ))
                 && passable(blocks.blockAt(blockX, feetY + 1, blockZ));
