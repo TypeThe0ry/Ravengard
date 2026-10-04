@@ -9,21 +9,21 @@ import java.util.Set;
 
 @Getter
 public enum CollectibleCategory {
-    PROJECTILE_TRAILS("Projectile Trails"),
-    VICTORY_DANCES("Victory Dances"),
-    FINAL_KILL_EFFECTS("Final Kill Effects"),
-    SPRAYS("Sprays"),
-    ISLAND_TOPPERS("Island Toppers"),
-    DEATH_CRIES("Death Cries"),
-    SHOPKEEPER_SKINS("Shopkeeper Skins"),
-    KILL_MESSAGES("Kill Messages"),
-    GLYPHS("Glyphs"),
-    BED_DESTROYS("Bed Destroys"),
-    WOOD_SKINS("Wood Skins"),
-    FIGURINES("Figurines"),
-    PRESTIGE_SCHEMES("Prestige Schemes"),
-    PRESTIGE_STARS("Prestige Stars"),
-    PRESTIGE_BRACKETS("Prestige Brackets");
+    PROJECTILE_TRAILS("弹射物轨迹"),
+    VICTORY_DANCES("胜利之舞"),
+    FINAL_KILL_EFFECTS("最终击杀特效"),
+    SPRAYS("喷漆"),
+    ISLAND_TOPPERS("岛屿装饰"),
+    DEATH_CRIES("死亡哀嚎"),
+    SHOPKEEPER_SKINS("商人皮肤"),
+    KILL_MESSAGES("击杀消息"),
+    GLYPHS("符文"),
+    BED_DESTROYS("破坏床特效"),
+    WOOD_SKINS("木材皮肤"),
+    FIGURINES("手办"),
+    PRESTIGE_SCHEMES("声望配色"),
+    PRESTIGE_STARS("声望星标"),
+    PRESTIGE_BRACKETS("声望括号");
 
     private static final EnumSet<CollectibleCategory> BEDWARS_CATEGORIES = EnumSet.of(
         PROJECTILE_TRAILS,

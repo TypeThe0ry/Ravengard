@@ -77,12 +77,12 @@ class StringUtilityTest {
 
     @Test
     void formatTimeLeftBoundaries() {
-        assertEquals("0s", StringUtility.formatTimeLeft(0));
-        assertEquals("59s", StringUtility.formatTimeLeft(59_000));
-        assertEquals("1m", StringUtility.formatTimeLeft(60_000));
-        assertEquals("1m 30s", StringUtility.formatTimeLeft(90_000));
-        assertEquals("1h", StringUtility.formatTimeLeft(3_600_000));
-        assertEquals("1d", StringUtility.formatTimeLeft(86_400_000));
+        assertEquals("0秒", StringUtility.formatTimeLeft(0));
+        assertEquals("59秒", StringUtility.formatTimeLeft(59_000));
+        assertEquals("1分钟", StringUtility.formatTimeLeft(60_000));
+        assertEquals("1分钟 30秒", StringUtility.formatTimeLeft(90_000));
+        assertEquals("1小时", StringUtility.formatTimeLeft(3_600_000));
+        assertEquals("1天", StringUtility.formatTimeLeft(86_400_000));
     }
 
     @Test

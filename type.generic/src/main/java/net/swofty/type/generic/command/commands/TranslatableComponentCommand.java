@@ -11,7 +11,7 @@ import net.swofty.type.generic.user.categories.Rank;
 @SuppressWarnings("unused")
 @CommandParameters(labels = "translatablecomponent",
     description = "Preview a TranslatableComponent",
-    usage = "/translatablecomponent <string>",
+    usage = "/translatablecomponent <字符串>",
     permission = Rank.STAFF,
     allowsConsole = false)
 public class TranslatableComponentCommand extends HypixelCommand {

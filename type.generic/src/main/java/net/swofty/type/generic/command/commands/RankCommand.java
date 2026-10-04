@@ -11,7 +11,7 @@ import net.swofty.type.generic.data.HypixelDataHandler;
 import net.swofty.type.generic.data.datapoints.DatapointRank;
 import net.swofty.type.generic.user.categories.Rank;
 
-@CommandParameters(labels = "setrank rank", description = "Rank command", usage = "/rank <player> <rank>", permission = Rank.STAFF, allowsConsole = true)
+@CommandParameters(labels = "setrank rank", description = "Rank command", usage = "/rank <玩家> <会员等级>", permission = Rank.STAFF, allowsConsole = true)
 public class RankCommand extends HypixelCommand {
 
     @Override

@@ -30,23 +30,23 @@ public class LoginCommand implements SimpleCommand {
 
         String[] args = invocation.arguments();
         if (args.length != 1) {
-            player.sendMessage(Text.of("<c>In the Minecraft chat, type <6>/login \\<password><c>."));
-            player.sendMessage(Text.of("<c>It is not a command, it's just a message. Nobody else can see it."));
+            player.sendMessage(Text.of("<c>请在 Minecraft 聊天栏中输入 <6>/login \\<密码><c>。"));
+            player.sendMessage(Text.of("<c>这不是命令，只是一条消息，其他人看不到。"));
             return;
         }
 
         AuthenticationDatabase.AuthenticationData data = new AuthenticationDatabase(player.getUniqueId()).getAuthenticationData();
         if (data == null) {
-            player.sendMessage(Text.of("<c>You must do <6>/register \\<password> \\<password> <c>first!"));
+            player.sendMessage(Text.of("<c>你必须先执行 <6>/register \\<密码> \\<密码><c>！"));
             return;
         }
 
         if (data.matches(args[0])) {
             SkyBlockVelocity.getUnauthenticated().remove(player.getUniqueId());
-            player.sendMessage(Text.of("<a>You have successfully logged in!"));
+            player.sendMessage(Text.of("<a>登录成功！"));
             new TransferHandler(player).transferTo(ServerType.RAVENGARD_LOBBY);
         } else {
-            player.sendMessage(Text.of("<c>Your password is incorrect."));
+            player.sendMessage(Text.of("<c>密码错误。"));
         }
     }
 }

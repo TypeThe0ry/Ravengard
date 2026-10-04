@@ -79,12 +79,12 @@ public record TransferHandler(Player player) {
 				GameManager.GameServer destination = BalanceConfigurations.getServerFor(player, ServerType.RAVENGARD_LOBBY);
 
 				if (destination == null) {
-					player.sendMessage(Text.of("<c>There are no lobby servers available right now."));
+					player.sendMessage(Text.of("<c>当前没有可用的大厅服务器。"));
 					return;
 				}
 
 				afkOriginLobbyType.remove(uuid);
-				player.sendMessage(Text.of("<7>Sending to server {}...", destination.displayName()));
+				player.sendMessage(Text.of("<7>正在传送到服务器 {}……", destination.displayName()));
 				player.createConnectionRequest(destination.registeredServer()).connectWithIndication();
 			} finally {
 				afkReturnInProgress.remove(uuid);
@@ -98,7 +98,7 @@ public record TransferHandler(Player player) {
 			try {
 				GameManager.GameServer destination = BalanceConfigurations.getServerFor(player, ServerType.RAVENGARD_LOBBY);
 				if (destination == null) {
-					player.sendMessage(Text.of("<c>There are no Ravengard Lobby servers available right now."));
+					player.sendMessage(Text.of("<c>当前没有可用的天穹余烬大厅服务器。"));
 					future.complete(false);
 					return;
 				}
@@ -142,7 +142,7 @@ public record TransferHandler(Player player) {
 			playersOriginServer.remove(player);
 
 			GameManager.GameServer manualPickAsGame = GameManager.getFromUUID(serverUUID);
-			player.sendMessage(Text.of("<7>Sending to server {}...", manualPickAsGame.displayName()));
+			player.sendMessage(Text.of("<7>正在传送到服务器 {}……", manualPickAsGame.displayName()));
 			player.createConnectionRequest(manualPick).connectWithIndication();
 
 			RedisClient.requestServer(originServerUUID,
@@ -166,7 +166,7 @@ public record TransferHandler(Player player) {
 			if (server == null) {
 				playersGoalServerType.remove(player);
 				playersOriginServer.remove(player);
-				ProxyText.disconnect(player, "<c>There are no Hypixel (type={}) servers available at the moment.", type.name());
+				ProxyText.disconnect(player, "<c>当前没有可用的 Hypixel（类型={}）服务器。", type.name());
 				return;
 			}
 
@@ -187,7 +187,7 @@ public record TransferHandler(Player player) {
 			playersOriginServer.remove(player);
 			playersGoalServerType.remove(player);
 
-			player.sendMessage(Text.of("<7>Sending to server {}...", server.displayName()));
+			player.sendMessage(Text.of("<7>正在传送到服务器 {}……", server.displayName()));
 			player.createConnectionRequest(server.registeredServer()).connectWithIndication();
 
 			RedisClient.requestServer(originServerUUID,
@@ -203,11 +203,11 @@ public record TransferHandler(Player player) {
 
 		GameManager.GameServer server = BalanceConfigurations.getServerFor(player, type);
 		if (server == null) {
-			player.sendMessage(Text.of("<c>There are no Hypixel (type={}) servers available at the moment.", type.name()));
+			player.sendMessage(Text.of("<c>当前没有可用的 Hypixel（类型={}）服务器。", type.name()));
 			return;
 		}
 
-		player.sendMessage(Text.of("<7>Sending to server {}...", server.displayName()));
+		player.sendMessage(Text.of("<7>正在传送到服务器 {}……", server.displayName()));
 		transferTo(server.registeredServer());
 	}
 
@@ -246,7 +246,7 @@ public record TransferHandler(Player player) {
 								future.completeExceptionally(error);
 							} else if (!Boolean.TRUE.equals(connected)) {
 								future.completeExceptionally(new IllegalStateException(
-										"Could not connect to " + toTransferTo.getServerInfo().getName()));
+										"无法连接到 " + toTransferTo.getServerInfo().getName()));
 							} else {
 								future.complete(null);
 							}

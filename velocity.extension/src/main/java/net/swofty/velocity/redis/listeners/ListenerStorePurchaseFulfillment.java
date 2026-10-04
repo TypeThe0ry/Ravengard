@@ -202,8 +202,8 @@ public class ListenerStorePurchaseFulfillment implements RedisMessageHandler<
 
     private static Book purchaseBook(List<StorePurchaseFulfillmentProtocol.Entitlement> entitlements) {
         return Book.builder().addPage(ProxyText.render(
-                "<0>Your purchase has been processed!\n\nYou've received the following items:\n{0}\n\n"
-                        + "If you have any problems, <d><n><click:url:'{1}'>contact support.",
+                "<0>你的购买已处理完毕！\n\n你获得了以下物品：\n{0}\n\n"
+                        + "如有任何问题，请<d><n><click:url:'{1}'>联系客服。",
                 rankItems(entitlements), SUPPORT_URL)).build();
     }
 
@@ -212,7 +212,7 @@ public class ListenerStorePurchaseFulfillment implements RedisMessageHandler<
             .filter(entitlement -> "RANK".equals(entitlement.type()))
             .map(ListenerStorePurchaseFulfillment::rankItem)
                 .toList();
-        if (ranks.isEmpty()) return Text.of("<0>Rank");
+        if (ranks.isEmpty()) return Text.of("<0>会员等级");
 
         return Text.join(Text.of("\n"), ranks);
     }
@@ -220,8 +220,8 @@ public class ListenerStorePurchaseFulfillment implements RedisMessageHandler<
     private static Text rankItem(StorePurchaseFulfillmentProtocol.Entitlement entitlement) {
         Long durationDays = entitlement.durationDays();
         return durationDays == null
-                ? Text.of("{}<0> Rank", rankName(entitlement.key()))
-                : Text.of("{}<0> Rank ({} days)", rankName(entitlement.key()), durationDays);
+                ? Text.of("{}<0> 会员等级", rankName(entitlement.key()))
+                : Text.of("{}<0> 会员等级（{} 天）", rankName(entitlement.key()), durationDays);
     }
 
     private static Text rankName(String rank) {
@@ -240,16 +240,16 @@ public class ListenerStorePurchaseFulfillment implements RedisMessageHandler<
 
         long skyBlockGems = entitlementAmount(message.entitlements(), "SKYBLOCK_GEMS");
         if (skyBlockGems > 0) {
-            packageName = StringUtility.commaify(skyBlockGems) + " SkyBlock Gems";
+            packageName = StringUtility.commaify(skyBlockGems) + " 空岛生存宝石";
         }
 
         long gold = entitlementAmount(message.entitlements(), "STORE_CURRENCY");
         if (gold > 0) {
-            packageName = StringUtility.commaify(gold) + " Gold";
+            packageName = StringUtility.commaify(gold) + " 金币";
         }
 
-        return "Your package of " + packageName
-            + " has been processed and delivered. You may need to log out and back in to receive the full effects.";
+        return "你购买的 " + packageName
+            + " 已处理并发放。你可能需要重新登录才能获得全部效果。";
     }
 
     private static long entitlementAmount(
@@ -263,7 +263,7 @@ public class ListenerStorePurchaseFulfillment implements RedisMessageHandler<
     }
 
     private static String readableKey(String key) {
-        if (key == null || key.isBlank()) return "Unknown";
+        if (key == null || key.isBlank()) return "未知";
         return switch (key) {
             case "VIP_PLUS" -> "VIP+";
             case "MVP_PLUS" -> "MVP+";

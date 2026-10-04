@@ -38,9 +38,9 @@ public record ReplayEntry(
 
     public String displayName() {
         return switch (serverType) {
-            case BEDWARS_GAME -> "Bed Wars";
-            case MURDER_MYSTERY_GAME -> "Murder Mystery";
-            case SKYWARS_GAME -> "SkyWars";
+            case BEDWARS_GAME -> "起床战争";
+            case MURDER_MYSTERY_GAME -> "密室杀手";
+            case SKYWARS_GAME -> "空岛战争";
             default -> serverType.formatName();
         };
     }

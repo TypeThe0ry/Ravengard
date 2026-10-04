@@ -13,7 +13,7 @@ import net.swofty.type.generic.user.categories.Rank;
 
 import java.util.List;
 
-@CommandParameters(labels = "npcpathfinding", allowsConsole = false, description = "NPC Pathfinding test", permission = Rank.STAFF, usage = "/npcpathfinding <npc>")
+@CommandParameters(labels = "npcpathfinding", allowsConsole = false, description = "NPC Pathfinding test", permission = Rank.STAFF, usage = "/npcpathfinding <NPC>")
 public class NPCPathfindingCommand extends HypixelCommand {
 
     @Override
@@ -31,7 +31,7 @@ public class NPCPathfindingCommand extends HypixelCommand {
             HypixelNPC npc = HypixelNPC.getRegisteredNPCs().stream().filter(n -> n.getName().equalsIgnoreCase(npcName.replace("_", " "))).findFirst().orElse(null);
 
             if (npc == null) {
-                player.sendMessage("<c>No NPC found with the name '{}'.", npcName);
+                player.sendMessage("<c>未找到名为“{}”的 NPC。", npcName);
                 return;
             }
 

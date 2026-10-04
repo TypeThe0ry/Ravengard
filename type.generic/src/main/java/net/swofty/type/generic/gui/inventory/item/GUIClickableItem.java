@@ -30,7 +30,7 @@ public abstract class GUIClickableItem extends GUIItem {
 
             @Override
             public ItemStack.Builder getItem(HypixelPlayer player) {
-                return ItemStacks.named(Material.BARRIER, "<c>Close");
+                return ItemStacks.named(Material.BARRIER, "<c>关闭");
             }
         };
     }
@@ -45,8 +45,8 @@ public abstract class GUIClickableItem extends GUIItem {
             @Override
             public ItemStack.Builder getItem(HypixelPlayer player) {
                 return ItemStacks.item(Material.ARROW, """
-                        <a>Go Back
-                        <7>To {}""", gui.getTitle());
+                        <a>返回
+                        <7>回到 {}""", gui.getTitle());
             }
         };
     }

@@ -4,16 +4,16 @@ import lombok.Getter;
 
 @Getter
 public enum UnpunishReason {
-    WRONG_PLAYER("Wrong Player", null),
-    WRONG_PUNISHMENT("Wrong Punishment", null),
-    INSUFFICIENT_EVIDENCE("Insufficient Evidence", "IE"),
-    ACCOUNT_SECURED("Account Secured", null),
-    SECOND_CHANCE("Second Chance", "SC"),
-    CHARGEBACK_APPEALED("Chargeback Appealed", null),
-    CHARGEBACK_FAILED("Chargeback Failed", null),
-    CHARGEBACK_CANCELLED("Chargeback Cancelled", null),
-    NOT_FRAUD("Not Fraud", null),
-    TIME_SERVED_MAINTAIN_WEIGHT("Time Served (Maintain Weight)", "MW");
+    WRONG_PLAYER("处罚对象有误", null),
+    WRONG_PUNISHMENT("处罚类型有误", null),
+    INSUFFICIENT_EVIDENCE("证据不足", "IE"),
+    ACCOUNT_SECURED("账号已恢复安全", null),
+    SECOND_CHANCE("再给一次机会", "SC"),
+    CHARGEBACK_APPEALED("拒付已申诉", null),
+    CHARGEBACK_FAILED("拒付失败", null),
+    CHARGEBACK_CANCELLED("拒付已取消", null),
+    NOT_FRAUD("并非欺诈", null),
+    TIME_SERVED_MAINTAIN_WEIGHT("已服满处罚（保留权重）", "MW");
 
     private final String reason;
     private final String tag;

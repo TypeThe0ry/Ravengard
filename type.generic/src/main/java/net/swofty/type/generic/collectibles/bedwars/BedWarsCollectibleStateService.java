@@ -28,22 +28,22 @@ public final class BedWarsCollectibleStateService {
         DatapointCollectibles.CollectiblesState state = state(player);
         CollectibleSelectionCheck check = checkSelectable(player, state, definition);
         if (!check.selectable()) {
-            String reason = check.reason() != null ? check.reason() : "Locked.";
+            String reason = check.reason() != null ? check.reason() : "未解锁。";
             return new SelectionResult(false, "<c>" + reason);
         }
 
         state.setSelected(definition.category(), definition.id());
         persist(player, state);
-        return new SelectionResult(true, Text.of("<a>Selected {}<a>.", definition.name()).serialize());
+        return new SelectionResult(true, Text.of("<a>已选择 {}<a>。", definition.name()).serialize());
     }
 
     public static SelectionResult selectSpecial(HypixelPlayer player, CollectibleCategory category, String selectionId) {
         if (!BedWarsCollectibleCatalog.categorySupportsRandom(category)) {
-            return new SelectionResult(false, "<c>Random mode is not supported for this category.");
+            return new SelectionResult(false, "<c>该类别不支持随机模式。");
         }
 
         if (!RANDOM_SELECTION_ID.equals(selectionId) && !RANDOM_FAVORITE_SELECTION_ID.equals(selectionId)) {
-            return new SelectionResult(false, "<c>Invalid random selection mode.");
+            return new SelectionResult(false, "<c>无效的随机选择模式。");
         }
 
         DatapointCollectibles.CollectiblesState state = state(player);
@@ -51,9 +51,9 @@ public final class BedWarsCollectibleStateService {
         persist(player, state);
 
         if (RANDOM_FAVORITE_SELECTION_ID.equals(selectionId)) {
-            return new SelectionResult(true, "<a>Selected Random Favorite mode.");
+            return new SelectionResult(true, "<a>已选择随机收藏模式。");
         }
-        return new SelectionResult(true, "<a>Selected Random mode.");
+        return new SelectionResult(true, "<a>已选择随机模式。");
     }
 
     public static SelectionResult purchaseAndSelect(HypixelPlayer player, CollectibleDefinition definition) {
@@ -68,14 +68,14 @@ public final class BedWarsCollectibleStateService {
         long currentTokens = tokensDp.getValue();
         long cost = purchaseCheck.cost();
         if (currentTokens < cost) {
-            return new SelectionResult(false, "<c>You do not have enough BedWars Tokens.");
+            return new SelectionResult(false, "<c>你的起床战争代币不足。");
         }
 
         tokensDp.setValue(currentTokens - cost);
         state.unlock(definition.category(), definition.id());
         state.setSelected(definition.category(), definition.id());
         persist(player, state);
-        return new SelectionResult(true, Text.of("<6>You purchased <a>{}<6>!", definition.name()).serialize());
+        return new SelectionResult(true, Text.of("<6>你购买了 <a>{}<6>！", definition.name()).serialize());
     }
 
     public static PurchaseCheck checkPurchase(HypixelPlayer player, CollectibleDefinition definition) {
@@ -237,30 +237,30 @@ public final class BedWarsCollectibleStateService {
         CollectibleDefinition definition
     ) {
         if (state.isManuallyUnlocked(definition.category(), definition.id())) {
-            return new PurchaseCheck(false, 0L, null, "This collectible is already unlocked.");
+            return new PurchaseCheck(false, 0L, null, "该收藏品已解锁。");
         }
 
         if (definition.unlockRequirement().method() != CollectibleUnlockMethod.CURRENCY) {
-            return new PurchaseCheck(false, 0L, null, "This collectible cannot be purchased.");
+            return new PurchaseCheck(false, 0L, null, "该收藏品无法购买。");
         }
 
         CollectibleCurrency currency = definition.unlockRequirement().currency();
         if (currency != CollectibleCurrency.BEDWARS_TOKENS) {
-            return new PurchaseCheck(false, 0L, currency, "This collectible cannot be purchased with BedWars Tokens.");
+            return new PurchaseCheck(false, 0L, currency, "该收藏品无法用起床战争代币购买。");
         }
 
         Long configuredCost = definition.unlockRequirement().cost();
         long cost = configuredCost == null ? 0L : configuredCost;
         if (cost <= 0) {
-            return new PurchaseCheck(false, 0L, currency, "This collectible has invalid pricing data.");
+            return new PurchaseCheck(false, 0L, currency, "该收藏品的价格数据无效。");
         }
 
         CollectibleSelectionCheck selectableCheck = checkSelectable(player, state, definition);
         if (selectableCheck.selectable()) {
-            return new PurchaseCheck(false, cost, currency, "This collectible is already selectable.");
+            return new PurchaseCheck(false, cost, currency, "该收藏品已可选择。");
         }
 
-        String reason = selectableCheck.reason() == null ? "This collectible is currently unavailable." : selectableCheck.reason();
+        String reason = selectableCheck.reason() == null ? "该收藏品当前不可用。" : selectableCheck.reason();
         if (!isCostReason(reason)) {
             return new PurchaseCheck(false, cost, currency, reason);
         }
@@ -283,7 +283,7 @@ public final class BedWarsCollectibleStateService {
     }
 
     private static boolean isCostReason(String reason) {
-        return reason != null && reason.contains("Cost:");
+        return reason != null && reason.contains("花费：");
     }
 
     private static DatapointCollectibles datapoint(HypixelPlayer player) {

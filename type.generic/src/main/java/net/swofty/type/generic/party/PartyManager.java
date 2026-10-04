@@ -40,21 +40,21 @@ public class PartyManager {
     public static void invitePlayer(HypixelPlayer inviter, String targetName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(inviter, "<c>Couldn't find a player with that name!");
+            sendError(inviter, "<c>找不到该名字的玩家！");
             return;
         }
         if (!new ProxyPlayer(targetUUID).isOnline().join()) {
-            sendError(inviter, "<c>That player is not online!");
+            sendError(inviter, "<c>该玩家不在线！");
             return;
         }
         if (targetUUID.equals(inviter.getUuid())) {
-            sendError(inviter, "<c>You cannot invite yourself!");
+            sendError(inviter, "<c>不能邀请自己！");
             return;
         }
         if (isInParty(inviter)) {
             FullParty party = getPartyFromPlayer(inviter);
             if (party != null && party.getMembers().stream().anyMatch(m -> m.getUuid().equals(targetUUID))) {
-                sendError(inviter, "<c>That player is already in your party!");
+                sendError(inviter, "<c>该玩家已在你的队伍中！");
                 return;
             }
         }
@@ -65,11 +65,11 @@ public class PartyManager {
     public static void acceptInvite(HypixelPlayer player, String inviterName) {
         @Nullable UUID inviterUUID = HypixelDataHandler.getPotentialUUIDFromName(inviterName);
         if (inviterUUID == null) {
-            sendError(player, "<c>Couldn't find a player with that name!");
+            sendError(player, "<c>找不到该名字的玩家！");
             return;
         }
         if (isInParty(player)) {
-            sendError(player, "<c>You must leave your current party before accepting an invite!");
+            sendError(player, "<c>接受邀请前必须先离开当前队伍！");
             return;
         }
         send(new PartyAction.AcceptInvite(player.getUuid(), inviterUUID));
@@ -131,16 +131,16 @@ public class PartyManager {
 
     public static void hijackParty(HypixelPlayer hijacker, String targetName) {
         if (!hijacker.getRank().isEqualOrHigherThan(Rank.STAFF)) {
-            hijacker.sendMessage("<c>You need STAFF to do this command");
+            hijacker.sendMessage("<c>需要 STAFF 权限才能使用此命令");
             return;
         }
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(hijacker, "<c>Couldn't find a player with that name!");
+            sendError(hijacker, "<c>找不到该名字的玩家！");
             return;
         }
         if (!new ProxyPlayer(targetUUID).isOnline().join()) {
-            sendError(hijacker, "<c>That player is not online!");
+            sendError(hijacker, "<c>该玩家不在线！");
             return;
         }
         send(new PartyAction.Hijack(hijacker.getUuid(), targetUUID));
@@ -149,7 +149,7 @@ public class PartyManager {
     private static @Nullable UUID resolveTarget(HypixelPlayer caller, String targetName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(caller, "<c>Couldn't find a player with that name!");
+            sendError(caller, "<c>找不到该名字的玩家！");
         }
         return targetUUID;
     }

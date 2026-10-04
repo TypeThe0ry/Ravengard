@@ -106,22 +106,22 @@ public abstract class AbstractGame<P extends GameParticipant> implements Game<P>
     @Override
     public JoinResult join(P player) {
         if (players.containsKey(player.getUuid())) {
-            return new JoinResult.Denied("Player is already in this game");
+            return new JoinResult.Denied("玩家已在本局游戏中");
         }
 
         PlayerPreJoinGameEvent event = new PlayerPreJoinGameEvent(this, player.getServerPlayer());
         eventDispatcher.accept(event);
 
         if (event.isCancelled()) {
-            return new JoinResult.Denied(event.getCancelReason() != null ? event.getCancelReason() : "Join cancelled");
+            return new JoinResult.Denied(event.getCancelReason() != null ? event.getCancelReason() : "加入已取消");
         }
 
         if (state != GameState.WAITING && state != GameState.COUNTDOWN) {
-            return new JoinResult.Denied("Game already in progress");
+            return new JoinResult.Denied("游戏已经开始");
         }
 
         if (getAvailableSlots() <= 0) {
-            return new JoinResult.Denied("Game is full");
+            return new JoinResult.Denied("游戏已满");
         }
 
         players.put(player.getUuid(), player);

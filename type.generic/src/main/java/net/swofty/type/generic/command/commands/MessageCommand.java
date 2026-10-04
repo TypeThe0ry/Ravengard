@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @CommandParameters(labels = "msg message whipser",
         description = "Sends a message to another player",
-        usage = "/msg <player> <message>",
+        usage = "/msg <玩家> <消息>",
         permission = Rank.DEFAULT,
         allowsConsole = false)
 public class MessageCommand extends HypixelCommand {

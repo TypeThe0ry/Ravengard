@@ -85,7 +85,7 @@ public class PlayerQuestHandler {
         QuestData data = getQuestData();
 
         if (!data.canCompleteChallenge()) {
-            player.sendMessage("<c>You have completed the maximum number of challenges today (15)!");
+            player.sendMessage("<c>你今天完成的挑战次数已达上限（15）！");
             return;
         }
 
@@ -97,8 +97,8 @@ public class PlayerQuestHandler {
 
         player.getExperienceHandler().addExperience(xpReward);
 
-        player.sendMessage("<a><l>CHALLENGE COMPLETE!");
-        player.sendMessage("<7>Challenges remaining today: <a>{}", data.getRemainingChallenges());
+        player.sendMessage("<a><l>挑战完成！");
+        player.sendMessage("<7>今日剩余挑战：<a>{}", data.getRemainingChallenges());
     }
 
     public List<QuestDefinition> getActiveQuests(AchievementCategory category) {
@@ -117,23 +117,23 @@ public class PlayerQuestHandler {
 
     private void onQuestCompleted(QuestDefinition def) {
         player.sendMessage("<6><l>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-        player.sendMessage("<a><l>QUEST COMPLETE: </l><e>{}", def.getName());
+        player.sendMessage("<a><l>任务完成：</l><e>{}", def.getName());
         player.sendMessage("");
 
         QuestReward reward = def.getReward();
         if (reward != null && reward.hasReward()) {
             if (reward.getHypixelExperience() > 0) {
-                player.sendMessage("<8>+<3>{} <7>Hypixel Experience", reward.getHypixelExperience());
+                player.sendMessage("<8>+<3>{} <7>Hypixel 经验", reward.getHypixelExperience());
                 player.getExperienceHandler().addExperience(reward.getHypixelExperience());
             }
             if (reward.getCoins() > 0) {
-                player.sendMessage("<8>+<6>{} <7>Coins", reward.getCoins());
+                player.sendMessage("<8>+<6>{} <7>硬币", reward.getCoins());
             }
             if (reward.getGameExperience() > 0) {
-                player.sendMessage("<8>+<b>{} <7>Game Experience", reward.getGameExperience());
+                player.sendMessage("<8>+<b>{} <7>游戏经验", reward.getGameExperience());
             }
             if (reward.getTokens() > 0) {
-                player.sendMessage("<8>+<2>{} <7>Tokens", reward.getTokens());
+                player.sendMessage("<8>+<2>{} <7>代币", reward.getTokens());
             }
         }
 

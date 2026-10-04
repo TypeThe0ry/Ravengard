@@ -32,12 +32,12 @@ public class WipeMeCommand extends HypixelCommand {
             HypixelPlayer player = (HypixelPlayer) sender;
             UUID playerUuid = player.getUuid();
             if (!PlayerWipeService.begin(playerUuid)) {
-                player.sendMessage("<c>You are already being wiped.");
+                player.sendMessage("<c>你的数据正在清除中。");
                 return;
             }
 
             ServerType type = HypixelConst.getTypeLoader().getType();
-            player.sendMessage("<c>Wiping everything you own on every server.");
+            player.sendMessage("<c>正在清除你在所有服务器上的全部数据。");
             Thread.startVirtualThread(() -> wipe(player, playerUuid, type));
         });
     }
@@ -74,7 +74,7 @@ public class WipeMeCommand extends HypixelCommand {
             PlayerDataService.loadAll(type, playerUuid);
             PlayerDataService.attachAll(type, player);
             PlayerDataService.applyAll(type, player);
-            player.sendMessage("<a>You have been wiped.");
+            player.sendMessage("<a>你的数据已清除。");
         } catch (Exception e) {
             Logger.error(e, "Failed to reload wiped user {}", playerUuid);
             kick(player);
@@ -83,7 +83,7 @@ public class WipeMeCommand extends HypixelCommand {
 
     private void kick(HypixelPlayer player) {
         ScheduleUtility.nextTick(() -> {
-            if (player.isOnline()) player.kick("<c>You have been wiped");
+            if (player.isOnline()) player.kick("<c>你的数据已清除");
         });
     }
 }

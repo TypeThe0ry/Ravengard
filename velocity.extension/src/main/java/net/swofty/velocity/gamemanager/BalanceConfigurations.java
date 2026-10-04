@@ -55,8 +55,8 @@ public final class BalanceConfigurations {
     public static @Nullable GameManager.GameServer getServerFor(Player player, ServerType type) {
         final boolean inTestFlow = TestFlowManager.isPlayerInTestFlow(player.getUsername());
         if (inTestFlow) {
-            player.sendMessage(Text.of("<e>You are currently in a network-isolated test flow, load balancing will be restricted to test flow servers!"));
-            player.sendMessage(Text.of("<8>Executing test flow {}...",
+            player.sendMessage(Text.of("<e>你当前处于网络隔离的测试流程中，负载均衡将仅限于测试流程服务器！"));
+            player.sendMessage(Text.of("<8>正在执行测试流程 {}……",
                     TestFlowManager.getTestFlowForPlayer(player.getUsername()).getName()));
         }
 
@@ -72,7 +72,7 @@ public final class BalanceConfigurations {
                 GameManager.GameServer server = configuration.getServer(player, serversToConsider);
                 if (server != null) {
                     if (inTestFlow) {
-                        player.sendMessage(Text.of("<8>Done overriding the server manager for your test flow."));
+                        player.sendMessage(Text.of("<8>已为你的测试流程完成服务器管理器覆盖。"));
                     }
                     return server;
                 }

@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 @CommandParameters(
         description = "Unmute a player on the server.",
-        usage = "/unmute <player>",
+        usage = "/unmute <玩家>",
         labels = "unmute",
         permission = Rank.STAFF,
         allowsConsole = false
@@ -46,17 +46,17 @@ public class UnMuteCommand extends HypixelCommand {
                     punishmentService.handleRequest(message).thenAccept(result -> {
                         if (result instanceof UnpunishPlayerProtocol.UnpunishPlayerResponse response) {
                             if (response.success()) {
-                                player.sendMessage("<a>Successfully unmuted player: {}", playerName);
+                                player.sendMessage("<a>已成功解除禁言：{}", playerName);
                             } else {
                                 player.sendMessage("<c>{}", response.errorMessage());
                             }
                         }
                     }).orTimeout(5, TimeUnit.SECONDS).exceptionally(_ -> {
-                        player.sendMessage("<c>Could not unmute this player at this time. The punishment service may be offline.");
+                        player.sendMessage("<c>暂时无法解除该玩家的禁言，处罚服务可能已离线。");
                         return null;
                     });
                 } catch (IOException e) {
-                    player.sendMessage("<c>Could not find player: {}", playerName);
+                    player.sendMessage("<c>找不到玩家：{}", playerName);
                 }
             });
         }, playerArg);

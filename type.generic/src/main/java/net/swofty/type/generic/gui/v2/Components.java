@@ -14,9 +14,9 @@ public final class Components {
 
     // use Components#fill(ViewLayout) instead which uses this
     static final ItemStack.Builder FILLER = ItemStacks.filler(Material.BLACK_STAINED_GLASS_PANE);
-    public static final ItemStack.Builder CLOSE_BUTTON = ItemStacks.named(Material.BARRIER, "<c>Close");
+    public static final ItemStack.Builder CLOSE_BUTTON = ItemStacks.named(Material.BARRIER, "<c>关闭");
 
-    public static final ItemStack.Builder BACK_BUTTON = ItemStacks.named(Material.ARROW, "<a>Go Back");
+    public static final ItemStack.Builder BACK_BUTTON = ItemStacks.named(Material.ARROW, "<a>返回");
 
     public static ItemStack.Builder asFiller(Material material) {
         return FILLER.material(material);
@@ -38,8 +38,8 @@ public final class Components {
         Optional<ViewNavigator.NavigationEntry<Object>> prev = context.navigator().peekPrevious();
         Text prevTitle = prev
                 .map(entry -> entry.view().configuration().getTitleFunction().apply(entry.state(), context))
-                .orElse(Text.of("<7>previous page"));
-        layout.slot(slot, (s, c) -> ItemStacks.lore(BACK_BUTTON, "<7>To {}", prevTitle), (_, ctx) -> {
+                .orElse(Text.of("<7>上一页"));
+        layout.slot(slot, (s, c) -> ItemStacks.lore(BACK_BUTTON, "<7>回到 {}", prevTitle), (_, ctx) -> {
             ViewNavigator.get(ctx.player()).pop();
         });
         return true;
@@ -109,7 +109,7 @@ public final class Components {
         layout.slot(slot, (s, c) -> {
             int page = currentPageGetter.apply(s);
             if (page > 0) {
-                return ItemStacks.named(Material.ARROW, "<e>Previous Page");
+                return ItemStacks.named(Material.ARROW, "<e>上一页");
             }
             return FILLER;
         }, (click, ctx) -> {
@@ -125,7 +125,7 @@ public final class Components {
             int page = currentPageGetter.apply(s);
             int total = totalPagesGetter.apply(s);
             if (page < total - 1) {
-                return ItemStacks.named(Material.ARROW, "<e>Next Page");
+                return ItemStacks.named(Material.ARROW, "<e>下一页");
             }
             return FILLER;
         }, (click, ctx) -> {

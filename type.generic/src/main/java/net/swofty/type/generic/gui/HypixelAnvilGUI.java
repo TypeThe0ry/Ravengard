@@ -22,7 +22,7 @@ public class HypixelAnvilGUI {
     }
 
     public CompletableFuture<String> open(String text) {
-        Inventory inventory = Inventories.of(InventoryType.ANVIL, "Insert Data: {}", text);
+        Inventory inventory = Inventories.of(InventoryType.ANVIL, "输入数据：{}", text);
         inventory.setItemStack(0, ItemStacks.named(Material.PAPER, "").build());
         inventory.setItemStack(1, ItemStack.of(Material.AIR));
         inventory.setItemStack(2, ItemStacks.named(Material.PAPER, "").build());

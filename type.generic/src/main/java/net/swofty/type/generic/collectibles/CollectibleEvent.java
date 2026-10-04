@@ -5,15 +5,15 @@ import java.util.Locale;
 import java.util.Optional;
 
 public enum CollectibleEvent {
-    EASTER("Easter",
+    EASTER("复活节",
         LocalDate.of(2026, 1, 1),
         LocalDate.of(2026, 4, 12)
     ),
-    HOLIDAY("Holiday",
+    HOLIDAY("节日",
         LocalDate.of(2025, 12, 31),
         LocalDate.of(2026, 2, 1)
     ),
-    HALLOWEEN("Halloween",
+    HALLOWEEN("万圣节",
         LocalDate.of(2026, 10, 31),
         LocalDate.of(2026, 11, 10)
     );

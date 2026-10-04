@@ -14,13 +14,13 @@ public final class StaffChat {
     private static final StaffChatProtocol PROTOCOL = new StaffChatProtocol();
 
     public static void sendMessage(HypixelPlayer sender, String message) {
-        Text formatted = Text.of("<b>[STAFF] <rank:{}>{}<f>: {}",
+        Text formatted = Text.of("<b>[工作人员] <rank:{}>{}<f>: {}",
                 sender.getRank(), sender.getUsername(), message);
         broadcastViaProxy(formatted.serialize());
     }
 
     public static void sendNotification(String message) {
-        broadcastViaProxy(Text.of("<b>[STAFF] <7>{}", message).serialize());
+        broadcastViaProxy(Text.of("<b>[工作人员] <7>{}", message).serialize());
     }
 
     private static void broadcastViaProxy(String formattedMessage) {

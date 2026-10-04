@@ -29,7 +29,7 @@ public class ReplaysCommand extends HypixelCommand {
 		command.setDefaultExecutor((sender, _) -> {
 			final HypixelPlayer player = (HypixelPlayer) sender;
 
-			player.sendMessage("<7>Loading replays...");
+			player.sendMessage("<7>正在加载回放列表……");
 			displaySendReplay(player);
 		});
 	}
@@ -40,7 +40,7 @@ public class ReplaysCommand extends HypixelCommand {
 				sendToReplayViewer(player, replay);
 			}), new ReplaysListView.State(replays, 0));
 		}).exceptionally(e -> {
-			player.sendMessage("<c>Failed to load replays.");
+			player.sendMessage("<c>加载回放列表失败。");
 			return null;
 		});
 	}
@@ -76,19 +76,19 @@ public class ReplaysCommand extends HypixelCommand {
 	}
 
 	private static void sendToReplayViewer(HypixelPlayer player, ReplayEntry replay) {
-		player.sendMessage("<a>Loading replay...");
+		player.sendMessage("<a>正在加载回放……");
 
 		ProxyService replayService = new ProxyService(ServiceType.REPLAY);
 		var request = new ChooseReplayProtocolObject.ChooseReplayMessage(player.getUuid(), replay.replayId().toString());
 		replayService.<ChooseReplayProtocolObject.ChooseReplayMessage, ChooseReplayProtocolObject.ChooseReplayResponse>handleRequest(request).thenAccept(response -> {;
 			if (!response.error()) {
-				player.sendMessage("<7>Sending you to the Replay Viewer...");
+				player.sendMessage("<7>正在将你传送到回放查看器……");
 				player.sendTo(ServerType.REPLAY_VIEWER);
 			} else {
-				player.sendMessage("<c>Failed to send you to a replay viewer.");
+				player.sendMessage("<c>无法将你传送到回放查看器。");
 			}
 		}).exceptionally(e -> {
-			player.sendMessage("<c>Failed to load replay: {}", e.getMessage());
+			player.sendMessage("<c>加载回放失败：{}", e.getMessage());
 			return null;
 		});
 	}

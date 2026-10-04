@@ -46,8 +46,8 @@ public class LevelReward {
     public String getBoosterDurationDisplay() {
         if (boosterDuration >= 60) {
             int hours = boosterDuration / 60;
-            return hours + " Hour" + (hours > 1 ? "s" : "");
+            return hours + " 小时";
         }
-        return boosterDuration + " Minutes";
+        return boosterDuration + " 分钟";
     }
 }

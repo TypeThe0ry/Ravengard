@@ -125,24 +125,24 @@ public class PlayerAchievementHandler {
     public boolean toggleTracking(String achievementId) {
         AchievementDefinition def = AchievementRegistry.get(achievementId);
         if (def == null || def.getType() != AchievementType.TIERED) {
-            player.sendMessage("<c>Only tiered achievements can be tracked!");
+            player.sendMessage("<c>只有分级成就可以追踪！");
             return false;
         }
 
         if (hasFullyCompletedAchievement(achievementId)) {
-            player.sendMessage("<c>You have already completed all tiers of this achievement!");
+            player.sendMessage("<c>你已完成该成就的所有等级！");
             return false;
         }
 
         boolean nowTracking = getAchievementData().toggleTracking(achievementId);
 
         if (nowTracking) {
-            player.sendMessage("<a>Now tracking: <e>{}", def.getName());
+            player.sendMessage("<a>正在追踪：<e>{}", def.getName());
             player.playSound(net.kyori.adventure.sound.Sound.sound(
                     net.minestom.server.sound.SoundEvent.BLOCK_NOTE_BLOCK_PLING,
                     net.kyori.adventure.sound.Sound.Source.MASTER, 1.0f, 2.0f));
         } else {
-            player.sendMessage("<c>Stopped tracking: <e>{}", def.getName());
+            player.sendMessage("<c>已停止追踪：<e>{}", def.getName());
         }
 
         return nowTracking;
@@ -161,13 +161,13 @@ public class PlayerAchievementHandler {
                 <a>{}{}
                 <7>{}
 
-                <7>Reward:
-                 <8>+<e>5 <7>Achievement Points
+                <7>奖励：
+                 <8>+<e>5 <7>成就点数
 
-                <e>Click to open achievements menu!""",
+                <e>点击打开成就菜单！""",
                 def.getName(), tierText, def.getDescription());
 
-        player.sendMessage("<e><k>A</k><a>>>   Achievement Unlocked: <6><hover:'{0}'>{1}{2}</hover><a>   \\<\\<<e><k>A",
+        player.sendMessage("<e><k>A</k><a>>>   成就解锁：<6><hover:'{0}'>{1}{2}</hover><a>   \\<\\<<e><k>A",
                 tierHover, def.getName(), tierText);
 
         player.playSound(net.kyori.adventure.sound.Sound.sound(

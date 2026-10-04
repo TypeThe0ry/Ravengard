@@ -11,7 +11,7 @@ import net.swofty.type.generic.user.categories.Rank;
 
 @CommandParameters(labels = "speed flyspeed",
         description = "Sets a players speed",
-        usage = "/speed <speed>",
+        usage = "/speed <速度>",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class FlySpeedCommand extends HypixelCommand {
@@ -19,8 +19,8 @@ public class FlySpeedCommand extends HypixelCommand {
     private static final float MAX_SPEED = 10.0f;
 
     public enum SpeedType {
-        FLY("flying"),
-        WALK("walking");
+        FLY("飞行"),
+        WALK("行走");
 
         @Getter
         private final String displayName;
@@ -70,7 +70,7 @@ public class FlySpeedCommand extends HypixelCommand {
             } else {
                 player.getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(realSpeed);
             }
-            player.sendMessage("<a>Set your {} speed to <e>{}<a>.", speedType.getDisplayName(), userSpeed);
+            player.sendMessage("<a>已将你的 {} 速度设为 <e>{}<a>。", speedType.getDisplayName(), userSpeed);
         }, speedArg, typeArg);
     }
 }

@@ -56,7 +56,11 @@ public enum ServerType {
 	}
 
 	public String formatName() {
-		return StringUtility.toNormalCase(name());
+		return switch (this) {
+			case RAVENGARD_LOBBY -> "天穹余烬大厅";
+			case RAVENGARD_DUNGEON -> "天穹余烬地牢";
+			default -> StringUtility.toNormalCase(name());
+		};
 	}
 
 	public String skyblockName() {

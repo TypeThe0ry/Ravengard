@@ -11,7 +11,7 @@ import org.tinylog.Logger;
 
 @CommandParameters(labels = "signgraphicaluserinterface signgui",
         description = "Opens a graphical user interface",
-        usage = "/signgui <text>",
+        usage = "/signgui <文本>",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class SignGUICommand extends HypixelCommand {
@@ -31,7 +31,7 @@ public class SignGUICommand extends HypixelCommand {
                     return;
                 }
 
-                player.sendMessage("<7>You wrote: <a>{}", line);
+                player.sendMessage("<7>你写的是：<a>{}", line);
                 Logger.debug("Sign GUI input: {}", line);
             });
         }, text);

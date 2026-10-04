@@ -11,7 +11,7 @@ import net.swofty.type.generic.user.HypixelPlayer;
 import net.swofty.type.generic.user.categories.Rank;
 
 @CommandParameters(description = "Changes chat mode",
-        usage = "/chat <type>",
+        usage = "/chat <类型>",
         permission = Rank.DEFAULT,
     labels = "chatmode chat",
         allowsConsole = false)
@@ -43,29 +43,37 @@ public class ChatCommand extends HypixelCommand {
 
             if ((raw.equals("staffview") || raw.equals("sv"))) {
                 if (!player.getRank().isStaff()) {
-                    player.sendMessage("<c>Unknown chat type.");
+                    player.sendMessage("<c>未知的聊天类型。");
                     return;
                 }
                 boolean enabled = staffView.getOrDefault(player.getUuid(), true);
                 staffView.put(player.getUuid(), !enabled);
-                player.sendMessage("<a>Staff chat viewing is now {}", !enabled ? Text.of("<a>enabled") : Text.of("<c>disabled"));
+                player.sendMessage("<a>工作人员聊天显示现已{}", !enabled ? Text.of("<a>开启") : Text.of("<c>关闭"));
                 return;
             }
 
             PickerChatType type = PickerChatType.fromString(raw);
             if (type == null) {
-                player.sendMessage("<c>Unknown chat type.");
+                player.sendMessage("<c>未知的聊天类型。");
                 return;
             }
 
             if (type.getChatType() == DatapointChatType.Chats.STAFF && !player.getRank().isStaff()) {
-                player.sendMessage("<c>Unknown chat type.");
+                player.sendMessage("<c>未知的聊天类型。");
                 return;
             }
 
             player.getChatType().switchTo(type.getChatType());
-            player.sendMessage("<a>You are now in the <6>{} <a>channel", type.chatType.name());
+            player.sendMessage("<a>你现在位于 <6>{} <a>频道", channelName(type.chatType));
         }, chatType);
+    }
+
+    private static String channelName(DatapointChatType.Chats chat) {
+        return switch (chat) {
+            case ALL -> "全体";
+            case PARTY -> "队伍";
+            case STAFF -> "工作人员";
+        };
     }
 
     enum PickerChatType {

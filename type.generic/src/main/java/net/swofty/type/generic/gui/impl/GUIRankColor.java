@@ -20,7 +20,7 @@ public class GUIRankColor extends StatelessView {
 
     @Override
     public ViewConfiguration<DefaultState> configuration() {
-        return new ViewConfiguration<>("Rank Color", InventoryType.CHEST_5_ROW);
+        return new ViewConfiguration<>("会员等级颜色", InventoryType.CHEST_5_ROW);
     }
 
     @Override
@@ -34,15 +34,15 @@ public class GUIRankColor extends StatelessView {
                 boolean aqua = c.player().isMvpPlusPlusAqua();
                 return ItemStacks.item(Material.NETHER_STAR, 1, aqua
                     ? """
-                        <a>Toggle Prefix Color
-                        <7>Selected: <b>Aqua
+                        <a>切换前缀颜色
+                        <7>已选择：<b>天蓝色
 
-                        <7>Click to change the color to <6>Gold"""
+                        <7>点击将颜色改为<6>金色"""
                     : """
-                        <a>Toggle Prefix Color
-                        <7>Selected: <6>Gold
+                        <a>切换前缀颜色
+                        <7>已选择：<6>金色
 
-                        <7>Click to change the color to <b>Aqua""");
+                        <7>点击将颜色改为<b>天蓝色""");
             }, (_, c) -> {
                 var data = c.player().getDataHandler().get(net.swofty.type.generic.data.HypixelDataHandler.Data.MVP_PLUS_PLUS_AQUA,
                     net.swofty.type.generic.data.datapoints.DatapointBoolean.class);
@@ -56,14 +56,14 @@ public class GUIRankColor extends StatelessView {
         layout.slot(slot, (_, ctx) -> render(ctx.player(), color), (_, ctx) -> {
             HypixelPlayer player = ctx.player();
             if (!player.getRank().isEqualOrHigherThan(Rank.MVP_PLUS)) {
-                player.sendMessage("<c>You must be MVP+ or higher to use rank colors!");
+                player.sendMessage("<c>你必须拥有 MVP+ 或更高的会员等级才能使用会员等级颜色！");
                 return;
             }
             if (!color.isUnlocked(player)) {
                 if (color == RankColor.DARK_BLUE) {
-                    player.sendMessage("<c>You must gift 100 ranks to unlock this rank color!");
+                    player.sendMessage("<c>你必须赠送 100 个会员等级才能解锁此会员等级颜色！");
                 } else {
-                    player.sendMessage("<c>You must be Hypixel Level {} to unlock this rank color!", color.getRequiredLevel());
+                    player.sendMessage("<c>你的 Hypixel 等级必须达到 {} 才能解锁此会员等级颜色！", color.getRequiredLevel());
                 }
                 return;
             }
@@ -77,18 +77,18 @@ public class GUIRankColor extends StatelessView {
         boolean unlocked = hasRank && color.isUnlocked(player);
         boolean selected = player.getRankColor() == color;
         String code = legacyCode(color.getColor());
-        String ending = selected ? "<a>Currently selected!"
-                : unlocked ? "<e>Click to select!"
-                : color == RankColor.DARK_BLUE ? "<6>Unlock by claiming 100 Ranks Gifted Reward!"
-                : "<3>Unlocked at Hypixel Level {}";
+        String ending = selected ? "<a>当前已选择！"
+                : unlocked ? "<e>点击选择！"
+                : color == RankColor.DARK_BLUE ? "<6>领取“赠送 100 个会员等级”奖励后解锁！"
+                : "<3>Hypixel 等级达到 {} 时解锁";
 
         return ItemStacks.item(unlocked ? color.getMaterial() : Material.GRAY_DYE, 1,
-                (unlocked ? "<a>" : "<c>") + "{} Rank Color\n"
-                        + "<7>Changes the color of the plus in <b>MVP<c>+\n"
-                        + "<7>to {}, turning it into <b>MVP" + code + "+\n"
+                (unlocked ? "<a>" : "<c>") + "会员等级颜色：{}\n"
+                        + "<7>将 <b>MVP<c>+ <7>中加号的颜色\n"
+                        + "<7>改为{}，使其变为 <b>MVP" + code + "+\n"
                         + "\n"
-                        + "<7>Shown in tab list also when chatting\n"
-                        + "<7>and joining lobbies.\n"
+                        + "<7>会显示在 Tab 列表中，聊天和\n"
+                        + "<7>进入大厅时也会显示。\n"
                         + "\n"
                         + ending,
                 color.getDisplayName(), color.getDisplayName().toLowerCase(), color.getRequiredLevel());

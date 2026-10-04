@@ -11,7 +11,7 @@ import net.swofty.type.generic.user.HypixelPlayer;
 import net.swofty.type.generic.user.categories.Rank;
 
 @CommandParameters(
-    usage = "/tpnpc <npc>",
+    usage = "/tpnpc <NPC>",
     labels = "tpnpc teleportnpc",
     permission = Rank.STAFF,
     description = "Teleports you to the specified NPC.",
@@ -33,7 +33,7 @@ public class TeleportToNPCCommand extends HypixelCommand {
             HypixelNPC npc = HypixelNPC.getRegisteredNPCs().stream().filter(n -> n.getName().equalsIgnoreCase(npcName)).findFirst().orElse(null);
 
             if (npc == null) {
-                ((HypixelPlayer) player).sendMessage("<c>No NPC found with the name '{}'.", npcName);
+                ((HypixelPlayer) player).sendMessage("<c>未找到名为“{}”的 NPC。", npcName);
                 return;
             }
             player.teleport(npc.getParameters().position((HypixelPlayer) player));

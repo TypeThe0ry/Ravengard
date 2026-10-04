@@ -97,8 +97,8 @@ public abstract class HypixelPaginatedGUI<T> extends HypixelInventoryGUI {
             @Override
             public ItemStack.Builder getItem(HypixelPlayer player) {
                 return ItemStacks.item(Material.BIRCH_SIGN, """
-                        <a>Search
-                        <7>Query: <e>{}""", Objects.equals(search, "") ? "None" : search);
+                        <a>搜索
+                        <7>关键词：<e>{}""", Objects.equals(search, "") ? "无" : search);
             }
         };
     }
@@ -113,7 +113,7 @@ public abstract class HypixelPaginatedGUI<T> extends HypixelInventoryGUI {
 
             @Override
             public ItemStack.Builder getItem(HypixelPlayer player) {
-                String block = forward ? "<a>Next Page\n<e>Page {}" : "<a>Previous Page\n<e>Page {}";
+                String block = forward ? "<a>下一页\n<e>第 {} 页" : "<a>上一页\n<e>第 {} 页";
                 return ItemStacks.item(Material.ARROW, block, forward ? page + 1 : page - 1);
             }
         };

@@ -98,18 +98,18 @@ public class FriendEventHandler implements RedisMessageHandler<Request, Response
     }
 
     private void handleRequestSent(HypixelPlayer player, FriendRequestSentResponseEvent event) {
-        sendMessage(player, "<a>Friend request sent to <e>{}<a>!", event.getTargetName());
+        sendMessage(player, "<a>已向 <e>{}<a> 发送好友请求！", event.getTargetName());
     }
 
     private void handleRequestReceived(HypixelPlayer player, FriendRequestReceivedResponseEvent event) {
         String senderName = event.getSenderName();
 
         player.sendMessage("<sep>");
-        player.sendMessage("<a>Friend request from <e>{}", senderName);
+        player.sendMessage("<a>来自 <e>{} <a>的好友请求", senderName);
         player.sendMessage("""
-                <e>Click <6><l>ACCEPT </l><e>or <c><l>DENY</l>\
-                <a><l><hover:'<e>Click to accept friend request'><click:run:'/f accept {0}'> [ACCEPT]</click></hover></l>\
-                <c><l><hover:'<e>Click to deny friend request'><click:run:'/f deny {0}'> [DENY]</click></hover>""",
+                <e>点击 <6><l>接受 </l><e>或 <c><l>拒绝</l>\
+                <a><l><hover:'<e>点击接受好友请求'><click:run:'/f accept {0}'> [接受]</click></hover></l>\
+                <c><l><hover:'<e>点击拒绝好友请求'><click:run:'/f deny {0}'> [拒绝]</click></hover>""",
                 senderName);
         player.sendMessage("<sep>");
     }
@@ -118,82 +118,82 @@ public class FriendEventHandler implements RedisMessageHandler<Request, Response
         String otherName = player.getUuid().equals(event.getPlayer1())
                 ? event.getPlayer2Name()
                 : event.getPlayer1Name();
-        sendMessage(player, "<a>You are now friends with <e>{}<a>!", otherName);
+        sendMessage(player, "<a>你与 <e>{}<a> 成为好友了！", otherName);
     }
 
     private void handleRequestDenied(HypixelPlayer player, FriendDeniedResponseEvent event) {
-        sendMessage(player, "<e>{} <c>denied your friend request.", event.getDenierName());
+        sendMessage(player, "<e>{} <c>拒绝了你的好友请求。", event.getDenierName());
     }
 
     private void handleFriendRemoved(HypixelPlayer player, FriendRemovedResponseEvent event) {
         if (player.getUuid().equals(event.getRemover())) {
-            sendMessage(player, "<c>Removed <e>{} <c>from your friends list.",
+            sendMessage(player, "<c>已将 <e>{} <c>从好友列表中移除。",
                     HypixelPlayer.getDisplayName(event.getRemoved()));
         } else {
-            sendMessage(player, "<e>{} <c>removed you from their friends list.", event.getRemoverName());
+            sendMessage(player, "<e>{} <c>将你从其好友列表中移除了。", event.getRemoverName());
         }
     }
 
     private void handleRemoveAll(HypixelPlayer player, FriendRemoveAllResponseEvent event) {
         if (event.getRemovedCount() == 0) {
-            sendMessage(player, "<c>You have no friends to remove! (Best friends are kept)");
+            sendMessage(player, "<c>没有可移除的好友！（挚友会保留）");
         } else {
-            sendMessage(player, "<c>Removed <e>{} <c>friends from your list. Best friends were kept.",
+            sendMessage(player, "<c>已从列表中移除 <e>{} <c>位好友，挚友已保留。",
                     event.getRemovedCount());
         }
     }
 
     private void handleBestToggled(HypixelPlayer player, FriendBestToggledResponseEvent event) {
         if (event.isBest()) {
-            sendMessage(player, "<e>{} <a>is now your best friend!", event.getTargetName());
+            sendMessage(player, "<e>{} <a>现在是你的挚友了！", event.getTargetName());
         } else {
-            sendMessage(player, "<e>{} <c>is no longer your best friend.", event.getTargetName());
+            sendMessage(player, "<e>{} <c>不再是你的挚友。", event.getTargetName());
         }
     }
 
     private void handleNicknameSet(HypixelPlayer player, FriendNicknameSetResponseEvent event) {
         if (event.getNickname() == null || event.getNickname().isEmpty()) {
-            sendMessage(player, "<a>Cleared nickname for <e>{}<a>.", event.getTargetName());
+            sendMessage(player, "<a>已清除 <e>{}<a> 的备注。", event.getTargetName());
         } else {
-            sendMessage(player, "<a>Set nickname for <e>{} <a>to <e>{}<a>.",
+            sendMessage(player, "<a>已将 <e>{} <a>的备注设为 <e>{}<a>。",
                     event.getTargetName(), event.getNickname());
         }
     }
 
     private void handleSettingToggled(HypixelPlayer player, FriendSettingToggledResponseEvent event) {
         String settingName = event.getSettingType() == FriendSettingType.ACCEPTING_REQUESTS
-                ? "Friend requests"
-                : "Friend join/leave notifications";
+                ? "好友请求"
+                : "好友上线/下线通知";
         sendMessage(player, event.isNewValue()
-                ? "<e>{} <7>are now <a>enabled<7>."
-                : "<e>{} <7>are now <c>disabled<7>.", settingName);
+                ? "<e>{}<7>现已<a>开启<7>。"
+                : "<e>{}<7>现已<c>关闭<7>。", settingName);
     }
 
     private void handleJoinNotification(HypixelPlayer player, FriendJoinNotificationEvent event) {
-        player.sendMessage("<a>Friend > {} <7>joined.", HypixelPlayer.getDisplayName(event.getFriend()));
+        player.sendMessage("<a>好友 > {} <7>上线了。", HypixelPlayer.getDisplayName(event.getFriend()));
     }
 
     private void handleLeaveNotification(HypixelPlayer player, FriendLeaveNotificationEvent event) {
-        player.sendMessage("<a>Friend > {} <7>left.", HypixelPlayer.getDisplayName(event.getFriend()));
+        player.sendMessage("<a>好友 > {} <7>下线了。", HypixelPlayer.getDisplayName(event.getFriend()));
     }
 
     private void handleRequestExpired(HypixelPlayer player, FriendRequestExpiredResponseEvent event) {
         if (player.getUuid().equals(event.getSender())) {
-            sendMessage(player, "<e>Your friend request to {} <e>has expired.",
+            sendMessage(player, "<e>你发给 {} <e>的好友请求已过期。",
                     HypixelPlayer.getDisplayName(event.getTarget()));
         } else {
-            sendMessage(player, "<e>The friend request from {} <e>has expired.",
+            sendMessage(player, "<e>来自 {} <e>的好友请求已过期。",
                     HypixelPlayer.getDisplayName(event.getSender()));
         }
     }
 
     private void handleFriendList(HypixelPlayer player, FriendListResponseEvent event) {
         player.sendMessage("<sep>");
-        player.sendMessage("<6>{} <7>(Page {}/{})", event.isBestOnly() ? "Best Friends" : "Friends",
+        player.sendMessage("<6>{} <7>（第 {}/{} 页）", event.isBestOnly() ? "挚友" : "好友",
                 event.getPage(), event.getTotalPages());
 
         if (event.getFriends().isEmpty()) {
-            player.sendMessage("<7>You have no {}friends to display.", event.isBestOnly() ? "best " : "");
+            player.sendMessage(event.isBestOnly() ? "<7>没有可显示的挚友。" : "<7>没有可显示的好友。");
         } else {
             for (FriendListResponseEvent.FriendListEntry friend : event.getFriends()) {
                 Text line = Text.of(friend.isOnline() ? "<a>● " : "<c>● ")
@@ -208,16 +208,16 @@ public class FriendEventHandler implements RedisMessageHandler<Request, Response
                 }
 
                 Text friendsSince = friend.getFriendSince() > 0
-                        ? Text.of("<7>Friends for {}", formatDuration(secondsSince(friend.getFriendSince())))
-                        : Text.of("<7>Friends since: Unknown");
+                        ? Text.of("<7>已成为好友 {}", formatDuration(secondsSince(friend.getFriendSince())))
+                        : Text.of("<7>成为好友时间：未知");
 
                 Text hover;
                 if (friend.isOnline()) {
                     hover = friendsSince;
                 } else {
                     Text lastSeen = friend.getLastSeen() > 0
-                            ? Text.of("<7>Last seen {} ago", formatDuration(secondsSince(friend.getLastSeen())))
-                            : Text.of("<7>Last seen: Unknown");
+                            ? Text.of("<7>最后上线：{} 前", formatDuration(secondsSince(friend.getLastSeen())))
+                            : Text.of("<7>最后上线：未知");
                     hover = Text.of("{}\n{}", lastSeen, friendsSince);
                 }
 
@@ -226,7 +226,7 @@ public class FriendEventHandler implements RedisMessageHandler<Request, Response
         }
 
         if (event.getTotalPages() > 1) {
-            player.sendMessage("<7>Use <e>/f list {}\\<page> <7>to navigate.", event.isBestOnly() ? "best " : "");
+            player.sendMessage("<7>使用 <e>/f list {}\\<页码> <7>翻页。", event.isBestOnly() ? "best " : "");
         }
 
         player.sendMessage("<sep>");
@@ -234,22 +234,22 @@ public class FriendEventHandler implements RedisMessageHandler<Request, Response
 
     private void handleRequestsList(HypixelPlayer player, FriendRequestsListResponseEvent event) {
         player.sendMessage("<sep>");
-        player.sendMessage("<6>Pending Friend Requests <7>(Page {}/{})", event.getPage(), event.getTotalPages());
+        player.sendMessage("<6>待处理的好友请求<7>（第 {}/{} 页）", event.getPage(), event.getTotalPages());
 
         if (event.getRequests().isEmpty()) {
-            player.sendMessage("<7>You have no pending friend requests.");
+            player.sendMessage("<7>没有待处理的好友请求。");
         } else {
             for (FriendRequestsListResponseEvent.FriendRequestEntry request : event.getRequests()) {
                 player.sendMessage("""
                         <e>{0} \
-                        <a><hover:'<e>Click to accept'><click:run:'/f accept {0}'>[ACCEPT]</click></hover>\
-                        <c><hover:'<e>Click to deny'><click:run:'/f deny {0}'> [DENY]</click></hover>""",
+                        <a><hover:'<e>点击接受'><click:run:'/f accept {0}'>[接受]</click></hover>\
+                        <c><hover:'<e>点击拒绝'><click:run:'/f deny {0}'> [拒绝]</click></hover>""",
                         request.getSenderName());
             }
         }
 
         if (event.getTotalPages() > 1) {
-            player.sendMessage("<7>Use <e>/f requests \\<page> <7>to navigate.");
+            player.sendMessage("<7>使用 <e>/f requests \\<页码> <7>翻页。");
         }
 
         player.sendMessage("<sep>");
@@ -282,14 +282,14 @@ public class FriendEventHandler implements RedisMessageHandler<Request, Response
         long hours = (seconds % 86400) / 3600;
         long minutes = (seconds % 3600) / 60;
         if (days > 0) {
-            return days + "d " + hours + "h";
+            return days + "天" + hours + "小时";
         }
         if (hours > 0) {
-            return hours + "h " + minutes + "m";
+            return hours + "小时" + minutes + "分钟";
         }
         if (minutes > 0) {
-            return minutes + "m";
+            return minutes + "分钟";
         }
-        return seconds + "s";
+        return seconds + "秒";
     }
 }

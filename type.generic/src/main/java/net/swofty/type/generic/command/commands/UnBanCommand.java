@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 @CommandParameters(
         description = "Unban a player from the server.",
-        usage = "/unban <player>",
+        usage = "/unban <玩家>",
         labels = "unban pardon unbanip pardonip",
         permission = Rank.STAFF,
         allowsConsole = false
@@ -46,17 +46,17 @@ public class UnBanCommand extends HypixelCommand {
                     punishmentService.handleRequest(message).thenAccept(result -> {
                         if (result instanceof UnpunishPlayerProtocol.UnpunishPlayerResponse response) {
                             if (response.success()) {
-                                player.sendMessage("<a>Successfully unbanned player: {}", playerName);
+                                player.sendMessage("<a>已成功解封玩家：{}", playerName);
                             } else {
                                 player.sendMessage("<c>{}", response.errorMessage());
                             }
                         }
                     }).orTimeout(5, TimeUnit.SECONDS).exceptionally(_ -> {
-                        player.sendMessage("<c>Could not unban this player at this time. The punishment service may be offline.");
+                        player.sendMessage("<c>暂时无法解封该玩家，处罚服务可能已离线。");
                         return null;
                     });
                 } catch (IOException e) {
-                    player.sendMessage("<c>Could not find player: {}", playerName);
+                    player.sendMessage("<c>找不到玩家：{}", playerName);
                 }
             });
         }, playerArg);

@@ -113,13 +113,13 @@ public abstract class PaginatedView<T, S extends PaginatedView.PaginatedState<T>
     }
 
     protected ItemStack.Builder createPrevPageItem(int currentPage, int totalPages) {
-        return ItemStacks.lore(ItemStacks.named(Material.ARROW, "<a>Previous Page"),
-                "<e>Page {}", currentPage);
+        return ItemStacks.lore(ItemStacks.named(Material.ARROW, "<a>上一页"),
+                "<e>第 {} 页", currentPage);
     }
 
     protected ItemStack.Builder createNextPageItem(int currentPage, int totalPages) {
-        return ItemStacks.lore(ItemStacks.named(Material.ARROW, "<a>Next Page"),
-                "<e>Page {}", currentPage + 2);
+        return ItemStacks.lore(ItemStacks.named(Material.ARROW, "<a>下一页"),
+                "<e>第 {} 页", currentPage + 2);
     }
 
     protected abstract int[] getPaginatedSlots();

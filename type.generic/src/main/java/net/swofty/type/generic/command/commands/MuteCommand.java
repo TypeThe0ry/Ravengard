@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
         labels = "mute tempmute",
         permission = Rank.STAFF,
         description = "Mute a player from the server.",
-        usage = "/mute <player> [duration] <reason>",
+        usage = "/mute <玩家> [时长] <原因>",
         allowsConsole = false
 )
 public class MuteCommand extends HypixelCommand {
