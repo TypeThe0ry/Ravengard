@@ -1,0 +1,346 @@
+{
+ "providers": [
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/assassin.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue200"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/bow.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue201"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/chestplate.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue202"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/common.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue203"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/consumable.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue205"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/crossbow.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue206"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/dagger.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue207"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/epic.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue208"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/boots.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue209"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/greataxe.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue20b"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/greatsword.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue20c"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/halberd.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue20d"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/hammer.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue20e"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/helmet.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue20f"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/knight.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue210"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/legendary.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue211"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/leggings.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue212"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/mace.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue213"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/necklace.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue216"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/rare.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue218"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/shield.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue219"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/sword.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue21a"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/trinket.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue21b"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/uncommon.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue21c"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/warrior.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue21e"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/hunter.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue221"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/knife.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue222"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/misc.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue224"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/earring.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue22b"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/belt.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue22c"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/ring.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\ue22d"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/claw.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\uf232"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/magic_sword.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\uf233"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/orb.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\uf234"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/sceptre.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\uf235"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/spellbook.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\uf236"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/staff.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\uf237"
+   ]
+  },
+  {
+   "type": "bitmap",
+   "file": "hypixel_ravengard:font/tags_zh/sorcerer.png",
+   "ascent": 5,
+   "height": 7,
+   "chars": [
+    "\uf23d"
+   ]
+  }
+ ]
+}
