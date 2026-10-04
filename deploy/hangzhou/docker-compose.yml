@@ -97,8 +97,8 @@ services:
     stop_grace_period: 60s
     environment:
       <<: [*forwarding_env, *zh_cn_env]
-      SERVICE_CMD: java -Xms256m -Xmx1500m -jar HypixelCore.jar RAVENGARD_DUNGEON
-    mem_limit: 2100m
+      SERVICE_CMD: java -Xms256m -Xmx2500m -XX:+ExitOnOutOfMemoryError -jar HypixelCore.jar RAVENGARD_DUNGEON
+    mem_limit: 3200m
     depends_on:
       proxy: {condition: service_healthy}
     volumes:
