@@ -19,6 +19,7 @@ final class ExtractionPortals {
     static final int SITES_PER_WAVE = 2;
     static final int SET_SIZE = 3;
     static final int SET_SPACING = 4;
+    static final double MIN_WAVE_SPACING = 64.0;
 
     record Site(Pos anchor, List<Pos> portals) {
         boolean isSet() {
@@ -42,28 +43,56 @@ final class ExtractionPortals {
     }
 
     /**
-     * One wave as each Death Wall stage is announced, taking the sites that stay inside the zone that
-     * stage closes to first; the site nearest that zone's centre opens as a set when it has room.
+     * One wave as each Death Wall stage is announced. Sites that stay inside the zone that stage
+     * closes to come first; among them the one farthest from every site opened so far is taken, so
+     * portals spread over the map instead of bunching up, and sites of one wave stand at least
+     * {@link #MIN_WAVE_SPACING} apart (a wave opens fewer sites rather than two side by side). The
+     * first site of a wave opens as a set when it has room.
      */
     static List<Wave> plan(List<Pos> anchors, RavengardDeathWall.Timeline timeline,
                            Function<Pos, List<Pos>> setAt) {
         List<Pos> remaining = new ArrayList<>(anchors);
+        List<Pos> opened = new ArrayList<>();
         List<Wave> waves = new ArrayList<>();
         for (int stage = 1; stage <= RavengardDeathWall.STAGE_COUNT && !remaining.isEmpty(); stage++) {
             RavengardDeathWall.Center center = timeline.targetCenter(stage);
             double radius = timeline.targetRadius(stage);
-            remaining.sort(Comparator
-                    .comparing((Pos anchor) -> !inside(anchor, center, radius))
-                    .thenComparingDouble(anchor -> distance(anchor, center)));
             List<Site> sites = new ArrayList<>();
             for (int index = 0; index < SITES_PER_WAVE && !remaining.isEmpty(); index++) {
-                Pos anchor = remaining.removeFirst();
+                List<Pos> spaced = remaining.stream()
+                        .filter(anchor -> sites.stream().allMatch(site ->
+                                nearestOpened(anchor, List.of(site.anchor())) >= MIN_WAVE_SPACING))
+                        .toList();
+                if (spaced.isEmpty()) break;
+                Pos anchor = nextSite(spaced, opened, center, radius);
+                remaining.remove(anchor);
+                opened.add(anchor);
                 List<Pos> set = index == 0 ? setAt.apply(anchor) : List.of();
                 sites.add(new Site(anchor, set.isEmpty() ? List.of(anchor) : set));
             }
             waves.add(new Wave(RavengardDeathWall.stageWarningAt(stage), sites));
         }
         return waves;
+    }
+
+    private static Pos nextSite(List<Pos> remaining, List<Pos> opened,
+                                RavengardDeathWall.Center center, double radius) {
+        List<Pos> safe = remaining.stream().filter(anchor -> inside(anchor, center, radius)).toList();
+        if (safe.isEmpty()) {
+            return remaining.stream().min(Comparator.comparingDouble(anchor -> distance(anchor, center))).orElseThrow();
+        }
+        if (opened.isEmpty()) {
+            return safe.stream().min(Comparator.comparingDouble(anchor -> distance(anchor, center))).orElseThrow();
+        }
+        return safe.stream()
+                .max(Comparator.comparingDouble((Pos anchor) -> nearestOpened(anchor, opened))
+                        .thenComparingDouble(anchor -> -distance(anchor, center)))
+                .orElseThrow();
+    }
+
+    static double nearestOpened(Pos anchor, List<Pos> opened) {
+        return opened.stream().mapToDouble(other -> Math.hypot(other.x() - anchor.x(), other.z() - anchor.z()))
+                .min().orElse(Double.MAX_VALUE);
     }
 
     static boolean inside(Pos anchor, RavengardDeathWall.Center center, double radius) {

@@ -69,6 +69,25 @@ class ExtractionPortalsTest {
     }
 
     @Test
+    void portalsOpeningTogetherAreSpreadApart() {
+        List<Pos> anchors = DungeonInstanceRegistry.officialExtractionAnchors();
+        for (long seed = 0; seed < 40; seed++) {
+            var timeline = RavengardDeathWall.timeline(5.5, -0.75, 264.0, anchors, seed);
+            var waves = ExtractionPortals.plan(anchors, timeline, anchor -> List.of());
+            for (var wave : waves) {
+                var sites = wave.sites();
+                for (int first = 0; first < sites.size(); first++) {
+                    for (int second = first + 1; second < sites.size(); second++) {
+                        Pos a = sites.get(first).anchor(), b = sites.get(second).anchor();
+                        assertTrue(Math.hypot(a.x() - b.x(), a.z() - b.z()) >= 64.0,
+                                "seed " + seed + " wave " + wave.opensAt() + ": " + a + " and " + b);
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
     void somePortalsOnTheOfficialMapOpenAsSetsOfThree() {
         List<Pos> anchors = DungeonInstanceRegistry.officialExtractionAnchors();
         long sets = anchors.stream()
