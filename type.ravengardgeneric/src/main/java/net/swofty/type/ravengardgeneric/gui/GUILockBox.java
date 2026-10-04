@@ -55,7 +55,7 @@ public class GUILockBox extends RavengardView {
 
     @Override
     protected String title() {
-        return "Lock Box";
+        return "保险箱";
     }
 
     @Override
@@ -90,17 +90,17 @@ public class GUILockBox extends RavengardView {
         }
 
         interactive(layout, SLOT_PREVIOUS, RavengardItems.button(RavengardButton.LEFT)
-                        .label("Previous Page")
-                        .lore("<7>Browse the previous page of items.")
+                        .label("上一页")
+                        .lore("<7>浏览上一页物品。")
                         .blankLine()
-                        .lore("<e>Click to go back to the previous page!"),
+                        .lore("<e>点击返回上一页！"),
                 (click, viewContext) -> turnTo(viewContext, page - 1));
 
         interactive(layout, SLOT_NEXT, RavengardItems.button(RavengardButton.RIGHT)
-                        .label("Next Page")
-                        .lore("<7>Browse the next page of items.")
+                        .label("下一页")
+                        .lore("<7>浏览下一页物品。")
                         .blankLine()
-                        .lore("<e>Click to go to the next page!"),
+                        .lore("<e>点击前往下一页！"),
                 (click, viewContext) -> turnTo(viewContext, page + 1));
 
         backButton(layout);
@@ -126,12 +126,12 @@ public class GUILockBox extends RavengardView {
 
         int cost = EXPAND_COSTS[tier - 1];
         interactive(layout, widgetCol + 2, RavengardItems.button(RavengardButton.TEXT_EXPAND)
-                        .label("Expand Lock Box!")
-                        .lore(Text.of("<7>Upgrade your lock box to Tier {}!", nextTier),
-                                Text.of("<7>This will unlock an additional {} slots", SLOTS_PER_TIER),
-                                Text.of("<7>in your lock box."))
+                        .label("扩展保险箱！")
+                        .lore(Text.of("<7>将保险箱升级到 {} 级！", nextTier),
+                                Text.of("<7>这将额外解锁 {} 个", SLOTS_PER_TIER),
+                                Text.of("<7>保险箱格子。"))
                         .blankLine()
-                        .lore(Text.of("<7>Cost: <f>👑<#FFCE47>{} Crowns", cost)),
+                        .lore(Text.of("<7>花费：<f>👑<#FFCE47>{} 王冠", cost)),
                 (click, viewContext) -> expand(viewContext, tier, cost));
     }
 
@@ -155,7 +155,7 @@ public class GUILockBox extends RavengardView {
             }
         }
         if (free < 0) {
-            player.sendMessage("<c>Your lock box is full!");
+            player.sendMessage("<c>你的保险箱已满！");
             return false;
         }
         String snbt = toSnbt(stack);
@@ -187,7 +187,7 @@ public class GUILockBox extends RavengardView {
             return;
         }
         if (!RavengardItems.hasFreeSlot(player)) {
-            player.sendMessage("<c>Your inventory is full!");
+            player.sendMessage("<c>你的背包已满！");
             return;
         }
         String snbt = stored.remove(absolute);
@@ -204,12 +204,12 @@ public class GUILockBox extends RavengardView {
             return;
         }
         if (!RavengardProfiles.tryPurchase(player, cost)) {
-            player.sendMessage("<c>You don't have enough Crowns!");
+            player.sendMessage("<c>你的王冠不足！");
             return;
         }
         RavengardProfileStorage.writeLockBoxTier(player.getSelectedProfile(), tier + 1);
         RavengardProfiles.saveActive(player);
-        player.sendMessage("<a>Your lock box is now Tier {}!", tier + 1);
+        player.sendMessage("<a>你的保险箱现在是 {} 级了！", tier + 1);
         ViewNavigator.get(player).push(new GUILockBox(page));
     }
 

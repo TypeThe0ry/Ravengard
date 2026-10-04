@@ -123,10 +123,10 @@ public abstract class RavengardView extends StatelessView {
     /** The standard back button, verbatim from the captures, wired to the view stack. */
     protected void backButton(ViewLayout<DefaultState> layout) {
         interactive(layout, SLOT_BACK, RavengardItems.button(RavengardButton.BACK)
-                        .label("Go Back")
-                        .lore("<7>Return to the previous menu.")
+                        .label("返回")
+                        .lore("<7>返回上一级菜单。")
                         .blankLine()
-                        .lore("<e>Click to go back!"),
+                        .lore("<e>点击返回！"),
                 (click, viewContext) -> viewContext.backOrClose());
     }
 

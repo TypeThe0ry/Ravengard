@@ -24,7 +24,7 @@ public class ActionRegionDiscovered implements HypixelEventClass {
 
         if (RavengardProfiles.hasDiscovered(event.getPlayer(), to)) {
             event.getPlayer().sendActionBar(
-                    Text.of("<f>{} discovered", to.getDisplayName()).asComponent());
+                    Text.of("<f>发现 {}", to.getDisplayName()).asComponent());
             return;
         }
         RavengardProfiles.markDiscovered(event.getPlayer(), to);
@@ -32,6 +32,6 @@ public class ActionRegionDiscovered implements HypixelEventClass {
         // one second in, one second out, no hold in between
         event.getPlayer().sendTitlePart(TitlePart.TIMES, Title.Times.times(FADE, Duration.ZERO, FADE));
         event.getPlayer().sendTitlePart(TitlePart.TITLE, Text.empty());
-        event.getPlayer().sendTitlePart(TitlePart.SUBTITLE, "<f>{} discovered", to.getDisplayName());
+        event.getPlayer().sendTitlePart(TitlePart.SUBTITLE, "<f>发现 {}", to.getDisplayName());
     }
 }

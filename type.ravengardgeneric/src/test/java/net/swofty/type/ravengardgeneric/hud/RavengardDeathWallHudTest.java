@@ -68,11 +68,11 @@ class RavengardDeathWallHudTest {
     void bossBarNameRidesTheSidebarLineThePackLiftsAboveTheBar() {
         RavengardHudState state = new RavengardHudState();
         state.setDungeon(true);
-        state.setBossBarName("Death Wall 1/5 | Moves in 00:16");
+        state.setBossBarName("死亡之墙 1/5 | 距移动 00:16");
 
         TextComponent line = (TextComponent) RavengardHudComposer.compose(state).get(RavengardHudLayer.SPACER_2);
 
-        assertEquals("Death Wall 1/5 | Moves in 00:16", line.content());
+        assertEquals("死亡之墙 1/5 | 距移动 00:16", line.content());
         assertEquals(0xFEFD0E, line.color().value());
     }
 }

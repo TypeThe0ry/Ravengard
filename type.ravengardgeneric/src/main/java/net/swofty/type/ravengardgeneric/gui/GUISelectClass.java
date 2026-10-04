@@ -38,7 +38,7 @@ public class GUISelectClass extends RavengardView {
 
     @Override
     protected String title() {
-        return "Select Class";
+        return "选择职业";
     }
 
     @Override
@@ -58,7 +58,7 @@ public class GUISelectClass extends RavengardView {
                     .label(Text.of("<a>{}", option.value.getDisplayName()))
                     .lore(option.value.selectLore())
                     .blankLine()
-                    .lore("<e>Click to select!");
+                    .lore("<e>点击选择！");
 
             interactive(layout, option.slot, button, (click, viewContext) -> {
                 if (click.player() instanceof RavengardPlayer player) {

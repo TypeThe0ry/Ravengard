@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 
 @CommandParameters(
         labels = "spawnsatchel",
-        description = "Drops a loot satchel at your position",
+        description = "在你的位置放置一个战利品袋",
         usage = "/spawnsatchel",
         permission = Rank.STAFF,
         allowsConsole = false)
@@ -24,11 +24,11 @@ public class SpawnSatchelCommand extends HypixelCommand {
             HypixelPlayer player = (HypixelPlayer) sender;
             Consumer<Player> hook = spawner;
             if (hook == null) {
-                player.sendMessage("<c>Satchels only exist on dungeon servers.");
+                player.sendMessage("<c>战利品袋只存在于地牢服务器。");
                 return;
             }
             hook.accept(player);
-            player.sendMessage("<a>Satchel dropped.");
+            player.sendMessage("<a>已放置战利品袋。");
         });
     }
 }

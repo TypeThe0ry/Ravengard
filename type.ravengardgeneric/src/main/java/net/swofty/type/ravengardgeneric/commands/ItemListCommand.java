@@ -10,8 +10,8 @@ import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
 @CommandParameters(
         labels = "items e",
-        description = "Browse every implemented Ravengard item",
-        usage = "/items [search]",
+        description = "浏览所有已实现的天穹余烬物品",
+        usage = "/items [搜索]",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class ItemListCommand extends HypixelCommand {

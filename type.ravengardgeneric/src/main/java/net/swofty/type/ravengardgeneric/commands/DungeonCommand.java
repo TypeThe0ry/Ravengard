@@ -18,8 +18,8 @@ import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 import java.util.concurrent.ThreadLocalRandom;
 
 @CommandParameters(labels = "dungeon",
-        description = "Ravengard dungeon administration",
-        usage = "/dungeon <join|list|generate [seed] [rooms]>",
+        description = "天穹余烬地牢管理",
+        usage = "/dungeon <join|list|generate [种子] [房间数]>",
         permission = Rank.STAFF, allowsConsole = false)
 public class DungeonCommand extends HypixelCommand {
     /** Set by the dungeon server so joining an instance hosted locally skips the proxy hop. */
@@ -33,10 +33,10 @@ public class DungeonCommand extends HypixelCommand {
         command.addSyntax((sender, context) -> {
             if (!permissionCheck(sender)) return;
             RavengardPlayer player = (RavengardPlayer) sender;
-            player.sendMessage("<e>/dungeon join <7>- queue into a dungeon");
-            player.sendMessage("<e>/dungeon join \\<instance> <7>- fly over an instance");
-            player.sendMessage("<e>/dungeon list <7>- every dungeon server and its instances");
-            player.sendMessage("<e>/dungeon generate [seed] [rooms] <7>- dedicated instance");
+            player.sendMessage("<e>/dungeon join <7>- 排队进入地牢");
+            player.sendMessage("<e>/dungeon join \\<实例> <7>- 俯瞰某个实例");
+            player.sendMessage("<e>/dungeon list <7>- 列出所有地牢服务器及其实例");
+            player.sendMessage("<e>/dungeon generate [种子] [房间数] <7>- 创建专用实例");
         });
 
         command.addSyntax((sender, context) -> {
@@ -78,7 +78,7 @@ public class DungeonCommand extends HypixelCommand {
     }
 
     private static void adminGenerate(RavengardPlayer player, String mode) {
-        player.sendMessage("<7>Allocating a dungeon instance...");
+        player.sendMessage("<7>正在分配地牢实例……");
         GetServerForMapProtocol.GetServerForMapMessage request =
                 new GetServerForMapProtocol.GetServerForMapMessage(
                         ServerType.RAVENGARD_DUNGEON, null, mode, 1);
@@ -87,16 +87,16 @@ public class DungeonCommand extends HypixelCommand {
                     UnderstandableProxyServer server, String gameId, boolean success, String error))
                     || server == null || gameId == null) {
                 String reason = response instanceof GetServerForMapProtocol.GetServerForMapResponse r
-                        && r.error() != null ? r.error() : "no servers available";
-                player.sendMessage("<c>Could not allocate an instance: {}", reason);
+                        && r.error() != null ? r.error() : "没有可用的服务器";
+                player.sendMessage("<c>无法分配实例：{}", reason);
                 return;
             }
-            player.sendMessage("<a>Instance <f>{}<a> created on <f>{}<a>. It self-destructs after 30s with nobody inside.",
+            player.sendMessage("<a>实例 <f>{}<a> 已在 <f>{}<a> 创建。无人时 30 秒后自动销毁。",
                     gameId, server.shortName());
-            player.sendMessage("<click:run:'/dungeon join {0}'><e><l>[CLICK TO JOIN] <7>or run /dungeon join {1}</click>",
+            player.sendMessage("<click:run:'/dungeon join {0}'><e><l>[点击加入] <7>或执行 /dungeon join {1}</click>",
                     gameId, gameId.substring(0, 8));
         }).exceptionally(throwable -> {
-            player.sendMessage("<c>Allocation failed: {}", throwable.getMessage());
+            player.sendMessage("<c>分配失败：{}", throwable.getMessage());
             return null;
         });
     }
@@ -109,7 +109,7 @@ public class DungeonCommand extends HypixelCommand {
                 .thenAccept(response -> {
                     if (!(response instanceof ListGamesProtocol.ListGamesResponse listing)
                             || !listing.success()) {
-                        player.sendMessage("<c>Failed to look the instance up.");
+                        player.sendMessage("<c>查找实例失败。");
                         return;
                     }
                     for (ListGamesProtocol.ServerGames server : listing.servers()) {
@@ -124,21 +124,21 @@ public class DungeonCommand extends HypixelCommand {
                                     server.shortName());
                             ORCHESTRATOR.handleRequest(new ChooseGameProtocol.ChooseGameMessage(
                                     player.getUuid(), proxy, game.gameId())).thenRun(() -> {
-                                player.sendMessage("<a>Sending you to <f>{}<a>!", server.shortName());
+                                player.sendMessage("<a>正在把你送往 <f>{}<a>！", server.shortName());
                                 player.asProxyPlayer().transferToWithIndication(proxy.uuid());
                             });
                             return;
                         }
                     }
-                    player.sendMessage("<c>No instance found matching <f>{}<c>.", instanceId);
+                    player.sendMessage("<c>没有匹配 <f>{}<c> 的实例。", instanceId);
                 }).exceptionally(throwable -> {
-                    player.sendMessage("<c>Lookup failed: {}", throwable.getMessage());
+                    player.sendMessage("<c>查找失败：{}", throwable.getMessage());
                     return null;
                 });
     }
 
     private static void queue(RavengardPlayer player, String mode) {
-        player.sendMessage("<7>Finding a dungeon server...");
+        player.sendMessage("<7>正在寻找地牢服务器……");
         GetServerForMapProtocol.GetServerForMapMessage request =
                 new GetServerForMapProtocol.GetServerForMapMessage(
                         ServerType.RAVENGARD_DUNGEON, null, mode, 1);
@@ -148,21 +148,21 @@ public class DungeonCommand extends HypixelCommand {
                     UnderstandableProxyServer server, String gameId, boolean success, String error))
                     || server == null || gameId == null) {
                 String reason = response instanceof GetServerForMapProtocol.GetServerForMapResponse r
-                        && r.error() != null ? r.error() : "no servers available";
-                player.sendMessage("<c>Could not find a dungeon: {}", reason);
+                        && r.error() != null ? r.error() : "没有可用的服务器";
+                player.sendMessage("<c>找不到地牢：{}", reason);
                 return;
             }
 
             ORCHESTRATOR.handleRequest(new ChooseGameProtocol.ChooseGameMessage(
                     player.getUuid(), server, gameId)).thenRun(() -> {
-                player.sendMessage("<a>Sending you to <f>{}<a>!", server.shortName());
+                player.sendMessage("<a>正在把你送往 <f>{}<a>！", server.shortName());
                 player.asProxyPlayer().transferToWithIndication(server.uuid());
             }).exceptionally(throwable -> {
-                player.sendMessage("<c>Failed to register for the dungeon: {}", throwable.getMessage());
+                player.sendMessage("<c>地牢登记失败：{}", throwable.getMessage());
                 return null;
             });
         }).exceptionally(throwable -> {
-            player.sendMessage("<c>Dungeon search failed: {}", throwable.getMessage());
+            player.sendMessage("<c>地牢搜索失败：{}", throwable.getMessage());
             return null;
         });
     }
@@ -172,31 +172,31 @@ public class DungeonCommand extends HypixelCommand {
                 .thenAccept(response -> {
                     if (!(response instanceof ListGamesProtocol.ListGamesResponse listing)
                             || !listing.success()) {
-                        player.sendMessage("<c>Failed to list dungeon servers.");
+                        player.sendMessage("<c>无法列出地牢服务器。");
                         return;
                     }
                     if (listing.servers().isEmpty()) {
-                        player.sendMessage("<c>No dungeon servers are online.");
+                        player.sendMessage("<c>没有在线的地牢服务器。");
                         return;
                     }
                     for (ListGamesProtocol.ServerGames server : listing.servers()) {
-                        player.sendMessage("<e>{} <7>- <f>{}<7>/<f>{} players<7>, <f>{}<7> free instance slots",
+                        player.sendMessage("<e>{} <7>- <f>{}<7>/<f>{} 名玩家<7>，<f>{}<7> 个空闲实例位",
                                 server.shortName(), server.onlinePlayers(), server.maxPlayers(),
                                 server.remainingGameSlots() == null ? "?" : server.remainingGameSlots());
                         for (ListGamesProtocol.GameSummary game : server.games()) {
                             boolean dying = game.map() != null && game.map().startsWith("empty:");
-                            Text line = Text.of("  <8>- <f>{} <7>{} <f>{} players ",
+                            Text line = Text.of("  <8>- <f>{} <7>{} <f>{} 名玩家 ",
                                             game.gameId().substring(0, 8), game.gameTypeName(), game.playerCount())
-                                    .append(game.acceptingJoins() ? "<a>open" : "<c>closed")
-                                    .appendIf(dying, " <c>(dies in {}s)", dying ? game.map().substring(6) : "");
+                                    .append(game.acceptingJoins() ? "<a>开放" : "<c>关闭")
+                                    .appendIf(dying, " <c>（{} 秒后销毁）", dying ? game.map().substring(6) : "");
                             player.sendMessage(line);
                         }
                         if (server.games().isEmpty()) {
-                            player.sendMessage("  <8>- <7>no instances");
+                            player.sendMessage("  <8>- <7>没有实例");
                         }
                     }
                 }).exceptionally(throwable -> {
-                    player.sendMessage("<c>Listing failed: {}", throwable.getMessage());
+                    player.sendMessage("<c>列表获取失败：{}", throwable.getMessage());
                     return null;
                 });
     }

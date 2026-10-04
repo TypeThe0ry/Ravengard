@@ -21,7 +21,7 @@ public class GUIProfiles extends RavengardView {
 
     @Override
     protected String title() {
-        return "Profiles";
+        return "存档";
     }
 
     @Override
@@ -59,22 +59,22 @@ public class GUIProfiles extends RavengardView {
         boolean isSelected = profile.getId().equals(selected);
 
         RavengardItems.Builder button = RavengardItems.button(statue)
-                .label(Text.literal(profileClass == null ? "Unclaimed" : profileClass.getDisplayName()))
+                .label(Text.literal(profileClass == null ? "未使用" : profileClass.getDisplayName()))
                 .lore(Text.of("<8>{}", profile.getId()))
                 .blankLine()
-                .lore(Text.of("<7>Class: <e>{}", profileClass == null ? "None" : profileClass.getDisplayName()),
-                        Text.of("<7>Playtime: <e>{}", profile.playtimeText()),
-                        Text.of("<7>Crowns: <e>{}", profile.getCrowns()),
-                        Text.of("<7>Ability Points<e>: {}", profile.getAbilityPoints()),
-                        Text.of("<7>Level: <e>{}", profile.getLevel()),
-                        Text.of("<7>Experience: <e>{}/{}", profile.getExperience(), profile.experienceForNextLevel()))
+                .lore(Text.of("<7>职业：<e>{}", profileClass == null ? "无" : profileClass.getDisplayName()),
+                        Text.of("<7>游玩时长：<e>{}", profile.playtimeText()),
+                        Text.of("<7>王冠：<e>{}", profile.getCrowns()),
+                        Text.of("<7>技能点<e>：{}", profile.getAbilityPoints()),
+                        Text.of("<7>等级：<e>{}", profile.getLevel()),
+                        Text.of("<7>经验：<e>{}/{}", profile.getExperience(), profile.experienceForNextLevel()))
                 .blankLine()
                 .origin(origin);
 
         if (isSelected) {
-            button.lore("<a>Selected!");
+            button.lore("<a>已选择！");
         } else {
-            button.lore("<e>Left-Click to select!", "<c>Right-Click to delete!");
+            button.lore("<e>左键选择！", "<c>右键删除！");
         }
 
         interactive(layout, origin, button, (click, viewContext) -> {
@@ -94,9 +94,9 @@ public class GUIProfiles extends RavengardView {
 
     private void placeCreate(ViewLayout<DefaultState> layout, int origin) {
         RavengardItems.Builder button = RavengardItems.button(RavengardButton.ADD)
-                .label("<a>Create Profile")
+                .label("<a>创建存档")
                 .blankLine()
-                .lore("<e>Click to create!")
+                .lore("<e>点击创建！")
                 .origin(origin);
 
         interactive(layout, origin, button, (click, viewContext) -> {

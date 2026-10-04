@@ -31,7 +31,7 @@ public class GUIAbilityPage extends RavengardView {
 
     @Override
     protected String title() {
-        return abilitySlot == 1 ? "First Ability" : "Second Ability";
+        return abilitySlot == 1 ? "第一技能" : "第二技能";
     }
 
     @Override
@@ -58,23 +58,23 @@ public class GUIAbilityPage extends RavengardView {
             RavengardItems.Builder button = equippedSlot > 0
                     ? RavengardItems.button(ability)
                             .label(Text.of("<a>{}", ability.getDisplayName()))
-                            .lore("<a><l>EQUIPPED")
+                            .lore("<a><l>已装备")
                     : RavengardItems.button(RavengardButton.ABILITY_LOCKED)
                             .label(Text.of("<c>{}", ability.getDisplayName()))
-                            .lore("<c><l>LOCKED");
+                            .lore("<c><l>未解锁");
 
             button.blankLine()
                     .lore(ability.getWrappedDescription())
                     .blankLine()
-                    .lore(Text.of("<7>Cooldown: <e>{}", ability.getCooldownText()))
+                    .lore(Text.of("<7>冷却：<e>{}", ability.getCooldownText()))
                     .blankLine();
 
             if (equippedSlot > 0) {
-                button.lore(Text.of("<c>Already equipped in <e>Slot {}<c>!", equippedSlot));
+                button.lore(Text.of("<c>已装备在<e>第 {} 槽<c>！", equippedSlot));
             } else {
-                button.lore("<7>Cost: <e>1<b> Ability Point")
+                button.lore("<7>花费：<e>1<b> 技能点")
                         .blankLine()
-                        .lore("<c>Not enough points to purchase this skill!");
+                        .lore("<c>技能点不足，无法购买该技能！");
             }
 
             place(layout, ABILITY_SLOTS[index], button);
@@ -83,18 +83,18 @@ public class GUIAbilityPage extends RavengardView {
         RavengardProfile active = RavengardProfileStorage.byId(player.getSelectedProfile());
         int points = active == null ? 0 : active.getAbilityPoints();
         interactive(layout, SLOT_POINTS, RavengardItems.button(RavengardButton.LEVEL)
-                .label(Text.of("<b>Ability Points <7>(<e>{}<7>)", points))
-                .lore("<7>You can unlock new <a>abilities<7> by",
-                        "<7>spending <b>Ability Points<7> in this menu.")
+                .label(Text.of("<b>技能点<7>（<e>{}<7>）", points))
+                .lore("<7>在此菜单中花费<b>技能点<7>",
+                        "<7>即可解锁新的<a>技能<7>。")
                 .blankLine()
-                .lore("<7>These points are rewarded for",
-                        "<7>earning <e>experience<7> and <6>levelling up<7>",
-                        "<7>your class.")
+                .lore("<7>这些点数来自于",
+                        "<7>获得<e>经验<7>并让你的职业",
+                        "<7><6>升级<7>。")
                 .blankLine()
-                .lore(Text.of("<e>Experience<7> is earned through:"),
-                        Text.of("<7> <f>◦<7> Defeating mobs and bosses."),
-                        Text.of("<7> <f>◦<7> Killing other players."),
-                        Text.of("<7> <f>◦<7> Escaping through portals.")),
+                .lore(Text.of("<e>经验<7>的获取途径："),
+                        Text.of("<7> <f>◦<7> 击败怪物与首领。"),
+                        Text.of("<7> <f>◦<7> 击杀其他玩家。"),
+                        Text.of("<7> <f>◦<7> 通过传送门撤离。")),
                 (click, viewContext) -> click.player().playSound(
                         net.kyori.adventure.sound.Sound.sound()
                                 .type(net.kyori.adventure.key.Key.key(

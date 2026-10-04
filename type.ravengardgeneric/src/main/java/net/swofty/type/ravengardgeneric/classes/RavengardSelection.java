@@ -35,7 +35,7 @@ public final class RavengardSelection {
         player.setTutorial(false);
 
         player.closeInventory();
-        player.sendMessage("<a>You have selected the {} class!", value.getDisplayName());
+        player.sendMessage("<a>你选择了{}职业！", value.getDisplayName());
 
         giveKit(player, value);
         net.swofty.type.ravengardgeneric.profile.RavengardProfiles.saveActive(player);

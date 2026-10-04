@@ -13,8 +13,8 @@ import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
 @CommandParameters(
         labels = "animreview",
-        description = "Review captured animations and mark their segments",
-        usage = "/animreview [start <clip>|stop|goto <tick>|markstart|mark <name>|marks|unmark <name>]",
+        description = "审查录制的动画并标记片段",
+        usage = "/animreview [start <片段>|stop|goto <刻>|markstart|mark <名称>|marks|unmark <名称>]",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class AnimReviewCommand extends HypixelCommand {
@@ -36,7 +36,7 @@ public class AnimReviewCommand extends HypixelCommand {
         command.addSyntax((sender, context) -> {
             if (!permissionCheck(sender)) return;
             AnimReviewService.stop((RavengardPlayer) sender);
-            ((RavengardPlayer) sender).sendMessage("<a>Review stopped.");
+            ((RavengardPlayer) sender).sendMessage("<a>已停止审阅。");
         }, ArgumentType.Literal("stop"));
 
         var tickArg = ArgumentType.Integer("tick").min(0);
@@ -76,7 +76,7 @@ public class AnimReviewCommand extends HypixelCommand {
                                     java.util.function.Consumer<AnimReviewService.Session> action) {
         AnimReviewService.Session session = AnimReviewService.session(player);
         if (session == null) {
-            player.sendMessage("<c>No review session running. Use /animreview to pick a capture.");
+            player.sendMessage("<c>当前没有进行中的审查。使用 /animreview 选择一个抓包。");
             return;
         }
         action.accept(session);

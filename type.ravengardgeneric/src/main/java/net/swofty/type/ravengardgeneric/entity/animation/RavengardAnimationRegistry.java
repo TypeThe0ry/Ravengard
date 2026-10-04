@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public final class RavengardAnimationRegistry {
     private static final List<AnimatedRavengardNPC> SPAWNED = new ArrayList<>();
@@ -104,6 +105,10 @@ public final class RavengardAnimationRegistry {
 
     private static String displayName(String name) {
         String base = name.replaceAll("_\\d+$", "");
+        String translated = DISPLAY_NAMES.get(base);
+        if (translated != null) {
+            return translated;
+        }
         String[] words = base.split("_");
         StringBuilder builder = new StringBuilder();
         for (String word : words) {
@@ -117,6 +122,20 @@ public final class RavengardAnimationRegistry {
         }
         return builder.toString();
     }
+
+    private static final Map<String, String> DISPLAY_NAMES = Map.ofEntries(
+            Map.entry("alchemist", "炼金术士"),
+            Map.entry("armorer", "军械师"),
+            Map.entry("blacksmith", "铁匠"),
+            Map.entry("collector", "收藏家"),
+            Map.entry("free_gear", "免费装备"),
+            Map.entry("harbor_master", "港务长"),
+            Map.entry("queue", "点我加入游戏"),
+            Map.entry("ravenport_guard", "渡鸦港卫兵"),
+            Map.entry("ship_captain", "船长"),
+            Map.entry("ship_captain_tutorial", "船长"),
+            Map.entry("tavern_master", "酒馆老板"),
+            Map.entry("villager", "村民"));
 
     private static final class Index {
         private List<String> clips;

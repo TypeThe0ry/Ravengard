@@ -41,13 +41,13 @@ class RavengardDeathWallTest {
         var gameState = net.swofty.type.game.game.AbstractGame.class.getDeclaredField("state");
         gameState.setAccessible(true);
         assertEquals(0, clock.getLong(game));
-        assertEquals("Waiting for game start", game.getDeathWallStatus());
+        assertEquals("等待游戏开始", game.getDeathWallStatus());
         gameState.set(game, net.swofty.type.game.game.GameState.COUNTDOWN);
-        assertEquals("Game starting soon", game.getDeathWallStatus());
+        assertEquals("游戏即将开始", game.getDeathWallStatus());
         game.start();
         long started = clock.getLong(game);
         assertTrue(started != 0);
-        assertEquals("Explore | 30:00 remaining | Wall signal in 05:00", game.getDeathWallStatus());
+        assertEquals("探索 | 剩余 30:00 | 距墙预警 05:00", game.getDeathWallStatus());
         game.start();
         assertEquals(started, clock.getLong(game));
         game.end();
@@ -86,7 +86,7 @@ class RavengardDeathWallTest {
         members.put(player.getUuid(), player);
         game.applyDeathWallForTest();
         assertEquals("27:55", net.swofty.type.ravengardgeneric.hud.RavengardHud.state(player).getClock());
-        assertEquals("Explore", net.swofty.type.ravengardgeneric.hud.RavengardHud.state(player).getLocation());
+        assertEquals("探索", net.swofty.type.ravengardgeneric.hud.RavengardHud.state(player).getLocation());
         members.clear();
         player.remove();
         game.dispose();

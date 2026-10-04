@@ -151,7 +151,7 @@ public final class DungeonSatchel extends DungeonInteractable {
 
     @Override
     public String castLabel() {
-        return "Searching Body";
+        return "正在搜索尸体";
     }
 
     @Override
@@ -164,7 +164,7 @@ public final class DungeonSatchel extends DungeonInteractable {
         }
         bag.editEntityMeta(ItemDisplayMeta.class, meta -> meta.setItemStack(modelStack(OPEN_MODEL)));
 
-        Inventory inventory = Inventories.of(InventoryType.CHEST_5_ROW, "Dead Body");
+        Inventory inventory = Inventories.of(InventoryType.CHEST_5_ROW, "尸体");
         Random random = ThreadLocalRandom.current();
         double distance = Math.hypot(base.x(), base.z());
         int rolls = 1 + random.nextInt(3);

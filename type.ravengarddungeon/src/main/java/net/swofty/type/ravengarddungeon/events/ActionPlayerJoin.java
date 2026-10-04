@@ -77,7 +77,7 @@ public class ActionPlayerJoin implements HypixelEventClass {
             }
             return;
         }
-        player.sendMessage("<c>No active dungeon assignment was found. Returning to Ravengard Lobby.");
+        player.sendMessage("<c>未找到有效的地牢分配，正在返回天穹余烬大厅。");
         player.sendTo(ServerType.RAVENGARD_LOBBY);
     }
 }

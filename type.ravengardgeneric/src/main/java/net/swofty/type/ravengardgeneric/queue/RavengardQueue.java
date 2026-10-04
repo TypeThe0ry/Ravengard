@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * so a short fixed delay stands in for them.
  */
 public final class RavengardQueue {
-    public static final String FIGHT_QUEUE = "Ravengard Dungeon Trios";
+    public static final String FIGHT_QUEUE = "天穹余烬地牢·三人组";
     public static final String NPC_CLIP = "queue";
     private static final TaskSchedule MATCH_DELAY = TaskSchedule.seconds(3);
     private static final Sound DRUMS = Sound.sound()
@@ -49,19 +49,19 @@ public final class RavengardQueue {
 
     public static void join(RavengardPlayer player) {
         if (isQueued(player)) {
-            player.sendMessage("<c>{} is already queued for a game!", player.getUsername());
+            player.sendMessage("<c>{} 已经在排队了！", player.getUsername());
             return;
         }
         if (net.swofty.type.generic.HypixelConst.getTypeLoader().getType() == ServerType.RAVENGARD_DUNGEON) {
-            player.sendMessage("<c>You are already in a dungeon!");
+            player.sendMessage("<c>你已经在地牢中了！");
             return;
         }
         if (player.isTutorial() || player.getRavengardClass() == null) {
-            player.sendMessage("<c>Choose a class before joining a fight!");
+            player.sendMessage("<c>加入战斗前请先选择职业！");
             return;
         }
-        player.sendMessage("<7>Joining fight...");
-        player.sendMessage("<a>Successfully queued for {}!", FIGHT_QUEUE);
+        player.sendMessage("<7>正在加入战斗……");
+        player.sendMessage("<a>已成功加入{}队列！", FIGHT_QUEUE);
         player.playSound(DRUMS);
 
         Task task = MinecraftServer.getSchedulerManager().buildTask(() -> {
@@ -69,8 +69,7 @@ public final class RavengardQueue {
             if (!player.isOnline()) {
                 return;
             }
-            player.sendMessage("<7>Found server, initiating transfer to {}...",
-                    ServerType.RAVENGARD_DUNGEON.name().toLowerCase());
+            player.sendMessage("<7>已找到服务器，正在传送到天穹余烬地牢……");
             GetServerForMapProtocol.GetServerForMapMessage request =
                     new GetServerForMapProtocol.GetServerForMapMessage(
                             ServerType.RAVENGARD_DUNGEON, null, "STANDARD", 1);
@@ -81,8 +80,8 @@ public final class RavengardQueue {
                         UnderstandableProxyServer server, String gameId, boolean success, String error))
                         || !success || server == null || gameId == null) {
                     String reason = response instanceof GetServerForMapProtocol.GetServerForMapResponse r
-                            && r.error() != null ? r.error() : "no dungeon servers available";
-                    player.sendMessage("<c>Could not start a dungeon: {}", reason);
+                            && r.error() != null ? r.error() : "没有可用的地牢服务器";
+                    player.sendMessage("<c>无法开启地牢：{}", reason);
                     return java.util.concurrent.CompletableFuture.<Void>completedFuture(null);
                 }
                 if (!player.isOnline()) {
@@ -91,26 +90,26 @@ public final class RavengardQueue {
                 return ORCHESTRATOR.handleRequest(new ChooseGameProtocol.ChooseGameMessage(
                         player.getUuid(), server, gameId), 90, TimeUnit.SECONDS).thenAccept(choice -> {
                     if (!(choice instanceof ChooseGameProtocol.ChooseGameResponse result)) {
-                        player.sendMessage("<c>Failed to register for the dungeon: no response");
+                        player.sendMessage("<c>地牢登记失败：无响应");
                         return;
                     }
                     if (!result.success()) {
                         String reason = result.error() != null
-                                ? result.error() : "dungeon registration failed";
-                        player.sendMessage("<c>Failed to register for the dungeon: {}", reason);
+                                ? result.error() : "地牢登记失败";
+                        player.sendMessage("<c>地牢登记失败：{}", reason);
                         return;
                     }
                     if (!player.isOnline()) {
                         return;
                     }
-                    player.sendMessage("<a>Sending you to <f>{}<a>!", server.shortName());
+                    player.sendMessage("<a>正在把你送往 <f>{}<a>！", server.shortName());
                     player.asProxyPlayer().transferToWithIndication(server.uuid());
                 }).exceptionally(throwable -> {
-                    player.sendMessage("<c>Failed to register for the dungeon: {}", throwable.getMessage());
+                    player.sendMessage("<c>地牢登记失败：{}", throwable.getMessage());
                     return null;
                 });
             }).exceptionally(throwable -> {
-                player.sendMessage("<c>Dungeon search failed: {}", throwable.getMessage());
+                player.sendMessage("<c>地牢搜索失败：{}", throwable.getMessage());
                 return null;
             }).whenComplete((ignored, throwable) -> SEARCHING.remove(searching));
         }).delay(MATCH_DELAY).schedule();
@@ -121,12 +120,12 @@ public final class RavengardQueue {
         Task task = QUEUED.remove(player.getUuid());
         if (task == null) {
             if (SEARCHING.contains(player.getUuid())) {
-                player.sendMessage("<c>A dungeon is already being prepared for you!");
+                player.sendMessage("<c>已经在为你准备地牢了！");
             }
             return;
         }
         task.cancel();
-        player.sendMessage("<c>You have left the queue.");
+        player.sendMessage("<c>你已离开队列。");
     }
 
     public static void forget(UUID uuid) {

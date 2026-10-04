@@ -23,13 +23,13 @@ public class DungeonInstantiateGameHandler implements RedisMessageHandler<Reques
             DungeonInstanceRegistry.DungeonInstance instance;
             synchronized (DungeonInstanceRegistry.class) {
                 if (DungeonInstanceRegistry.remainingSlots() <= 0) {
-                    return Response.failure("All dungeon instances are busy");
+                    return Response.failure("所有地牢实例均繁忙");
                 }
                 instance = DungeonInstanceRegistry.create(request.gameType());
             }
             return Response.success(instance.getGameId().toString(), "generated", instance.getMode());
         } catch (Exception exception) {
-            return Response.failure("Failed to instantiate dungeon: " + exception.getMessage());
+            return Response.failure("创建地牢失败：" + exception.getMessage());
         }
     }
 }

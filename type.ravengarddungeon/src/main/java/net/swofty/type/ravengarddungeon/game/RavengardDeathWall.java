@@ -300,40 +300,40 @@ final class RavengardDeathWall {
 
     static String status(State state) {
         return switch (state.phase()) {
-            case EXPLORATION -> "Explore | " + formatClock(state.remainingSeconds())
-                    + " remaining | Wall signal in " + formatClock(state.phaseRemainingSeconds());
-            case WARNING -> "Death Wall " + state.stage() + "/" + STAGE_COUNT + " | Moves in "
+            case EXPLORATION -> "探索 | 剩余 " + formatClock(state.remainingSeconds())
+                    + " | 距墙预警 " + formatClock(state.phaseRemainingSeconds());
+            case WARNING -> "死亡之墙 " + state.stage() + "/" + STAGE_COUNT + " | 距移动 "
                     + formatClock(state.phaseRemainingSeconds());
-            case MOVING -> "Death Wall " + state.stage() + "/" + STAGE_COUNT + " | Moving | "
+            case MOVING -> "死亡之墙 " + state.stage() + "/" + STAGE_COUNT + " | 移动中 | "
                     + formatClock(state.phaseRemainingSeconds());
-            case HOLD -> "Death Wall " + state.stage() + "/" + STAGE_COUNT + " | Stable | "
-                    + (state.stage() == STAGE_COUNT ? "Final closure in " : "Next signal in ")
+            case HOLD -> "死亡之墙 " + state.stage() + "/" + STAGE_COUNT + " | 稳定 | "
+                    + (state.stage() == STAGE_COUNT ? "距最终闭合 " : "距下次预警 ")
                     + formatClock(state.phaseRemainingSeconds());
-            case EXPIRED -> "Dungeon expired";
+            case EXPIRED -> "地牢已过期";
         };
     }
 
     static String progressStatus(State state) {
         return switch (state.phase()) {
-            case EXPLORATION -> "Death Wall dormant | Signal in "
+            case EXPLORATION -> "死亡之墙休眠 | 距预警 "
                     + formatClock(state.phaseRemainingSeconds());
-            case WARNING -> "Death Wall stage " + state.stage() + " warning | "
+            case WARNING -> "死亡之墙第 " + state.stage() + " 阶段预警 | "
                     + formatClock(state.phaseRemainingSeconds());
-            case MOVING -> "Death Wall stage " + state.stage() + " moving | "
+            case MOVING -> "死亡之墙第 " + state.stage() + " 阶段移动中 | "
                     + formatClock(state.phaseRemainingSeconds());
-            case HOLD -> "Death Wall stage " + state.stage() + " stable | "
+            case HOLD -> "死亡之墙第 " + state.stage() + " 阶段稳定 | "
                     + formatClock(state.phaseRemainingSeconds());
-            case EXPIRED -> "Death Wall closed";
+            case EXPIRED -> "死亡之墙已闭合";
         };
     }
 
     static String hudStatus(State state) {
         return switch (state.phase()) {
-            case EXPLORATION -> "Explore";
-            case WARNING -> "Death Wall warning " + state.stage() + "/" + STAGE_COUNT;
-            case MOVING -> "Death Wall moving " + state.stage() + "/" + STAGE_COUNT;
-            case HOLD -> "Safe zone " + state.stage() + "/" + STAGE_COUNT;
-            case EXPIRED -> "Dungeon expired";
+            case EXPLORATION -> "探索";
+            case WARNING -> "死亡之墙预警 " + state.stage() + "/" + STAGE_COUNT;
+            case MOVING -> "死亡之墙移动中 " + state.stage() + "/" + STAGE_COUNT;
+            case HOLD -> "安全区 " + state.stage() + "/" + STAGE_COUNT;
+            case EXPIRED -> "地牢已过期";
         };
     }
 

@@ -8,11 +8,11 @@ import java.util.List;
 
 @Getter
 public enum RavengardClass {
-    KNIGHT("Knight", '\uE226'),
-    WARRIOR("Warrior", '\uE228'),
-    HUNTER("Hunter", '\uE227'),
-    ASSASSIN("Assassin", '\uE225'),
-    SORCERER("Sorcerer", '\uE229');
+    KNIGHT("骑士", '\uE226'),
+    WARRIOR("战士", '\uE228'),
+    HUNTER("猎人", '\uE227'),
+    ASSASSIN("刺客", '\uE225'),
+    SORCERER("术士", '\uE229');
 
     private final String displayName;
     private final char icon;
@@ -37,35 +37,35 @@ public enum RavengardClass {
     public List<Text> selectLore() {
         return switch (this) {
             case KNIGHT -> List.of(
-                    Text.of("<7>A tank class specializing in defense."),
-                    Text.of("<7>Knights can support themselves and"),
-                    Text.of("<7>teammates against incoming damage."),
+                    Text.of("<7>专精防御的坦克职业。"),
+                    Text.of("<7>骑士能够保护自己与队友"),
+                    Text.of("<7>免受伤害。"),
                     Text.empty(),
-                    Text.of("<7>Primary weapon: <f>Sword and Shield"));
+                    Text.of("<7>主武器：<f>剑与盾"));
             case WARRIOR -> List.of(
-                    Text.of("<7>A heavy damage dealer."),
-                    Text.of("<7>Uses two-handed weapons to deal"),
-                    Text.of("<7>devastating damage."),
+                    Text.of("<7>高伤害输出职业。"),
+                    Text.of("<7>使用双手武器"),
+                    Text.of("<7>造成毁灭性伤害。"),
                     Text.empty(),
-                    Text.of("<7>Primary weapon: <f>Great Axe"));
+                    Text.of("<7>主武器：<f>巨斧"));
             case HUNTER -> List.of(
-                    Text.of("<7>Specializes in ranged combat."),
-                    Text.of("<7>Hunters are known for using traps"),
-                    Text.of("<7>to keep enemies at bay."),
+                    Text.of("<7>专精远程战斗。"),
+                    Text.of("<7>猎人擅长用陷阱"),
+                    Text.of("<7>让敌人无法近身。"),
                     Text.empty(),
-                    Text.of("<7>Primary weapon: <f>Bow"));
+                    Text.of("<7>主武器：<f>弓"));
             case ASSASSIN -> List.of(
-                    Text.of("<7>A stealth-focused class adept at"),
-                    Text.of("<7>sneaking."),
+                    Text.of("<7>专注潜行的职业，"),
+                    Text.of("<7>擅长隐匿。"),
                     Text.empty(),
-                    Text.of("<7>Primary weapon: <f>Daggers"));
+                    Text.of("<7>主武器：<f>匕首"));
             case SORCERER -> List.of(
-                    Text.of("<7>A spellcaster focused on ability"),
-                    Text.of("<7>damage."),
-                    Text.of("<7>Sorcerers unleash elemental magic"),
-                    Text.of("<7>to blast foes from a distance."),
+                    Text.of("<7>专注技能伤害的"),
+                    Text.of("<7>施法者。"),
+                    Text.of("<7>术士释放元素魔法"),
+                    Text.of("<7>远距离轰击敌人。"),
                     Text.empty(),
-                    Text.of("<7>Primary weapons: <f>Staves and Orbs"));
+                    Text.of("<7>主武器：<f>法杖与宝珠"));
         };
     }
 

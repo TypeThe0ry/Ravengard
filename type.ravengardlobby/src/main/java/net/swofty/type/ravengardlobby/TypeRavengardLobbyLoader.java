@@ -65,8 +65,8 @@ public class TypeRavengardLobbyLoader implements RavengardTypeLoader {
 
         new RavengardNPC(RavengardNPC.Configuration.builder()
                 .position(new Pos(-57.5, 65, 33.5))
-                .name("Castle Guard")
-                .bottom("Guard")
+                .name("城堡卫兵")
+                .bottom("卫兵")
                 .areaEffectCloud(new RavengardNPC.AreaEffectCloudData(new Vec(0, 0.9375, 0), 0f, -1, 20, 0f, 0f, 0, ""))
                 .areaEffectCloud(new RavengardNPC.AreaEffectCloudData(new Vec(0, -0.5, 0), 0f, -1, 20, 0f, 0f, 0, ""))
                 .itemDisplay(new RavengardNPC.ItemDisplayData(new Vec(0, 1.4375, 0), Material.LEATHER_BOOTS, "hypixel_ravengard:entity/guard_ducal/head", List.of(), List.of(), List.of(), List.of(), 16777215, null, "HEAD", new RavengardNPC.DisplayData(new Vec(0, 0.0618, -0), new Vec(1, 1, 1), new float[]{-0.001f, 0.7071f, 0.001f, 0.7071f}, new float[]{-0f, -0f, -0f, 1f}, 0, 0, 0, "FIXED", -1, 0f, 1f, 16777215)))

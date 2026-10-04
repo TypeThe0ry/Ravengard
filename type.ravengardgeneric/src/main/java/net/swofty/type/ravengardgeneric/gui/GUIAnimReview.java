@@ -26,7 +26,7 @@ public class GUIAnimReview extends RavengardView {
 
     @Override
     protected String title() {
-        return mob == null ? "Animation Review" : "Captures: " + mob;
+        return mob == null ? "动画审查" : "录制片段：" + mob;
     }
 
     @Override
@@ -52,8 +52,8 @@ public class GUIAnimReview extends RavengardView {
                 String mobName = entry.getKey();
                 int captures = entry.getValue().size();
                 layout.slot(slot++, item(Material.SKELETON_SKULL, Text.of("<e>{}", mobName),
-                                Text.of("<7>{}{}", captures, captures == 1 ? " capture" : " captures"),
-                                Text.of("<e>Click to browse!")),
+                                Text.of("<7>{} 个录制片段", captures),
+                                Text.of("<e>点击浏览！")),
                         (click, viewContext) -> {
                             if (viewContext.player() instanceof RavengardPlayer player) {
                                 ViewNavigator.get(player).push(new GUIAnimReview(mobName));
@@ -63,7 +63,7 @@ public class GUIAnimReview extends RavengardView {
             return;
         }
 
-        layout.slot(53, item(Material.BARRIER, Text.of("<c>All mobs"), Text.of("<e>Click to go back!")),
+        layout.slot(53, item(Material.BARRIER, Text.of("<c>所有怪物"), Text.of("<e>点击返回！")),
                 (click, viewContext) -> {
                     if (viewContext.player() instanceof RavengardPlayer player) {
                         ViewNavigator.get(player).push(new GUIAnimReview(null));
@@ -74,8 +74,8 @@ public class GUIAnimReview extends RavengardView {
         for (String clipName : clips) {
             if (slot >= 45) break;
             layout.slot(slot++, item(Material.PAPER, Text.of("<f>{}", clipName),
-                            Text.of("<7>Raw capture replay."),
-                            Text.of("<e>Click to review on the stage!")),
+                            Text.of("<7>原始录制回放。"),
+                            Text.of("<e>点击在舞台上审查！")),
                     (click, viewContext) -> {
                         if (viewContext.player() instanceof RavengardPlayer player) {
                             player.closeInventory();

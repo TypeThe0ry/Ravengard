@@ -22,7 +22,7 @@ public class GUIDeleteProfile extends RavengardView {
 
     @Override
     protected String title() {
-        return "Delete profile?";
+        return "删除存档？";
     }
 
     @Override
@@ -33,9 +33,9 @@ public class GUIDeleteProfile extends RavengardView {
     @Override
     protected void content(ViewLayout<DefaultState> layout, DefaultState state, ViewContext ctx) {
         interactive(layout, SLOT_CONFIRM, RavengardItems.button(RavengardButton.TEXT_CONFIRM)
-                        .label("<a>Confirm")
+                        .label("<a>确认")
                         .blankLine()
-                        .lore("<e>Click to confirm this change!"),
+                        .lore("<e>点击确认此更改！"),
                 (click, viewContext) -> {
                     if (viewContext.player() instanceof RavengardPlayer player) {
                         player.closeInventory();
@@ -44,9 +44,9 @@ public class GUIDeleteProfile extends RavengardView {
                 });
 
         interactive(layout, SLOT_CANCEL, RavengardItems.button(RavengardButton.TEXT_CANCEL)
-                        .label("<c>Cancel")
+                        .label("<c>取消")
                         .blankLine()
-                        .lore("<e>Click to cancel this change!"),
+                        .lore("<e>点击取消此更改！"),
                 (click, viewContext) -> viewContext.backOrClose());
 
         backButton(layout);

@@ -6,7 +6,7 @@ import net.swofty.type.generic.command.HypixelCommand;
 import net.swofty.type.generic.user.categories.Rank;
 import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
-@CommandParameters(labels = "h hub", description = "Sends the player to the Ravengard hub",
+@CommandParameters(labels = "h hub", description = "将玩家送回天穹余烬大厅",
         usage = "/hub", permission = Rank.DEFAULT, allowsConsole = false)
 public class HubCommand extends HypixelCommand {
     @Override

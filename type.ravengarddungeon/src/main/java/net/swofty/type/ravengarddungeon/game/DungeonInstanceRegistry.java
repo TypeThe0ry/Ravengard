@@ -1831,23 +1831,23 @@ public final class DungeonInstanceRegistry {
 
     public static void sendPlayerIn(HypixelPlayer player, DungeonInstance instance) {
         if (!PENDING_TELEPORTS.add(player.getUuid())) {
-            player.sendMessage("<7>Your dungeon is still being prepared, hold on...");
+            player.sendMessage("<7>你的地牢仍在准备中，请稍候……");
             return;
         }
         boolean reserved = tryReserve(instance, player.getUuid());
         if (!reserved) {
             PENDING_TELEPORTS.remove(player.getUuid());
-            player.sendMessage("<c>This dungeon is no longer accepting players.");
+            player.sendMessage("<c>该地牢已不再接受玩家加入。");
             player.sendTo(net.swofty.commons.ServerType.RAVENGARD_LOBBY);
             return;
         }
-        player.sendMessage("<7>Preparing your dungeon (seed <f>{}<7>)...", instance.getSeed());
+        player.sendMessage("<7>正在准备你的地牢（种子 <f>{}<7>）……", instance.getSeed());
         boolean aerial = instance.getMode().equals("ADMIN");
         instance.whenReady().whenComplete((ignored, error) -> player.scheduler().scheduleNextTick(() -> {
             if (error != null) {
                 instance.markPlayerLeft(player.getUuid());
                 PENDING_TELEPORTS.remove(player.getUuid());
-                player.sendMessage("<c>Dungeon preparation failed: {}", error.getMessage());
+                player.sendMessage("<c>地牢准备失败：{}", error.getMessage());
                 player.sendTo(net.swofty.commons.ServerType.RAVENGARD_LOBBY);
                 return;
             }
@@ -1884,8 +1884,8 @@ public final class DungeonInstanceRegistry {
             if (!(result instanceof net.swofty.type.game.game.Game.JoinResult.Success)) {
                 instance.markPlayerLeft(player.getUuid());
                 String reason = result instanceof net.swofty.type.game.game.Game.JoinResult.Denied denied
-                        ? denied.reason() : "Dungeon join was redirected";
-                player.sendMessage("<c>Could not enter the dungeon: {}", reason);
+                        ? denied.reason() : "地牢加入被重定向";
+                player.sendMessage("<c>无法进入地牢：{}", reason);
                 player.sendTo(net.swofty.commons.ServerType.RAVENGARD_LOBBY);
                 return;
             }
@@ -1903,10 +1903,10 @@ public final class DungeonInstanceRegistry {
                         start.originX() + start.getFootprintWidth() / 2.0, hoverY,
                         start.originZ() + start.getFootprintDepth() / 2.0, 0, 90));
             }
-            player.sendMessage("<a>Entered dungeon <f>{}<a> ({} rooms, mode {}).",
+            player.sendMessage("<a>已进入地牢 <f>{}<a>（{} 个房间，模式 {}）。",
                     instance.getGameId().toString().substring(0, 8),
                     instance.getGenerated().dungeon().getRoomCount(),
-                    instance.getMode());
+                    instance.getMode().equals("ADMIN") ? "管理员" : "标准");
             scheduleChunkRefresh(player, instance);
         } finally {
             PENDING_TELEPORTS.remove(player.getUuid());
@@ -1939,7 +1939,7 @@ public final class DungeonInstanceRegistry {
     public static void restoreRun(RavengardDungeonPlayer player) {
         for (DungeonInstance instance : INSTANCES.values()) {
             if (instance.getGame().restoreRun(player)) {
-                player.sendMessage("<e>Your run continues.");
+                player.sendMessage("<e>你的探险继续。");
                 return;
             }
         }
@@ -2051,7 +2051,7 @@ public final class DungeonInstanceRegistry {
                 "Deferring expired dungeon cleanup while player {} remains in instance {}; routing to lobby",
                 player.getUsername(), instance.getGameId());
         if (player instanceof HypixelPlayer hypixelPlayer) {
-            hypixelPlayer.sendMessage("<e>This dungeon expired and is being cleaned up.");
+            hypixelPlayer.sendMessage("<e>该地牢已过期，正在清理。");
             hypixelPlayer.asProxyPlayer()
                     .transferToWithIndication(net.swofty.commons.ServerType.RAVENGARD_LOBBY)
                     .exceptionally(error -> {

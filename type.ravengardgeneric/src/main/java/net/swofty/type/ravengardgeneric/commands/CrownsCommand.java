@@ -10,8 +10,8 @@ import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 
 @CommandParameters(
         labels = "crowns",
-        description = "Sets your crown balance",
-        usage = "/crowns <amount>",
+        description = "设置你的王冠余额",
+        usage = "/crowns <数量>",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class CrownsCommand extends HypixelCommand {
@@ -25,12 +25,12 @@ public class CrownsCommand extends HypixelCommand {
             RavengardPlayer player = (RavengardPlayer) sender;
             RavengardProfiles.setCrowns(player, context.get(amountArgument));
 
-            player.sendMessage("<a>Successfully set crowns to <e>{}<a>.", context.getRaw(amountArgument));
+            player.sendMessage("<a>已将王冠设为 <e>{}<a>。", context.getRaw(amountArgument));
         }, amountArgument);
 
         command.addSyntax((sender, context) -> {
             RavengardPlayer player = (RavengardPlayer) sender;
-            player.sendMessage("<a>You have <e>👑{} Crowns<a>.", RavengardProfiles.getCrowns(player));
+            player.sendMessage("<a>你有 <e>👑{} 王冠<a>。", RavengardProfiles.getCrowns(player));
         });
     }
 }
