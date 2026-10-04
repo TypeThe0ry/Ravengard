@@ -65,6 +65,28 @@ class RavengardPackTest {
     }
 
     @Test
+    void aGlyphTheLayerRedrawsIsTakenOutOfTheOfficialProviders() throws Exception {
+        Path base = temp.resolve("official-tags");
+        Path overlay = temp.resolve("overlay-tags");
+        write(base.resolve("assets/ns/font/ravengard.json"), "{\"providers\":["
+                + "{\"type\":\"bitmap\",\"file\":\"ns:font/tags/common.png\",\"chars\":[\"\uE203\"]},"
+                + "{\"type\":\"bitmap\",\"file\":\"ns:font/grid.png\",\"chars\":[\"\uE202\uE204\"]},"
+                + "{\"type\":\"space\",\"advances\":{\"\uE202\":4,\" \":3}}]}");
+        write(overlay.resolve("assets/ns/font/ravengard.json"), "{\"providers\":["
+                + "{\"type\":\"bitmap\",\"file\":\"ns:font/tags_zh/common.png\",\"chars\":[\"\uE203\"]},"
+                + "{\"type\":\"bitmap\",\"file\":\"ns:font/tags_zh/chestplate.png\",\"chars\":[\"\uE202\"]}]}");
+
+        Map<String, String> entries = entries(new HypixelPackBuilder(layered(base, overlay)).build().data().toByteArray());
+
+        assertEquals("{\"providers\":["
+                + "{\"type\":\"bitmap\",\"file\":\"ns:font/grid.png\",\"chars\":[\"\\u0000" + (char) 0xE204 + "\"]},"
+                + "{\"type\":\"space\",\"advances\":{\" \":3}},"
+                + "{\"type\":\"bitmap\",\"file\":\"ns:font/tags_zh/common.png\",\"chars\":[\"" + (char) 0xE203 + "\"]},"
+                + "{\"type\":\"bitmap\",\"file\":\"ns:font/tags_zh/chestplate.png\",\"chars\":[\"" + (char) 0xE202 + "\"]}]}",
+                entries.get("assets/ns/font/ravengard.json"));
+    }
+
+    @Test
     void theSharedIdIsTheOneCraftEngineDerivesFromTheNetworkPackSha1() throws Exception {
         String sha1 = "69284ef9cbf43264457434a9d5b4b43fa0ba953a";
         Path cache = temp.resolve("gitlab_default.json");

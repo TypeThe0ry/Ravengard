@@ -93,11 +93,12 @@ public class HypixelPackBuilder {
     }
 
     /**
-     * Fonts and languages combine across stacked packs instead of replacing one another: the
-     * client concatenates font providers bottom to top and lets later ones win, and lets upper
-     * languages override single keys. Merging those files keeps one pack identical to the stack.
-     * A layer's font references are the exception: they go below the existing providers, so a
-     * pixel font falls back to the referenced font only for characters it does not draw itself.
+     * Fonts and languages combine across stacked packs instead of replacing one another: upper
+     * font providers win over lower ones and upper languages override single keys. A character
+     * the layer draws is taken out of the lower providers outright, so no client or font mod can
+     * pick the lower glyph by loading providers in another order. A layer's font references go
+     * below the existing providers, so a pixel font falls back to the referenced font only for
+     * characters it does not draw itself.
      */
     static byte[] stack(String name, byte[] below, byte[] above) {
         boolean font = name.matches("assets/[^/]+/font/.+\\.json");
@@ -111,7 +112,11 @@ public class HypixelPackBuilder {
             added.forEach(provider -> {
                 if (isReference(provider)) providers.add(provider);
             });
-            providers.addAll(lower.getAsJsonArray("providers"));
+            java.util.Set<Integer> redrawn = drawnCharacters(added);
+            for (com.google.gson.JsonElement provider : lower.getAsJsonArray("providers")) {
+                com.google.gson.JsonElement kept = withoutCharacters(provider, redrawn);
+                if (kept != null) providers.add(kept);
+            }
             added.forEach(provider -> {
                 if (!isReference(provider)) providers.add(provider);
             });
@@ -120,6 +125,54 @@ public class HypixelPackBuilder {
             upper.entrySet().forEach(entry -> lower.add(entry.getKey(), entry.getValue()));
         }
         return lower.toString().getBytes(StandardCharsets.UTF_8);
+    }
+
+    private static java.util.Set<Integer> drawnCharacters(JsonArray providers) {
+        java.util.Set<Integer> drawn = new java.util.HashSet<>();
+        for (com.google.gson.JsonElement element : providers) {
+            if (!element.isJsonObject()) continue;
+            JsonObject provider = element.getAsJsonObject();
+            if (provider.has("chars")) {
+                provider.getAsJsonArray("chars").forEach(row -> row.getAsString().codePoints()
+                        .filter(codePoint -> codePoint != 0).forEach(drawn::add));
+            }
+            if (provider.has("advances")) {
+                provider.getAsJsonObject("advances").keySet()
+                        .forEach(key -> key.codePoints().forEach(drawn::add));
+            }
+        }
+        return drawn;
+    }
+
+    /** The provider with the given characters blanked out, or null when nothing of it is left. */
+    private static com.google.gson.JsonElement withoutCharacters(com.google.gson.JsonElement element,
+                                                                 java.util.Set<Integer> removed) {
+        if (removed.isEmpty() || !element.isJsonObject()) return element;
+        JsonObject provider = element.getAsJsonObject().deepCopy();
+        if (provider.has("chars")) {
+            JsonArray rows = new JsonArray();
+            boolean anyLeft = false;
+            for (com.google.gson.JsonElement row : provider.getAsJsonArray("chars")) {
+                StringBuilder kept = new StringBuilder();
+                for (int codePoint : row.getAsString().codePoints().toArray()) {
+                    boolean blank = codePoint == 0 || removed.contains(codePoint);
+                    kept.appendCodePoint(blank ? 0 : codePoint);
+                    anyLeft |= !blank;
+                }
+                rows.add(kept.toString());
+            }
+            if (!anyLeft) return null;
+            provider.add("chars", rows);
+        }
+        if (provider.has("advances")) {
+            JsonObject advances = provider.getAsJsonObject("advances");
+            advances.keySet().stream()
+                    .filter(key -> key.codePoints().anyMatch(removed::contains))
+                    .toList()
+                    .forEach(advances::remove);
+            if (advances.size() == 0) return null;
+        }
+        return provider;
     }
 
     private static boolean isReference(com.google.gson.JsonElement provider) {
