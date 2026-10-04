@@ -106,7 +106,9 @@ haproxy-protocol = false
 tcp-fast-open = false
 
 # Enables BungeeCord plugin messaging channel support on Velocity.
-bungee-plugin-message-channel = true
+# Off: behind a network's front proxy, a server's BungeeCord "Connect" (back to the main city) has
+# to reach that front proxy, which owns the target server.
+bungee-plugin-message-channel = false
 
 # Shows ping requests to the proxy from clients.
 show-ping-requests = false

@@ -12,9 +12,9 @@ import net.swofty.type.ravengardgeneric.user.RavengardPlayer;
 import java.util.List;
 
 @CommandParameters(
-        labels = "spawn",
+        labels = "spawnmob",
         description = "在你的位置生成一只天穹余烬怪物",
-        usage = "/spawn <怪物>",
+        usage = "/spawnmob <怪物>",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class SpawnCommand extends HypixelCommand {

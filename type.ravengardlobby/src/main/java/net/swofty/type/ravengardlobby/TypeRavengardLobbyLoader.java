@@ -139,7 +139,9 @@ public class TypeRavengardLobbyLoader implements RavengardTypeLoader {
 
     @Override
     public List<HypixelNPC> getNPCs() {
-        return new ArrayList<>();
+        return net.swofty.type.ravengardgeneric.network.NetworkHome.isEnabled()
+                ? List.of(new net.swofty.type.ravengardlobby.npcs.NPCCityGuide())
+                : List.of();
     }
 
 
