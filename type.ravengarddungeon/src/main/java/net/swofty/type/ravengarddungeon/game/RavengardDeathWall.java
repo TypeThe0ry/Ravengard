@@ -140,6 +140,10 @@ final class RavengardDeathWall {
                 .withWarningTime((int) WARNING_SECONDS);
     }
 
+    static long stageWarningAt(int stage) {
+        return STAGES[stage - 1].warningAt();
+    }
+
     static long remainingSeconds(long elapsedSeconds) {
         return Math.max(0, MATCH_DURATION_SECONDS - elapsedSeconds);
     }

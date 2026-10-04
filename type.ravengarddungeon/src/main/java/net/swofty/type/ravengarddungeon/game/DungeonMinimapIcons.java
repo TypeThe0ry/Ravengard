@@ -71,7 +71,7 @@ public final class DungeonMinimapIcons {
         if (player == null) return List.of();
         for (DungeonInstanceRegistry.DungeonInstance candidate : DungeonInstanceRegistry.all()) {
             if (candidate.getPlayers().contains(player)) {
-                return candidate.getGame().getExtractionPoints();
+                return candidate.getGame().getOpenExtractionPoints();
             }
         }
         return List.of();

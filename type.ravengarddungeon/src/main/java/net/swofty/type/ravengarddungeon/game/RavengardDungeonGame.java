@@ -66,6 +66,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
     private long lastWorldBorderSecond = -1;
     private WorldBorder syncedWorldBorder = WorldBorder.DEFAULT_BORDER;
     private volatile RavengardDeathWall.State deathWallState;
+    private volatile ExtractionPortals portals;
     private final BossBar deathWallProgress = BossBar.bossBar(Component.empty(), 0,
             BossBar.Color.RED, BossBar.Overlay.PROGRESS);
 
@@ -107,6 +108,43 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
 
     public List<Pos> getExtractionPoints() {
         return extractionPoints;
+    }
+
+    /** The escape portals open right now. */
+    public List<Pos> getOpenExtractionPoints() {
+        ExtractionPortals current = portals;
+        return current == null ? List.of() : current.openAnchors();
+    }
+
+    void announcePortals(String message) {
+        for (RavengardDungeonPlayer player : players.values()) {
+            player.sendMessage(message);
+        }
+        portalsChanged();
+    }
+
+    void portalsChanged() {
+        players.values().forEach(this::updateHud);
+    }
+
+    private void openPortalSchedule() {
+        closePortals();
+        List<ExtractionPortals.Wave> waves = ExtractionPortals.plan(
+                extractionPoints, deathWallTimeline,
+                anchor -> ExtractionPortals.setAround(anchor,
+                        net.swofty.type.ravengarddungeon.generator.DungeonTemplate.get()::blockAt));
+        portals = new ExtractionPortals(instance, this, waves);
+        org.tinylog.Logger.info("Ravengard escape portal plan: game={} waves={}", getGameId(),
+                waves.stream().map(wave -> wave.opensAt() + "s:" + wave.sites().stream()
+                        .map(site -> "(" + site.anchor().blockX() + "," + site.anchor().blockZ() + ")x"
+                                + site.portals().size())
+                        .toList()).toList());
+    }
+
+    private void closePortals() {
+        ExtractionPortals current = portals;
+        portals = null;
+        if (current != null) current.close();
     }
 
     public void configureDeathWall(double centerX, double centerZ, double initialRadius) {
@@ -383,6 +421,8 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         if (startedAtNanos == 0 && !tryBeginActiveRun()) return;
         enforceSpectators();
         applyDeathWall();
+        ExtractionPortals current = portals;
+        if (current != null && state == GameState.IN_PROGRESS) current.tick(getElapsedSeconds());
         if (getRemainingSeconds() > 0) return;
         endExpiredMatch();
     }
@@ -406,6 +446,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         }
         startedAtNanos = System.nanoTime();
         startDeathWall();
+        openPortalSchedule();
         for (RavengardDungeonPlayer player : players.values()) {
             player.setDungeonDead(false);
             player.setGameMode(GameMode.SURVIVAL);
@@ -573,27 +614,28 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         tickGame();
     }
 
-    public void extract(RavengardDungeonPlayer player) {
+    /** Whether the player escaped (and so used up the portal). */
+    public boolean extract(RavengardDungeonPlayer player) {
         if (state != GameState.IN_PROGRESS || player.isDungeonDead()
                 || !players.containsKey(player.getUuid())) {
             rejectExtraction(player, "你不在进行中的地牢探险里");
-            return;
+            return false;
         }
         if (!RavengardRunState.isActive(player.getUuid(), getGameId())) {
             rejectExtraction(player, "服务器无法确认你的探险状态");
-            return;
+            return false;
         }
         try {
             if (!RavengardProfiles.secureExtraction(player)) {
                 rejectExtraction(player, "无法保存你的天穹余烬存档");
-                return;
+                return false;
             }
         } catch (RuntimeException exception) {
             org.tinylog.Logger.error(exception,
                     "Ravengard extraction save failed: game={} player={}",
                     getGameId(), player.getUsername());
             rejectExtraction(player, "无法保存你的战利品");
-            return;
+            return false;
         }
         RavengardSounds.stop(player, RavengardSounds.Cue.DUNGEON_AMBIENCE);
         RavengardSounds.play(player, RavengardSounds.Cue.EXTRACTION_SUCCESS);
@@ -608,6 +650,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             end();
             routePlayersToLobby(players.values().stream().toList());
         }
+        return true;
     }
 
     private void rejectExtraction(RavengardDungeonPlayer player, String reason) {
@@ -624,6 +667,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
     public void end() {
         super.end();
         if (ambienceTask != null) ambienceTask.cancel();
+        closePortals();
     }
 
     @Override
@@ -752,7 +796,8 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         hud.setClock(RavengardDeathWall.formatClock(seconds));
         hud.setPlayerCount(getAlivePlayerCount());
         hud.setTeamCount(getAliveTeamCount());
-        hud.setPortalCount(extractionPoints.size());
+        ExtractionPortals current = portals;
+        hud.setPortalCount(current == null ? 0 : current.openCount());
         hud.setSpectating(player.isDungeonDead());
         hud.setDungeon(true);
         hud.setLocation(RavengardDeathWall.hudStatus(wall));

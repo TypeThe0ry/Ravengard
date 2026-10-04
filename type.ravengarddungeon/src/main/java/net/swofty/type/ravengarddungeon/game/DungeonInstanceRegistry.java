@@ -338,13 +338,9 @@ public final class DungeonInstanceRegistry {
             int satchels = net.swofty.type.ravengarddungeon.interactables.DungeonSatchel
                     .clearCapturedSatchels(dungeonInstance.getInstance());
             List<net.minestom.server.coordinate.Pos> extractions = dungeonInstance.getGame().getExtractionPoints();
-            for (var extraction : extractions) {
-                net.swofty.type.ravengarddungeon.interactables.DungeonExtraction.spawn(
-                        dungeonInstance.getInstance(), dungeonInstance.getGame(), extraction);
-            }
             org.tinylog.Logger.info("Registered interactables: {} proximity mob encounters, {} door chunks loaded, {} chests converted, {} captured satchels cleared",
                     mobs, chunks.size(), chests, satchels);
-            org.tinylog.Logger.info("Registered {} dynamic cyan-room extraction points", extractions.size());
+            org.tinylog.Logger.info("{} escape portal sites; portals open in waves as the Death Wall closes in", extractions.size());
             int statues = net.swofty.type.ravengarddungeon.interactables.DungeonRevivalStatue.spawnAll(
                     dungeonInstance.getInstance(), dungeonInstance.getGame(),
                     TypeRavengardDungeonLoader.getGame().getConfig().objects());
@@ -370,13 +366,9 @@ public final class DungeonInstanceRegistry {
         RavengardDungeonGame staticGame = TypeRavengardDungeonLoader.getGame();
         List<net.minestom.server.coordinate.Pos> extractions = staticGame == null
                 ? List.of() : staticGame.getExtractionPoints();
-        for (var extraction : extractions) {
-            net.swofty.type.ravengarddungeon.interactables.DungeonExtraction.spawn(
-                    instance, staticGame, extraction);
-        }
         int statues = staticGame == null ? 0
                 : net.swofty.type.ravengarddungeon.interactables.DungeonRevivalStatue.spawnAll(instance, staticGame, config.objects());
-        org.tinylog.Logger.info("Registered static dungeon interactables: {} proximity mob encounters, {} chests, {} extraction points, {} revival statues, {} captured satchels cleared",
+        org.tinylog.Logger.info("Registered static dungeon interactables: {} proximity mob encounters, {} chests, {} escape portal sites, {} revival statues, {} captured satchels cleared",
                 mobs, chests, extractions.size(), statues, satchels);
         MinecraftServer.getSchedulerManager().buildTask(() -> {
             EncounterRuntime runtime = ENCOUNTERS.get(instance);
@@ -1313,20 +1305,27 @@ public final class DungeonInstanceRegistry {
     }
 
     private static boolean portalFits(DungeonRoom room, int sourceX, int sourceZ, int feetY) {
-        DungeonTemplate template = DungeonTemplate.get();
-        int worldX = room.getMinX() + sourceX;
-        int worldZ = room.getMinZ() + sourceZ;
-        for (int dx = -PORTAL_HALF_WIDTH; dx <= PORTAL_HALF_WIDTH; dx++) {
-            var floor = template.blockAt(worldX + dx, feetY - 1, worldZ);
+        return portalFitsAt(DungeonTemplate.get()::blockAt,
+                room.getMinX() + sourceX, feetY, room.getMinZ() + sourceZ, true);
+    }
+
+    /** Whether a portal arch spanning {@code alongX} (else along Z) stands at this block with room to walk up to it. */
+    static boolean portalFitsAt(BlockLookup blocks, int worldX, int feetY, int worldZ, boolean alongX) {
+        int stepX = alongX ? 1 : 0;
+        int stepZ = alongX ? 0 : 1;
+        for (int offset = -PORTAL_HALF_WIDTH; offset <= PORTAL_HALF_WIDTH; offset++) {
+            int x = worldX + offset * stepX;
+            int z = worldZ + offset * stepZ;
+            var floor = blocks.blockAt(x, feetY - 1, z);
             if (floor.compare(net.minestom.server.instance.block.Block.BARRIER)
                     || !floor.registry().collisionShape().isFaceFull(
                     net.minestom.server.instance.block.BlockFace.TOP)) return false;
             for (int dy = 0; dy < PORTAL_HEIGHT; dy++) {
-                if (!passable(template.blockAt(worldX + dx, feetY + dy, worldZ))) return false;
+                if (!passable(blocks.blockAt(x, feetY + dy, z))) return false;
             }
         }
-        return standable(template::blockAt, worldX, feetY, worldZ - 1)
-                || standable(template::blockAt, worldX, feetY, worldZ + 1);
+        return standable(blocks, worldX - stepZ, feetY, worldZ - stepX)
+                || standable(blocks, worldX + stepZ, feetY, worldZ + stepX);
     }
 
     private static ExtractionAnchorSource preferredCyanAnchor(DungeonRoom room) {

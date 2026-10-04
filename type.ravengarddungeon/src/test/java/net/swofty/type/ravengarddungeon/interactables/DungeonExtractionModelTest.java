@@ -83,7 +83,8 @@ class DungeonExtractionModelTest {
                 "unused.polar", null, java.util.List.of());
         var game = new RavengardDungeonGame(instance, config);
         DungeonExtraction extraction = DungeonExtraction.spawn(instance, game,
-                new Pos(2.5, 65, -3.5, 90, 0));
+                new Pos(2.5, 65, -3.5, 90, 0), ignored -> {
+                });
         var display = instance.getEntities().stream()
                 .filter(entity -> entity.getEntityType() == EntityType.ITEM_DISPLAY)
                 .findFirst().orElseThrow();

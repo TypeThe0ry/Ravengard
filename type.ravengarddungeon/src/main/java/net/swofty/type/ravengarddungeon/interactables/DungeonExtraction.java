@@ -14,7 +14,7 @@ import net.swofty.type.ravengarddungeon.game.RavengardDungeonGame;
 import net.swofty.type.ravengarddungeon.user.RavengardDungeonPlayer;
 import net.swofty.type.ravengardgeneric.profile.RavengardRunState;
 
-/** The interaction at an official cyan dungeon room. */
+/** An escape portal at an official cyan dungeon room; it closes once a Mercenary escapes through it. */
 public final class DungeonExtraction extends DungeonInteractable {
     static final String MODEL = "hypixel_ravengard:item/gameplay/portals/exit_portal";
     static final double MODEL_FLOOR_OFFSET = 1.228264169;
@@ -26,13 +26,18 @@ public final class DungeonExtraction extends DungeonInteractable {
     static final double CHANNEL_VERTICAL_DISTANCE = 3.0;
 
     private final RavengardDungeonGame game;
+    private final Pos anchor;
+    private final java.util.function.Consumer<DungeonExtraction> onUsed;
     private final Entity display;
     private final java.util.Set<java.util.UUID> channelers = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private Task animationTask;
 
-    private DungeonExtraction(Instance instance, RavengardDungeonGame game, Pos position) {
+    private DungeonExtraction(Instance instance, RavengardDungeonGame game, Pos position,
+                              java.util.function.Consumer<DungeonExtraction> onUsed) {
         super(instance);
         this.game = game;
+        this.anchor = position;
+        this.onUsed = onUsed;
         this.interaction = spawnInteraction(position, INTERACTION_WIDTH, INTERACTION_HEIGHT);
         this.display = spawnDisplay(modelPose(position), MODEL);
     }
@@ -54,11 +59,12 @@ public final class DungeonExtraction extends DungeonInteractable {
                 .withPitch(0f);
     }
 
-    public static DungeonExtraction spawn(Instance instance, RavengardDungeonGame game, Pos position) {
-        DungeonExtraction extraction = new DungeonExtraction(instance, game, position);
+    public static DungeonExtraction spawn(Instance instance, RavengardDungeonGame game, Pos position,
+                                          java.util.function.Consumer<DungeonExtraction> onUsed) {
+        DungeonExtraction extraction = new DungeonExtraction(instance, game, position, onUsed);
         InteractableRegistry.register(extraction);
         InteractableRegistry.registerExtraInteraction(extraction, extraction.display);
-        org.tinylog.Logger.info(
+        org.tinylog.Logger.debug(
                 "Ravengard extraction ready: anchor=({}, {}, {}) yaw={} model=({}, {}, {}) modelYaw={} interaction=({}, {}, {}) offset=({}, {}) channel=3.0s",
                 position.x(), position.y(), position.z(),
                 position.yaw(),
@@ -69,9 +75,13 @@ public final class DungeonExtraction extends DungeonInteractable {
                 extraction.interaction.getPosition().z(),
                 extraction.display.getPosition().x() - position.x(),
                 extraction.display.getPosition().z() - position.z());
-        org.tinylog.Logger.info("Ravengard extraction display context: {}",
+        org.tinylog.Logger.debug("Ravengard extraction display context: {}",
                 ((ItemDisplayMeta) extraction.display.getEntityMeta()).getDisplayContext());
         return extraction;
+    }
+
+    public Pos anchor() {
+        return anchor;
     }
 
     @Override
@@ -91,7 +101,7 @@ public final class DungeonExtraction extends DungeonInteractable {
 
     @Override
     public boolean channelStillValid(Player player) {
-        if (!(player instanceof RavengardDungeonPlayer dungeonPlayer)
+        if (removed || !(player instanceof RavengardDungeonPlayer dungeonPlayer)
                 || player.getInstance() != instance
                 || game.getState() != net.swofty.type.game.game.GameState.IN_PROGRESS
                 || dungeonPlayer.isDungeonDead()
@@ -137,9 +147,10 @@ public final class DungeonExtraction extends DungeonInteractable {
     @Override
     public void open(Player player) {
         stopChanneling(player);
-        if (game.getState() == net.swofty.type.game.game.GameState.IN_PROGRESS
-                && player instanceof RavengardDungeonPlayer dungeonPlayer) {
-            game.extract(dungeonPlayer);
+        if (!removed && game.getState() == net.swofty.type.game.game.GameState.IN_PROGRESS
+                && player instanceof RavengardDungeonPlayer dungeonPlayer
+                && game.extract(dungeonPlayer)) {
+            onUsed.accept(this);
         }
     }
 
