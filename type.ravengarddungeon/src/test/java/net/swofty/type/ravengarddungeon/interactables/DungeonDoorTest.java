@@ -673,18 +673,18 @@ class DungeonDoorTest {
 
         var summary = DungeonDoor.spawnAll(instance, config.objects());
 
-        assertEquals(1399, summary.inputMarkers());
-        assertEquals(821, summary.uniqueLeafMarkers());
-        assertEquals(380, summary.uniqueTopMarkers());
-        assertEquals(380, summary.completeDoorways());
+        assertEquals(1567, summary.inputMarkers());
+        assertEquals(933, summary.uniqueLeafMarkers());
+        assertEquals(436, summary.uniqueTopMarkers());
+        assertEquals(436, summary.completeDoorways());
         assertEquals(2, summary.restoredLeaves());
         assertEquals(2, summary.orphanLeaves());
-        assertEquals(762, summary.leafDisplays());
-        assertEquals(380, summary.topDisplays());
+        assertEquals(874, summary.leafDisplays());
+        assertEquals(436, summary.topDisplays());
         assertEquals(8, summary.ironGateDisplays());
-        assertEquals(1150, summary.displays());
-        assertEquals(386, summary.interactions());
-        assertEquals(6144, summary.barrierReferences());
+        assertEquals(1318, summary.displays());
+        assertEquals(442, summary.interactions());
+        assertEquals(7040, summary.barrierReferences());
         assertEquals(true, summary.uniqueBarrierCells() > 0);
         assertEquals(summary.uniqueBarrierCells(), DungeonDoor.barrierCellCount(instance));
 
@@ -715,13 +715,14 @@ class DungeonDoorTest {
             net.minestom.server.instance.Instance instance, RavengardDungeonConfig config) throws Exception {
         var summary = DungeonDoor.spawnAll(instance, config.objects());
 
-        assertEquals(382, summary.completeDoorways());
+        assertEquals(438, summary.completeDoorways());
         assertEquals(4, summary.restoredLeaves());
         assertEquals(0, summary.orphanLeaves());
-        assertEquals(764, summary.leafDisplays());
-        assertEquals(382, summary.topDisplays());
+        assertEquals(876, summary.leafDisplays());
+        assertEquals(438, summary.topDisplays());
         for (Vec aperture : List.of(new Vec(62, 66, -124), new Vec(233, 66, 105),
-                new Vec(94, 66, -21), new Vec(-139, 66, -181))) {
+                new Vec(94, 66, -21), new Vec(-139, 66, -181),
+                new Vec(-157, 66, -71), new Vec(-123, 66, -62))) {
             assertEquals(true, DungeonDoor.isBarrierManaged(instance, aperture), aperture.toString());
             assertEquals(Block.BARRIER, instance.getBlock(aperture), aperture.toString());
         }

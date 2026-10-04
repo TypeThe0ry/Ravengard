@@ -14,13 +14,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DungeonRevivalStatueTest {
     @Test
-    void theOfficialMapPlacesTenDistinctStatues() throws Exception {
+    void theMapPlacesElevenDistinctStatues() throws Exception {
         RavengardDungeonConfig config = new Gson().fromJson(Files.readString(
                 Path.of("..", "configuration", "ravengard", "dungeon_1.json")), RavengardDungeonConfig.class);
 
         List<Pos> markers = DungeonRevivalStatue.markers(config.objects());
 
-        assertEquals(10, markers.size());
+        assertEquals(11, markers.size());
+        assertTrue(markers.contains(new Pos(-140.5, 60.5, -59.5, 180f, 0f)));
         assertTrue(markers.contains(new Pos(-91.5, 66.5, -20.5, 0f, 0f)));
         assertTrue(markers.contains(new Pos(79.5, 66.5, 162.5, 270f, 0f)));
     }

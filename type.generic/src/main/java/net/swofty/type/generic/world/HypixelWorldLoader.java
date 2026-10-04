@@ -145,10 +145,28 @@ public final class HypixelWorldLoader {
         }
     }
 
+    /**
+     * Loads display entities kept beside a world, in the same layout as the polar user data list,
+     * on top of an already loaded world.
+     */
+    public static int loadDisplayOverlay(Path path, SharedInstance instance) throws IOException {
+        CompoundBinaryTag root = BinaryTagIO.unlimitedReader().read(path, BinaryTagIO.Compression.GZIP);
+        int loaded = loadDisplayList(root, instance);
+        Logger.info("Loaded {} display entities from {}", loaded, path.getFileName());
+        return loaded;
+    }
+
     private static void loadDisplays(CompoundBinaryTag root, SharedInstance instance) {
         if (root == null) {
             return;
         }
+        int loaded = loadDisplayList(root, instance);
+        if (loaded > 0) {
+            Logger.info("Loaded {} display entities from polar user data", loaded);
+        }
+    }
+
+    private static int loadDisplayList(CompoundBinaryTag root, SharedInstance instance) {
         int loaded = 0;
         for (BinaryTag tag : root.getList("block_displays", BinaryTagTypes.COMPOUND)) {
             try {
@@ -156,12 +174,10 @@ public final class HypixelWorldLoader {
                     loaded++;
                 }
             } catch (RuntimeException exception) {
-                Logger.warn(exception, "Skipping invalid display entity in polar user data");
+                Logger.warn(exception, "Skipping invalid display entity");
             }
         }
-        if (loaded > 0) {
-            Logger.info("Loaded {} display entities from polar user data", loaded);
-        }
+        return loaded;
     }
 
     private static boolean loadDisplay(CompoundBinaryTag data, SharedInstance instance) {

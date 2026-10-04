@@ -18,7 +18,6 @@ import net.swofty.type.generic.entity.npc.HypixelNPC;
 import net.swofty.type.generic.event.HypixelEventClass;
 import net.swofty.type.generic.tab.TablistManager;
 import net.swofty.type.generic.tab.TablistModule;
-import net.swofty.type.generic.world.HypixelWorldLoader;
 import net.swofty.type.ravengarddungeon.config.RavengardDungeonConfig;
 import net.swofty.type.ravengarddungeon.game.RavengardDungeonGame;
 import net.swofty.type.ravengarddungeon.game.DungeonInstanceRegistry;
@@ -59,7 +58,7 @@ public class TypeRavengardDungeonLoader implements RavengardTypeLoader {
         InstanceContainer temp = MinecraftServer.getInstanceManager().createInstanceContainer();
         final Instance instance;
         try {
-            instance = HypixelWorldLoader.loadFrom(polarPath, temp, MinecraftServer.getInstanceManager());
+            instance = net.swofty.type.ravengarddungeon.world.RestoredDisplays.loadMap(polarPath, temp);
         } catch (IOException e) {
             throw new IllegalStateException("Could not load Ravengard dungeon map: " + polarPath);
         }

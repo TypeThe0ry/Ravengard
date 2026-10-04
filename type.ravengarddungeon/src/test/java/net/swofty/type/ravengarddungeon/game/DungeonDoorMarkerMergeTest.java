@@ -21,12 +21,12 @@ class DungeonDoorMarkerMergeTest {
 
         var merge = DungeonInstanceRegistry.mergeDoorMarkers(List.of(), config.objects());
 
-        assertEquals(1399, merge.officialDoorMarkers());
+        assertEquals(1567, merge.officialDoorMarkers());
         assertEquals(0, merge.generatedDoorMarkers());
         assertEquals(188, merge.duplicateDoorMarkers());
-        assertEquals(1211, merge.mergedDoorMarkers());
-        assertEquals(821, count(merge.objects(), "door_1"));
-        assertEquals(380, count(merge.objects(), "door_1_top"));
+        assertEquals(1379, merge.mergedDoorMarkers());
+        assertEquals(933, count(merge.objects(), "door_1"));
+        assertEquals(436, count(merge.objects(), "door_1_top"));
         assertEquals(10, count(merge.objects(), "iron_gate"));
     }
 

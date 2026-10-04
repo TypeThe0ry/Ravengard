@@ -260,9 +260,8 @@ public final class DungeonInstanceRegistry {
                 .createInstanceContainer(dimensionKey);
         net.minestom.server.instance.SharedInstance shared;
         try {
-            shared = net.swofty.type.generic.world.HypixelWorldLoader.loadFrom(
-                    java.nio.file.Path.of("./configuration/ravengard/dungeon_1.polar"),
-                    instance, MinecraftServer.getInstanceManager());
+            shared = net.swofty.type.ravengarddungeon.world.RestoredDisplays.loadMap(
+                    java.nio.file.Path.of("./configuration/ravengard/dungeon_1.polar"), instance);
         } catch (java.io.IOException exception) {
             throw new IllegalStateException("Could not load dungeon city base", exception);
         }

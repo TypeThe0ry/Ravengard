@@ -836,7 +836,7 @@ public final class DungeonDoor extends DungeonInteractable {
         }
     }
 
-    static boolean isBarrierManaged(Instance instance,
+    public static boolean isBarrierManaged(Instance instance,
                                     net.minestom.server.coordinate.Point point) {
         synchronized (BARRIERS) {
             Map<Long, BarrierState> states = BARRIERS.get(instance);
