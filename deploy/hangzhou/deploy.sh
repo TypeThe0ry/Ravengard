@@ -91,7 +91,7 @@ if [ -n "$changed" ]; then
     mkdir -p "$STAGE.parts"
     split -b 4M -d -a 3 "$STAGE.tgz" "$STAGE.parts/part."
     remote "rm -rf $REMOTE/../upload && mkdir -p $REMOTE/../upload/parts"
-    (cd "$STAGE.parts" && sha256sum part.*) > "$STAGE.sums"
+    (cd "$STAGE.parts" && sha256sum part.* | sed 's/ [ *]/ /') > "$STAGE.sums"
     pending=$(cd "$STAGE.parts" && ls part.*)
     for round in $(seq 1 10); do
         for part in $pending; do
@@ -99,7 +99,7 @@ if [ -n "$changed" ]; then
             while [ "$(jobs -r | wc -l)" -ge 4 ]; do sleep 1; done
         done
         wait
-        remote_capture "$STAGE.remote_sums" "cd $REMOTE/../upload/parts && sha256sum part.* 2>/dev/null || true"
+        remote_capture "$STAGE.remote_sums" "cd $REMOTE/../upload/parts && sha256sum part.* 2>/dev/null | sed 's/ [ *]/ /' || true"
         pending=$(sort "$STAGE.sums" | comm -23 - <(sort "$STAGE.remote_sums") | awk '{print $2}')
         [ -z "$pending" ] && break
         echo "re-uploading $(echo "$pending" | wc -w) part(s)"
