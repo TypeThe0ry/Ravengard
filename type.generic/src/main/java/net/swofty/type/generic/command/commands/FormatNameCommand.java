@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @CommandParameters(labels = "getnameformatted formatname",
         description = "Gets the format of a players name from their username",
-        usage = "/formatname <name>",
+        usage = "/formatname <名字>",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class FormatNameCommand extends HypixelCommand {
@@ -28,7 +28,7 @@ public class FormatNameCommand extends HypixelCommand {
             UUID uuid = HypixelDataHandler.getPotentialUUIDFromName(playerName);
 
             if (uuid == null) {
-                player.sendMessage("Nope doesn't exist");
+                player.sendMessage("该玩家不存在");
                 return;
             }
 

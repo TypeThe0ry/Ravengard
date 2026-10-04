@@ -349,23 +349,23 @@ public class SkyBlockVelocity {
             }
 
             if (ConfigProvider.settings().isRequireAuth()) {
-                ProxyText.disconnect(player, "<c>Authentication requires a configured holding server; this Ravengard-only proxy has none.");
+                ProxyText.disconnect(player, "<c>登录验证需要配置等候服务器；此天穹余烬专用代理没有配置。");
                 return;
             }
 
             if (!GameManager.hasType(ServerType.RAVENGARD_LOBBY)
                     || !GameManager.isAnyEmpty(ServerType.RAVENGARD_LOBBY)) {
-                ProxyText.disconnect(player, "<c>There are no Ravengard Lobby servers available at the moment.");
+                ProxyText.disconnect(player, "<c>目前没有可用的天穹余烬大厅服务器。");
                 return;
             }
 
             List<GameManager.GameServer> gameServers = GameManager.getFromType(ServerType.RAVENGARD_LOBBY);
             if (TestFlowManager.isPlayerInTestFlow(player.getUsername())) {
                 TestFlowManager.ProxyTestFlowInstance instance = TestFlowManager.getTestFlowForPlayer(player.getUsername());
-                player.sendMessage(Text.of("<7>You are currently in test flow {}.", instance.getName()));
-                player.sendMessage(Text.of("<7>Servers involved include {}", instance.getGameServers().stream().map(GameManager.GameServer::displayName).collect(Collectors.joining(", "))));
-                player.sendMessage(Text.of("<7>We are expecting {} servers to instantiate.", instance.getTotalExpectedServers()));
-                player.sendMessage(Text.of("<7>Test flow has been running for {} seconds.", instance.getUptime() / 1000));
+                player.sendMessage(Text.of("<7>你当前处于测试流程 {} 中。", instance.getName()));
+                player.sendMessage(Text.of("<7>涉及的服务器：{}", instance.getGameServers().stream().map(GameManager.GameServer::displayName).collect(Collectors.joining(", "))));
+                player.sendMessage(Text.of("<7>预计将启动 {} 台服务器。", instance.getTotalExpectedServers()));
+                player.sendMessage(Text.of("<7>测试流程已运行 {} 秒。", instance.getUptime() / 1000));
 
                 gameServers.removeIf(server -> {
                     TestFlowManager.ProxyTestFlowInstance testFlowInstance = TestFlowManager.getFromServerUUID(
@@ -385,7 +385,7 @@ public class SkyBlockVelocity {
             }
 
             if (gameServers.isEmpty()) {
-                ProxyText.disconnect(player, "<c>There are no servers (type=RAVENGARD_LOBBY) available at the moment.");
+                ProxyText.disconnect(player, "<c>目前没有可用的服务器（类型=RAVENGARD_LOBBY）。");
                 return;
             }
 
@@ -416,7 +416,7 @@ public class SkyBlockVelocity {
         UUID playerUuid = event.getPlayer().getUniqueId();
         if (!TransferHandler.beginCrashRecovery(playerUuid)) {
             event.setResult(KickedFromServerEvent.Notify.create(
-                ProxyText.render("<c>Your Ravengard connection is already recovering. Please reconnect.")));
+                ProxyText.render("<c>你的天穹余烬连接正在恢复中，请重新连接。")));
             return;
         }
 
@@ -427,7 +427,7 @@ public class SkyBlockVelocity {
 
         RegisteredServer originalServer = event.getServer();
         Component reason = event.getServerKickReason().orElseGet(() ->
-            ProxyText.render("<c>Your connection to the server was lost. Please try again later."));
+            ProxyText.render("<c>与服务器的连接已断开，请稍后再试。"));
         ServerType serverType = GameManager.getTypeFromRegisteredServer(originalServer);
 
         for (ServerType candidate : CrashRecoveryRouting.candidates(serverType)) {
@@ -451,7 +451,7 @@ public class SkyBlockVelocity {
         event.setPing(new ServerPing(
             event.getPing().getVersion(),
             new ServerPing.Players(server.getPlayerCount(), 200000, List.of()),
-            Text.legacy("§f                 §aHypixel Network §c[1.8/26.2]\n§f   §6§lSB 0.27 TORRHUS & SAFARI §7| §e§lSUMMER EVENT").asComponent(),
+            Text.legacy("§f                 §aHypixel 网络 §c[1.8/26.2]\n§f   §6§l空岛生存 0.27 TORRHUS & SAFARI §7| §e§l夏日活动").asComponent(),
             event.getPing().getFavicon().orElse(null)
         ));
     }
@@ -463,9 +463,9 @@ public class SkyBlockVelocity {
             String supportedFrom = ProtocolVersion.MAXIMUM_VERSION.getVersionIntroducedIn();
 
             player.sendMessage(Text.of("\n" +
-                "<6><l>----------- <r><c>Server Notice <6><l>-----------\n" +
-                "<r><c>Although we do support versions prior to <6>{}<c>, the experience may be degraded.\n" +
-                "<c>If you experience any issues, please test if it also occurs on <6>{}<c> before reporting it.\n" +
+                "<6><l>----------- <r><c>服务器公告 <6><l>-----------\n" +
+                "<r><c>我们支持 <6>{}<c> 之前的版本，但体验可能会打折扣。\n" +
+                "<c>如果遇到问题，请先确认在 <6>{}<c> 上是否同样出现，再进行反馈。\n" +
                 "<6><l>---------------------------------\n" +
                 "\n", supportedFrom, supportedFrom));
         }

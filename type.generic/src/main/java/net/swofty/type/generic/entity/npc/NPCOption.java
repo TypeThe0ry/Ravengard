@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 public class NPCOption {
 	public static final Map<HypixelPlayer, OptionData> options = new HashMap<>();
-	private static final Text selectAnOption = Text.of("<e>Select an option:");
+	private static final Text selectAnOption = Text.of("<e>请选择一项：");
 
 	public static void sendOption(
 			HypixelPlayer player,
@@ -38,7 +38,7 @@ public class NPCOption {
 					.color(option.color())
 					.decoration(TextDecoration.BOLD, option.bold())
 					.hoverEvent(
-							HoverEvent.showText(Text.of("<e>Click to select"))
+							HoverEvent.showText(Text.of("<e>点击选择"))
 					)
 					.clickEvent(
 							ClickEvent.runCommand("/selectnpcoption " + id + " " + option.key())

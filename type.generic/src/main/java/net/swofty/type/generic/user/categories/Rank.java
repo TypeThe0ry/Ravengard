@@ -16,7 +16,7 @@ public enum Rank {
     MVP("MVP", false, NamedTextColor.AQUA),
     VIP_PLUS("VIP+", false, NamedTextColor.GREEN),
     VIP("VIP", false, NamedTextColor.GREEN),
-    DEFAULT("Default", false, NamedTextColor.GRAY),
+    DEFAULT("默认", false, NamedTextColor.GRAY),
     ;
 
     public static final String TAG = "rank";
@@ -52,7 +52,7 @@ public enum Rank {
             case VIP_PLUS ->
                 Component.text("VIP", NamedTextColor.GREEN).append(Component.text("+", NamedTextColor.GOLD));
             case VIP -> Component.text("VIP", NamedTextColor.GREEN);
-            case DEFAULT -> Component.text("Default", NamedTextColor.GRAY);
+            case DEFAULT -> Component.text("默认", NamedTextColor.GRAY);
         };
     }
 

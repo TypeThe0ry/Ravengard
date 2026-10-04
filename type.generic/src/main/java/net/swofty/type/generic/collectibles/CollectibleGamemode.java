@@ -1,10 +1,10 @@
 package net.swofty.type.generic.collectibles;
 
 public enum CollectibleGamemode {
-    BEDWARS("BedWars"),
-    SKYWARS("SkyWars"),
-    MURDER_MYSTERY("Murder Mystery"),
-    PROTOTYPE("Prototype");
+    BEDWARS("起床战争"),
+    SKYWARS("空岛战争"),
+    MURDER_MYSTERY("密室杀手"),
+    PROTOTYPE("原型测试");
 
     private final String displayName;
 

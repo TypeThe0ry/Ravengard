@@ -10,7 +10,7 @@ import net.swofty.type.generic.user.categories.Rank;
 
 @CommandParameters(labels = "setvelocity",
 		description = "Sets the velocity of a player",
-		usage = "/velocity <player> <x> <y> <z>",
+		usage = "/velocity <玩家> <x> <y> <z>",
 		permission = Rank.STAFF,
 		allowsConsole = false)
 public class SetVelocityCommand extends HypixelCommand {
@@ -30,7 +30,7 @@ public class SetVelocityCommand extends HypixelCommand {
 			float z = context.get(zArg);
 
 			if (target == null) {
-				((HypixelPlayer) sender).sendMessage("<c>Player not found.");
+				((HypixelPlayer) sender).sendMessage("<c>未找到该玩家。");
 				return;
 			}
 

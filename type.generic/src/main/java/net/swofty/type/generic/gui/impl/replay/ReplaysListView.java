@@ -67,22 +67,21 @@ public class ReplaysListView extends StatefulPaginatedView<ReplayEntry, ReplaysL
         Components.close(layout, 48);
 
         layout.slot(47, (_, _) -> ItemStacks.item(Material.BOOK, 1, """
-            <a>Hypixel Replays
-            <7>The Hypixel Replay System allows
-            <7>players to watch back their recently
-            <7>played games.
+            <a>Hypixel 回放
+            <7>Hypixel 回放系统让玩家可以
+            <7>回看自己最近玩过的对局。
 
-            <7>Replays are currently supported in the following games:
-            <f> - Bed Wars"""));
+            <7>目前支持回放的游戏：
+            <f> - 起床战争"""));
 
         // TODO: behaviour
         layout.slot(49, (_, _) -> ItemStacks.item(Material.GRAY_DYE, 1, """
-            <a>Show Replays Only
-            <7>Toggle whether all your recently
-            <7>played games should be displayed or
-            <7>only games with replays attached.
+            <a>仅显示回放
+            <7>切换是显示你最近玩过的
+            <7>所有对局，还是只显示
+            <7>带有回放的对局。
 
-            <e>Click to toggle!"""));
+            <e>点击切换！"""));
     }
 
     @Override
@@ -108,15 +107,15 @@ public class ReplaysListView extends StatefulPaginatedView<ReplayEntry, ReplaysL
         return ItemStacks.item(material, """
             <a>{}
             <7>{}
-            <7>Duration: {}
+            <7>时长：{}
 
-            <7>Mode: <a>{}
-            <7>Map: <a>{}
+            <7>模式：<a>{}
+            <7>地图：<a>{}
 
-            <7>Server: <a>{}
-            <7>Players: <a>{}
+            <7>服务器：<a>{}
+            <7>玩家：<a>{}
 
-            <e>Click to view replay!""",
+            <e>点击观看回放！""",
                 item.displayName(),
                 DATE_FORMAT.format(new Date(item.startTime())),
                 item.formattedDuration(),

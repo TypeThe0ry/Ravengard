@@ -9,7 +9,7 @@ import net.swofty.type.generic.user.categories.Rank;
 
 @CommandParameters(labels = "sc staffchat",
         description = "Sends a message to staff chat",
-        usage = "/sc <message>",
+        usage = "/sc <消息>",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class StaffChatCommand extends HypixelCommand {
@@ -25,7 +25,7 @@ public class StaffChatCommand extends HypixelCommand {
             String message = String.join(" ", messageArray);
 
             if (message.isEmpty()) {
-                player.sendMessage("<c>Usage: {}", "/sc <message>");
+                player.sendMessage("<c>用法：{}", "/sc <消息>");
                 return;
             }
 

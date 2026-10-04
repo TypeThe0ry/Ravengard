@@ -29,6 +29,6 @@ public abstract class GUIQueryItem extends GUIClickableItem {
      * @return an array that needs only 2 components
      */
     public String[] lines() {
-        return new String[]{"Enter your", "input"};
+        return new String[]{"请在上方", "输入内容"};
     }
 }

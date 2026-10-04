@@ -341,11 +341,11 @@ public abstract class HypixelInventoryGUI {
                 updateItemStacks(inventory, player);
                 onOpen(openEvent);
                 if (player.getHeldSlot() != itemInHand) {
-                    player.sendMessage("<c>Your item in hand cannot change in between opening GUIs");
+                    player.sendMessage("<c>打开界面期间手持物品不能变化");
                     return;
                 }
             } catch (Exception e) {
-                player.sendMessage("<c>An error occurred while opening the GUI");
+                player.sendMessage("<c>打开界面时发生错误");
                 player.closeInventory();
                 Logger.error(e, "Failed to open GUI '{}' for player {}", getTitle(), player.getUsername());
                 return;

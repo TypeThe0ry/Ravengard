@@ -33,7 +33,7 @@ public class PlayerExperienceHandler {
 
         setExperience(newXP);
 
-        player.sendMessage("<b>+<3>{:,} Hypixel Experience", amount);
+        player.sendMessage("<b>+<3>{:,} Hypixel 经验", amount);
 
         if (newLevel > oldLevel) {
             for (int level = oldLevel + 1; level <= newLevel; level++) {
@@ -75,19 +75,19 @@ public class PlayerExperienceHandler {
 
     private void onLevelUp(int newLevel) {
         player.sendMessage("<6><l>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-        player.sendMessage("<b><l>LEVEL UP! </l><7>You are now Hypixel Level <e>{}", newLevel);
+        player.sendMessage("<b><l>升级了！</l><7>你的 Hypixel 等级现在是 <e>{}", newLevel);
         player.sendMessage("");
 
         double multiplier = HypixelExperience.getCoinMultiplier(newLevel);
         int prevLevel = newLevel - 1;
         double prevMultiplier = HypixelExperience.getCoinMultiplier(prevLevel);
         if (multiplier > prevMultiplier) {
-            player.sendMessage("<6>NEW PERK! <e>Coin Multiplier: <6>{}x", multiplier);
+            player.sendMessage("<6>新特权！<e>硬币倍率：<6>{}x", multiplier);
         }
 
         if (newLevel == 100) {
-            player.sendMessage("<d><l>VETERAN STATUS UNLOCKED!");
-            player.sendMessage("<7>Access exclusive veteran rewards!");
+            player.sendMessage("<d><l>老玩家身份已解锁！");
+            player.sendMessage("<7>可领取老玩家专属奖励！");
         }
 
         player.sendMessage("<6><l>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");

@@ -9,7 +9,7 @@ import net.swofty.type.generic.user.categories.Rank;
 
 @CommandParameters(labels = "transfer sendto",
         description = "Transfers a player to another server",
-        usage = "/sendto <server_type>",
+        usage = "/sendto <服务器类型>",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class SendToCommand extends HypixelCommand {

@@ -9,11 +9,11 @@ import java.util.Locale;
 
 @Getter
 public enum CollectibleRarity {
-    COMMON("COMMON", NamedTextColor.GREEN, 1),
-    RARE("RARE", NamedTextColor.BLUE, 2),
-    EPIC("EPIC", NamedTextColor.DARK_PURPLE, 3),
-    LEGENDARY("LEGENDARY", NamedTextColor.GOLD, 4),
-    MYTHIC("MYTHIC", NamedTextColor.LIGHT_PURPLE, 5);
+    COMMON("普通", NamedTextColor.GREEN, 1),
+    RARE("稀有", NamedTextColor.BLUE, 2),
+    EPIC("史诗", NamedTextColor.DARK_PURPLE, 3),
+    LEGENDARY("传说", NamedTextColor.GOLD, 4),
+    MYTHIC("神话", NamedTextColor.LIGHT_PURPLE, 5);
 
     private final String displayName;
     private final TextColor color;

@@ -53,7 +53,7 @@ public class PartyCache {
 
         PendingParty pending = pendingInvites.remove(accepter);
         if (pending == null || !pending.leader().equals(inviter)) {
-            sendErrorToPlayer(accepter, "<c>You haven't been invited to a party, or the invitation has expired!");
+            sendErrorToPlayer(accepter, "<c>你没有收到组队邀请，或邀请已过期！");
             return;
         }
 
@@ -74,7 +74,7 @@ public class PartyCache {
         UUID leaver = action.leaver();
         FullParty party = getPartyFromPlayer(leaver);
         if (party == null) {
-            sendErrorToPlayer(leaver, "<c>You are not in a party.");
+            sendErrorToPlayer(leaver, "<c>你不在队伍中。");
             return;
         }
 
@@ -94,13 +94,13 @@ public class PartyCache {
         UUID disbander = action.disbander();
         FullParty party = getPartyFromPlayer(disbander);
         if (party == null) {
-            sendErrorToPlayer(disbander, "<c>You are not in a party.");
+            sendErrorToPlayer(disbander, "<c>你不在队伍中。");
             return;
         }
 
         FullParty.Member member = getMember(party, disbander);
         if (member.getRole() != FullParty.Role.LEADER) {
-            sendErrorToPlayer(disbander, "<c>You are not the party leader!");
+            sendErrorToPlayer(disbander, "<c>你不是队长！");
             return;
         }
 
@@ -113,7 +113,7 @@ public class PartyCache {
 
         FullParty party = getPartyFromPlayer(currentLeaderUUID);
         if (party == null) {
-            sendErrorToPlayer(currentLeaderUUID, "<c>You are not in a party!");
+            sendErrorToPlayer(currentLeaderUUID, "<c>你不在队伍中！");
             return;
         }
 
@@ -121,11 +121,11 @@ public class PartyCache {
         FullParty.Member newLeader = getMember(party, newLeaderUUID);
 
         if (currentLeader.getRole() != FullParty.Role.LEADER) {
-            sendErrorToPlayer(currentLeaderUUID, "<c>You are not the party leader!");
+            sendErrorToPlayer(currentLeaderUUID, "<c>你不是队长！");
             return;
         }
         if (newLeader == null) {
-            sendErrorToPlayer(currentLeaderUUID, "<c>That player is not in your party!");
+            sendErrorToPlayer(currentLeaderUUID, "<c>该玩家不在你的队伍中！");
             return;
         }
 
@@ -140,7 +140,7 @@ public class PartyCache {
 
         FullParty party = getPartyFromPlayer(kickerUUID);
         if (party == null) {
-            sendErrorToPlayer(kickerUUID, "<c>You are not in a party!");
+            sendErrorToPlayer(kickerUUID, "<c>你不在队伍中！");
             return;
         }
 
@@ -148,15 +148,15 @@ public class PartyCache {
         FullParty.Member target = getMember(party, targetUUID);
 
         if (kicker.getRole() == FullParty.Role.MEMBER) {
-            sendErrorToPlayer(kickerUUID, "<c>Only party leaders and moderators can kick players!");
+            sendErrorToPlayer(kickerUUID, "<c>只有队长和管理员可以踢出玩家！");
             return;
         }
         if (target == null) {
-            sendErrorToPlayer(kickerUUID, "<c>That player is not in your party!");
+            sendErrorToPlayer(kickerUUID, "<c>该玩家不在你的队伍中！");
             return;
         }
         if (target.getRole() == FullParty.Role.LEADER) {
-            sendErrorToPlayer(kickerUUID, "<c>You cannot kick the party leader!");
+            sendErrorToPlayer(kickerUUID, "<c>不能踢出队长！");
             return;
         }
 
@@ -177,7 +177,7 @@ public class PartyCache {
         FullParty.Member target = getMember(party, targetUUID);
 
         if (promoter.getRole() != FullParty.Role.LEADER) {
-            sendErrorToPlayer(promoterUUID, "<c>Only the party leader can promote players!");
+            sendErrorToPlayer(promoterUUID, "<c>只有队长可以提升玩家！");
             return;
         }
         if (target == null || target.getRole() == FullParty.Role.MODERATOR) return;
@@ -207,7 +207,7 @@ public class PartyCache {
         UUID sender = action.player();
         FullParty party = getPartyFromPlayer(sender);
         if (party == null) {
-            sendErrorToPlayer(sender, "<c>You are not in a party!");
+            sendErrorToPlayer(sender, "<c>你不在队伍中！");
             return;
         }
         broadcast(new PartyBroadcast.Chat(party, sender, action.message()));
@@ -226,7 +226,7 @@ public class PartyCache {
 
         FullParty targetParty = getPartyFromPlayer(targetUUID);
         if (targetParty == null) {
-            sendErrorToPlayer(hijackerUUID, "<c>That player is not in a party!");
+            sendErrorToPlayer(hijackerUUID, "<c>该玩家不在队伍中！");
             return;
         }
 
@@ -251,21 +251,21 @@ public class PartyCache {
 
         FullParty party = getPartyFromPlayer(warperUUID);
         if (party == null) {
-            sendErrorToPlayer(warperUUID, "<c>You are not in a party!");
+            sendErrorToPlayer(warperUUID, "<c>你不在队伍中！");
             return;
         }
 
         FullParty.Member warper = getMember(party, warperUUID);
         if (warper.getRole() != FullParty.Role.LEADER) {
-            sendErrorToPlayer(warperUUID, "<c>You are not the party leader!");
+            sendErrorToPlayer(warperUUID, "<c>你不是队长！");
             return;
         }
         if (party.getMembers().size() == 1) {
-            sendErrorToPlayer(warperUUID, "<c>You need someone else in the party to warp!");
+            sendErrorToPlayer(warperUUID, "<c>队伍里需要有其他人才能传送！");
             return;
         }
         if (warpCooldown.contains(warperUUID)) {
-            sendErrorToPlayer(warperUUID, "<c>You can only warp once every 5 seconds!");
+            sendErrorToPlayer(warperUUID, "<c>每 5 秒只能传送一次！");
             return;
         }
 

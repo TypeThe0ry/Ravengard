@@ -99,7 +99,7 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
             // Large amount of Clients (such as Lunar) send a `/tip all` when joining
             // due to the scoreboard containing `hypixel.net`
             if (command.startsWith("tip ")) return;
-            sender.sendMessage(Text.of("<f>Unknown command. Type \"/help\" for help. ('{}')", command));
+            sender.sendMessage(Text.of("<f>未知命令。输入 \"/help\" 获取帮助。（'{}'）", command));
         });
         loopThroughPackage("net.swofty.type.generic.command.commands", HypixelCommand.class).forEach(command -> {
             try {
@@ -160,20 +160,20 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
 
                     if (TPS < 20) {
                         HypixelGenericLoader.getLoadedPlayers().forEach(player -> {
-                            player.getLogHandler().debug("<c>Server TPS is below 20! TPS: {}", TPS);
+                            player.getLogHandler().debug("<c>服务器 TPS 低于 20！TPS：{}", TPS);
                         });
                         Logger.error("Server TPS is below 20! TPS: " + TPS);
                     }
 
                     final Text newline = Text.literal("\n");
-                    final Text header = Text.of("<b>You are playing on <e><l>MC.HYPIXEL.NET")
+                    final Text header = Text.of("<b>你正在游玩 <e><l>MC.HYPIXEL.NET")
                             .append(newline)
-                            .append(Text.of("<7>RAM USAGE: <8>{} MB", ramUsage))
+                            .append(Text.of("<7>内存占用：<8>{} MB", ramUsage))
                             .append(newline)
                             .append(Text.of("<7>TPS: <8>{}", TPS))
                             .append(newline);
                     final Text footer = newline
-                            .append(Text.of("<a>Ranks, Boosters & MORE! <c><l>STORE.HYPIXEL.NET"));
+                            .append(Text.of("<a>会员等级、加成等更多内容！<c><l>STORE.HYPIXEL.NET"));
                     Audiences.players().sendPlayerListHeaderAndFooter(header, footer);
                 });
             }).repeat(10, TimeUnit.SERVER_TICK).schedule();

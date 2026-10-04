@@ -10,7 +10,7 @@ import net.swofty.type.generic.user.categories.Rank;
 
 @CommandParameters(labels = "gm gamemode",
         description = "Sets a players gamemode",
-        usage = "/gamemode <gamemode>",
+        usage = "/gamemode <游戏模式>",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class GamemodeCommand extends HypixelCommand {
@@ -28,7 +28,16 @@ public class GamemodeCommand extends HypixelCommand {
 
             player.setGameMode(gamemodeType);
 
-            player.sendMessage("<a>Set your gamemode to <e>{}<a>.", gamemodeType.name());
+            player.sendMessage("<a>已将你的游戏模式设为 <e>{}<a>。", gameModeName(gamemodeType));
         }, gamemode);
+    }
+
+    private static String gameModeName(GameMode gameMode) {
+        return switch (gameMode) {
+            case SURVIVAL -> "生存";
+            case CREATIVE -> "创造";
+            case ADVENTURE -> "冒险";
+            case SPECTATOR -> "旁观";
+        };
     }
 }

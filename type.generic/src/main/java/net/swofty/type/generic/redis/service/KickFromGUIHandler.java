@@ -35,7 +35,7 @@ public class KickFromGUIHandler implements RedisMessageHandler<Request, Response
 
                 if (gui.getClass().getSimpleName().toLowerCase().contains(message.guiType().toLowerCase())) {
                     player.closeInventory();
-                    player.sendMessage("<c>You have been kicked from the {} GUI due to a data synchronization operation.", message.guiType());
+                    player.sendMessage("<c>由于数据同步操作，你已被移出 {} 界面。", message.guiType());
                     kickedPlayers.add(playerUUID);
                 }
             }

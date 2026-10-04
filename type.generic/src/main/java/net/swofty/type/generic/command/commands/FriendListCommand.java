@@ -11,7 +11,7 @@ import net.swofty.type.generic.user.categories.Rank;
 @CommandParameters(
         labels = "fl friendlist",
         description = "List your friends",
-        usage = "/fl [page]",
+        usage = "/fl [页码]",
         permission = Rank.DEFAULT,
         allowsConsole = false
 )

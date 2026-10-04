@@ -145,13 +145,13 @@ public record ProxyPlayer(UUID uuid) {
         waitingForTransferComplete.remove(uuid);
         notifyTransferFailed();
         future.completeExceptionally(error);
-        tellHere(Text.of("<c>Unable to transfer you: {}", rootMessage(error)));
+        tellHere(Text.of("<c>无法传送你：{}", rootMessage(error)));
     }
 
     public void transferTo(ServerType serverType) {
         resolveServer(serverType).thenAccept(this::transferToWithIndication)
                 .exceptionally(error -> {
-                    tellHere(Text.of("<c>Unable to transfer you: {}", rootMessage(error)));
+                    tellHere(Text.of("<c>无法传送你：{}", rootMessage(error)));
                     return null;
                 });
     }
@@ -182,7 +182,7 @@ public record ProxyPlayer(UUID uuid) {
                                 Map.of("type", serverType.toString())))
                 .thenApply(response -> {
                     if (!response.success() || response.data().get("server_uuid") == null) {
-                        throw new IllegalStateException(response.error() != null ? response.error() : "No destination server available");
+                        throw new IllegalStateException(response.error() != null ? response.error() : "没有可用的目标服务器");
                     }
                     return UUID.fromString((String) response.data().get("server_uuid"));
                 });

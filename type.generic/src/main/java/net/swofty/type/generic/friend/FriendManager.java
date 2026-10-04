@@ -66,12 +66,12 @@ public class FriendManager {
     public static void addFriend(HypixelPlayer player, String targetName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(player, "Couldn't find a player with that name!");
+            sendError(player, "找不到该名字的玩家！");
             return;
         }
 
         if (targetUUID.equals(player.getUuid())) {
-            sendError(player, "You cannot add yourself as a friend!");
+            sendError(player, "不能添加自己为好友！");
             return;
         }
 
@@ -82,7 +82,7 @@ public class FriendManager {
     public static void acceptRequest(HypixelPlayer player, String senderName) {
         @Nullable UUID senderUUID = HypixelDataHandler.getPotentialUUIDFromName(senderName);
         if (senderUUID == null) {
-            sendError(player, "Couldn't find a player with that name!");
+            sendError(player, "找不到该名字的玩家！");
             return;
         }
 
@@ -93,7 +93,7 @@ public class FriendManager {
     public static void denyRequest(HypixelPlayer player, String senderName) {
         @Nullable UUID senderUUID = HypixelDataHandler.getPotentialUUIDFromName(senderName);
         if (senderUUID == null) {
-            sendError(player, "Couldn't find a player with that name!");
+            sendError(player, "找不到该名字的玩家！");
             return;
         }
 
@@ -104,7 +104,7 @@ public class FriendManager {
     public static void removeFriend(HypixelPlayer player, String targetName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(player, "Couldn't find a player with that name!");
+            sendError(player, "找不到该名字的玩家！");
             return;
         }
 
@@ -120,7 +120,7 @@ public class FriendManager {
     public static void toggleBestFriend(HypixelPlayer player, String targetName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(player, "Couldn't find a player with that name!");
+            sendError(player, "找不到该名字的玩家！");
             return;
         }
 
@@ -131,7 +131,7 @@ public class FriendManager {
     public static void setNickname(HypixelPlayer player, String targetName, String nickname) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(player, "Couldn't find a player with that name!");
+            sendError(player, "找不到该名字的玩家！");
             return;
         }
 

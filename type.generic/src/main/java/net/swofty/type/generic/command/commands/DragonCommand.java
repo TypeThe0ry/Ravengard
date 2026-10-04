@@ -62,7 +62,7 @@ public class DragonCommand extends HypixelCommand {
     private void spawnDragon(HypixelPlayer player, double speed) {
         DragonEntity existing = playerDragons.get(player.getUuid());
         if (existing != null && !existing.isDead()) {
-            player.sendMessage("<c>You already have a dragon spawned! Use /dragon remove first.");
+            player.sendMessage("<c>你已经生成了一条龙！请先使用 /dragon remove。");
             return;
         }
 
@@ -71,63 +71,63 @@ public class DragonCommand extends HypixelCommand {
         dragon.addViewer(player);
         playerDragons.put(player.getUuid(), dragon);
 
-        player.sendMessage("<a>Dragon spawned!");
+        player.sendMessage("<a>龙已生成！");
     }
 
     private void followPlayer(HypixelPlayer player, double speed) {
         DragonEntity dragon = playerDragons.get(player.getUuid());
         if (dragon == null || dragon.isDead()) {
-            player.sendMessage("<c>You don't have a dragon! Use /dragon spawn first.");
+            player.sendMessage("<c>你还没有龙！请先使用 /dragon spawn。");
             return;
         }
 
         dragon.followPlayer(player, speed);
-        player.sendMessage("<a>Dragon is now following you at speed {}!", speed);
+        player.sendMessage("<a>龙正以 {} 的速度跟随你！", speed);
     }
 
     private void setIdle(HypixelPlayer player, double distance, double speed) {
         DragonEntity dragon = playerDragons.get(player.getUuid());
         if (dragon == null || dragon.isDead()) {
-            player.sendMessage("<c>You don't have a dragon! Use /dragon spawn first.");
+            player.sendMessage("<c>你还没有龙！请先使用 /dragon spawn。");
             return;
         }
 
         dragon.setIdle(player.getPosition().add(0, 10, 0), distance, speed);
-        player.sendMessage("<a>Dragon is now idling around your position with distance {}!", distance);
+        player.sendMessage("<a>龙正在你周围 {} 的距离内盘旋！", distance);
     }
 
     private void stopFollowing(HypixelPlayer player) {
         DragonEntity dragon = playerDragons.get(player.getUuid());
         if (dragon == null || dragon.isDead()) {
-            player.sendMessage("<c>You don't have a dragon!");
+            player.sendMessage("<c>你还没有龙！");
             return;
         }
 
         dragon.clearTarget();
-        player.sendMessage("<a>Dragon stopped.");
+        player.sendMessage("<a>龙已停下。");
     }
 
     private void removeDragon(HypixelPlayer player) {
         DragonEntity dragon = playerDragons.remove(player.getUuid());
         if (dragon == null) {
-            player.sendMessage("<c>You don't have a dragon!");
+            player.sendMessage("<c>你还没有龙！");
             return;
         }
 
         if (!dragon.isDead()) {
             dragon.remove();
         }
-        player.sendMessage("<a>Dragon removed!");
+        player.sendMessage("<a>龙已移除！");
     }
 
     private void showHelp(HypixelPlayer player) {
         player.sendMessage("<sep>");
-        player.sendMessage("<6>Dragon Commands");
-        player.sendMessage("<e>/dragon spawn [speed] <8>- <7>Spawn a dragon at your location");
-        player.sendMessage("<e>/dragon follow [speed] <8>- <7>Make the dragon follow you");
-        player.sendMessage("<e>/dragon idle [distance] <8>- <7>Make the dragon idle around your position");
-        player.sendMessage("<e>/dragon stop <8>- <7>Stop the dragon");
-        player.sendMessage("<e>/dragon remove <8>- <7>Remove your dragon");
+        player.sendMessage("<6>龙命令");
+        player.sendMessage("<e>/dragon spawn [speed] <8>- <7>在你的位置生成一条龙");
+        player.sendMessage("<e>/dragon follow [speed] <8>- <7>让龙跟随你");
+        player.sendMessage("<e>/dragon idle [distance] <8>- <7>让龙在你周围盘旋");
+        player.sendMessage("<e>/dragon stop <8>- <7>让龙停下");
+        player.sendMessage("<e>/dragon remove <8>- <7>移除你的龙");
         player.sendMessage("<sep>");
     }
 

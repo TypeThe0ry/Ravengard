@@ -53,9 +53,9 @@ public class RedisStaffChatBroadcast implements RedisMessageHandler<BroadcastSta
 
             String ign = handler.get(HypixelDataHandler.Data.IGN, DatapointString.class).getValue();
             Text displayName = Text.of("{}", rank.displayName(ign));
-            String action = isJoin ? "joined" : "left";
+            String action = isJoin ? "上线了" : "下线了";
 
-            sendToLocalStaff(Text.of("<b>[STAFF] <7>{} <7>{}.", displayName, action), playerUuid);
+            sendToLocalStaff(Text.of("<b>[工作人员] <7>{} <7>{}。", displayName, action), playerUuid);
         } catch (Exception e) {
         }
     }

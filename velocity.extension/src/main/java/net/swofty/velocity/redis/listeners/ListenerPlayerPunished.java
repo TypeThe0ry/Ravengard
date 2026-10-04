@@ -72,7 +72,7 @@ public class ListenerPlayerPunished implements RedisMessageHandler<
                 case BAN -> ProxyText.disconnect(player, PunishmentMessages.banMessage(activePunishment));
                 case MUTE -> player.sendMessage(PunishmentMessages.muteMessage(activePunishment));
                 case WARNING -> player.sendMessage(Text.of(
-                        "<c>[WARNING] <7>You have received a warning for the following reason: <e>{}",
+                        "<c>[警告] <7>你因以下原因收到警告：<e>{}",
                         finalReason.getReasonString()));
                 default -> {}
             }

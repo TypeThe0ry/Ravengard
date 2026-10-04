@@ -63,7 +63,7 @@ public class ResourcePackManager {
                 .packs(packs)
                 .replace(true)
                 .required(activePack.isRequired())
-                .prompt(Text.of("<a>This resource pack is required to play on Hypixel.").asComponent())
+                .prompt(Text.of("<a>在 Hypixel 游玩需要此资源包。").asComponent())
                 .callback((packId, status, audience) -> {
                     if (status.intermediate() || !pending.remove(packId)) return;
                     if (status != net.kyori.adventure.resource.ResourcePackStatus.SUCCESSFULLY_LOADED) {

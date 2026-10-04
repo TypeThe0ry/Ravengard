@@ -13,11 +13,11 @@ import java.util.Map;
 public class ServerStatusCommand implements SimpleCommand {
     @Override
     public void execute(Invocation invocation) {
-        invocation.source().sendMessage(Text.of("***** Server Status *****"));
+        invocation.source().sendMessage(Text.of("***** 服务器状态 *****"));
 
         Map<ServerType, List<GameServer>> serverMap = GameManager.getServers();
         if (serverMap.isEmpty()) {
-            invocation.source().sendMessage(Text.of("No servers are currently registered."));
+            invocation.source().sendMessage(Text.of("当前没有已注册的服务器。"));
             return;
         }
 
@@ -28,12 +28,12 @@ public class ServerStatusCommand implements SimpleCommand {
             invocation.source().sendMessage(Text.of("{}:", type.name()));
 
             if (gameServers.isEmpty()) {
-                invocation.source().sendMessage(Text.of(" - No servers of this type are currently online."));
+                invocation.source().sendMessage(Text.of(" - 当前没有在线的此类服务器。"));
                 continue;
             }
 
             for (GameServer server : gameServers) {
-                invocation.source().sendMessage(Text.of(" - {} (ID: {}, Port: {}, PlayerCount: {})",
+                invocation.source().sendMessage(Text.of(" - {}（ID：{}，端口：{}，玩家数：{}）",
                         server.displayName(),
                         server.internalID(),
                         server.registeredServer().getServerInfo().getAddress().getPort(),

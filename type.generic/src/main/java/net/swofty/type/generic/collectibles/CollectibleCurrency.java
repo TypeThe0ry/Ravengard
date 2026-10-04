@@ -8,9 +8,9 @@ import java.util.Locale;
 
 @Getter
 public enum CollectibleCurrency {
-    BEDWARS_TOKENS("Tokens", NamedTextColor.DARK_GREEN),
-    SKYWARS_COINS("Tokens", NamedTextColor.DARK_GREEN),
-    MURDER_MYSTERY_COINS("Tokens", NamedTextColor.DARK_GREEN);
+    BEDWARS_TOKENS("代币", NamedTextColor.DARK_GREEN),
+    SKYWARS_COINS("代币", NamedTextColor.DARK_GREEN),
+    MURDER_MYSTERY_COINS("代币", NamedTextColor.DARK_GREEN);
 
     private final String displayName;
     private final TextColor color;

@@ -29,7 +29,7 @@ public class PunishmentReason {
         } else if (muteType != null) {
             return muteType.getReason();
         } else {
-            return "Could not resolve reason.";
+            return "无法解析原因。";
         }
     }
 }

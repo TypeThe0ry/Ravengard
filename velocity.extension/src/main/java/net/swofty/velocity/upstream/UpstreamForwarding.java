@@ -72,7 +72,7 @@ public final class UpstreamForwarding {
     public void onLogin(LoginEvent event) {
         if (!verified.remove(event.getPlayer().getUniqueId())) {
             event.setResult(ResultedEvent.ComponentResult.denied(
-                Component.text("This server only accepts connections through the network proxy.")));
+                Component.text("本服务器只接受通过网络代理的连接。")));
         }
     }
 

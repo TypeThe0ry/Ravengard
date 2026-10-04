@@ -34,15 +34,15 @@ public final class CollectibleEvaluator {
 
         Rank requiredRank = requirement.requiredRank();
         if (requiredRank != null && !player.getRank().isEqualOrHigherThan(requiredRank)) {
-            return CollectibleSelectionCheck.blocked("<c>Requires "
-                + requiredRank.prefixMarkup() + "<c>.");
+            return CollectibleSelectionCheck.blocked("<c>需要 "
+                + requiredRank.prefixMarkup() + "<c>。");
         }
 
         return switch (requirement.method()) {
             case FREE, RANK -> CollectibleSelectionCheck.allowed();
             case MANUAL, CURRENCY -> manuallyUnlocked
                 ? CollectibleSelectionCheck.allowed()
-                : CollectibleSelectionCheck.blocked(defaultReason(requirement, "Locked."));
+                : CollectibleSelectionCheck.blocked(defaultReason(requirement, "未解锁。"));
             case CUSTOM -> {
                 if (manuallyUnlocked) {
                     yield CollectibleSelectionCheck.allowed();
@@ -54,15 +54,15 @@ public final class CollectibleEvaluator {
                 if (unlocked) {
                     yield CollectibleSelectionCheck.allowed();
                 }
-                yield CollectibleSelectionCheck.blocked(defaultReason(requirement, "Locked."));
+                yield CollectibleSelectionCheck.blocked(defaultReason(requirement, "未解锁。"));
             }
             case BEDWARS_LEVEL -> {
                 int requiredLevel = requirement.cost() == null ? 0 : requirement.cost().intValue();
                 if (bedWarsLevel(player) >= requiredLevel) {
                     yield CollectibleSelectionCheck.allowed();
                 }
-                yield CollectibleSelectionCheck.blocked(defaultReason(requirement, "<c><l>!! </l><c>You must be level "
-                    + NUMBER_FORMAT.format(requiredLevel) + " to use this\n<c>prestige!"));
+                yield CollectibleSelectionCheck.blocked(defaultReason(requirement, "<c><l>!! </l><c>你必须达到 "
+                    + NUMBER_FORMAT.format(requiredLevel) + " 级才能使用此\n<c>声望！"));
             }
         };
     }
@@ -83,7 +83,7 @@ public final class CollectibleEvaluator {
         if (requirement.method() == CollectibleUnlockMethod.CURRENCY
             && requirement.cost() != null
             && requirement.cost() > 0) {
-            return "<7>Cost: " + requirement.currency().getColor() + NUMBER_FORMAT.format(requirement.cost()) + " " + requirement.currency().getDisplayName() + "<7>.";
+            return "<7>花费：" + requirement.currency().getColor() + NUMBER_FORMAT.format(requirement.cost()) + " " + requirement.currency().getDisplayName() + "<7>。";
         }
         return fallback;
     }
@@ -91,14 +91,14 @@ public final class CollectibleEvaluator {
     private static String unavailableReason(CollectibleUnlockRequirement requirement, CollectibleEvent event) {
         String customText = requirement.customDisplayText();
         if (event != null) {
-            return "<c>Available during the " + event.displayName() + " Event.";
+            return "<c>仅在" + event.displayName() + "活动期间可用。";
         }
 
         if (customText != null && !customText.isBlank()) {
             return "<c>" + customText;
         }
 
-        return "<c>Unavailable right now.";
+        return "<c>当前不可用。";
     }
 
     private static String formatTimestamp(Long timestampMs) {

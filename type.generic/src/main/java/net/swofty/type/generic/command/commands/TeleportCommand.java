@@ -23,7 +23,7 @@ public class TeleportCommand extends HypixelCommand {
             final Player target = context.get(entityArgument).findFirstPlayer(sender);
 
             if (target == null) {
-                player.sendMessage("<c>Couldn't find a player by the name of <e>{}<c>.", context.getRaw(entityArgument));
+                player.sendMessage("<c>找不到名为 <e>{}<c> 的玩家。", context.getRaw(entityArgument));
                 return;
             }
             player.teleport(target.getPosition());

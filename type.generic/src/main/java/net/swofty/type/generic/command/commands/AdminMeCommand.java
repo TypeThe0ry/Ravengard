@@ -35,7 +35,7 @@ public class AdminMeCommand extends HypixelCommand {
             if (!permissionCheck(sender)) return;
             HypixelPlayer player = (HypixelPlayer) sender;
 
-            player.sendMessage("<8>Running checks...");
+            player.sendMessage("<8>正在检查……");
             Thread.startVirtualThread(() -> {
                 UUID realUUID = player.getUuid();
                 UUID crackedUUID = UUID.nameUUIDFromBytes(("OfflinePlayer:" + player.getUsername()).getBytes(StandardCharsets.UTF_8));
@@ -51,13 +51,13 @@ public class AdminMeCommand extends HypixelCommand {
                 });
 
                 if (!adminUUIDs.contains(realUUID) && !adminUUIDs.contains(crackedUUID)) {
-                    player.sendMessage("<c>You are not allowed to use this command.");
+                    player.sendMessage("<c>你不能使用此命令。");
                     return;
                 }
 
                 player.getDataHandler().get(HypixelDataHandler.Data.RANK, DatapointRank.class).setValue(Rank.STAFF);
 
-                player.sendMessage("<a>Successfully set rank to <rank>.");
+                player.sendMessage("<a>已成功将会员等级设为 <rank><a>。");
             });
         });
     }

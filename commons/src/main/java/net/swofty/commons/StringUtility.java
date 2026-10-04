@@ -31,13 +31,13 @@ public final class StringUtility {
 		long timeDifference = System.currentTimeMillis() - millis;
 		// Simplified the calculation logic by abstracting repetitive calculations
 		long[] timeUnits = {TimeUnit.DAYS.toMillis(1), TimeUnit.HOURS.toMillis(1), TimeUnit.MINUTES.toMillis(1)};
-		String[] timeLabels = {"d ago", "h ago", "m ago"};
+		String[] timeLabels = {"天前", "小时前", "分钟前"};
 		for (int i = 0; i < timeUnits.length; i++) {
 			if (timeDifference >= timeUnits[i]) {
 				return (timeDifference / timeUnits[i]) + timeLabels[i];
 			}
 		}
-		return "Just now";
+		return "刚刚";
 	}
 
 	public static String commaifyAndTh(double d) {
@@ -57,13 +57,13 @@ public final class StringUtility {
 		long timeDifference = System.currentTimeMillis() - millis;
 		// Simplified the calculation logic by abstracting repetitive calculations
 		long[] timeUnits = {TimeUnit.DAYS.toMillis(1), TimeUnit.HOURS.toMillis(1), TimeUnit.MINUTES.toMillis(1)};
-		String[] timeLabels = {"d", "h", "m"};
+		String[] timeLabels = {"天", "小时", "分钟"};
 		for (int i = 0; i < timeUnits.length; i++) {
 			if (timeDifference >= timeUnits[i]) {
 				return (timeDifference / timeUnits[i]) + timeLabels[i];
 			}
 		}
-		return "Just now";
+		return "刚刚";
 	}
 
 	public static double roundTo(double d, int decimalPlaces) {
@@ -96,10 +96,10 @@ public final class StringUtility {
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis % TimeUnit.MINUTES.toMillis(1));
 
 		// Eliminated redundant checks by concatenating non-zero values directly
-		if (days > 0) sb.append(days).append("d ");
-		if (hours > 0) sb.append(hours).append("h ");
-		if (minutes > 0) sb.append(minutes).append("m ");
-		if (seconds > 0 || sb.isEmpty()) sb.append(seconds).append("s");
+		if (days > 0) sb.append(days).append("天 ");
+		if (hours > 0) sb.append(hours).append("小时 ");
+		if (minutes > 0) sb.append(minutes).append("分钟 ");
+		if (seconds > 0 || sb.isEmpty()) sb.append(seconds).append("秒");
 		return sb.toString().trim();
 	}
 
@@ -111,10 +111,10 @@ public final class StringUtility {
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(millis % TimeUnit.MINUTES.toMillis(1));
 
 		// Eliminated redundant checks by concatenating non-zero values directly
-		if (days > 0) sb.append(days).append((days == 1) ? " day " : " days ");
-		if (hours > 0) sb.append(hours).append((hours == 1) ? " hour " : " hours ");
-		if (minutes > 0) sb.append(minutes).append((minutes == 1) ? " minute " : " minutes ");
-		if (seconds > 0 || sb.isEmpty()) sb.append(seconds).append((seconds == 1) ? " second " : " seconds ");
+		if (days > 0) sb.append(days).append(" 天 ");
+		if (hours > 0) sb.append(hours).append(" 小时 ");
+		if (minutes > 0) sb.append(minutes).append(" 分钟 ");
+		if (seconds > 0 || sb.isEmpty()) sb.append(seconds).append(" 秒 ");
 		return sb.toString().trim();
 	}
 
@@ -244,7 +244,7 @@ public final class StringUtility {
 
 	public static String getAuctionSetupFormattedTime(long millis) {
 		return formatTimeLeft(millis).replace(" ", "")
-				.replaceAll("s$", "");
+				.replaceAll("秒$", "");
 	}
 
 	public static String formatAsDate(long millis) {

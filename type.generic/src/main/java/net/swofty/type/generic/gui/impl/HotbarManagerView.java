@@ -24,7 +24,7 @@ public class HotbarManagerView extends StatelessView {
 
     @Override
     public ViewConfiguration<DefaultState> configuration() {
-        return ViewConfiguration.withString((_, _) -> "Hotbar Manager", InventoryType.CHEST_6_ROW);
+        return ViewConfiguration.withString((_, _) -> "快捷栏管理", InventoryType.CHEST_6_ROW);
     }
 
     private final int[] SELECTABLE_SLOTS = new int[]{10, 11, 12, 13, 14, 15, 16, 17};
@@ -36,13 +36,13 @@ public class HotbarManagerView extends StatelessView {
         layout.slot(
             50,
             (s, c) -> ItemStacks.item(Material.BARRIER, 1, """
-                <c>Reset to Default
-                <7>Reset your hotbar to the default."""),
+                <c>恢复默认
+                <7>将快捷栏恢复为默认布局。"""),
             (clickContext, c) -> {
                 BedWarsDataHandler dataHandler = BedWarsDataHandler.getUser(c.player());
                 if (dataHandler == null) {
                     c.backOrClose();
-                    c.player().sendMessage("<c>An error occurred while trying to reset your hotbar layout. Please try again later.");
+                    c.player().sendMessage("<c>重置快捷栏布局时发生错误，请稍后再试。");
                     return;
                 }
                 dataHandler.get(BedWarsDataHandler.Data.HOTBAR_LAYOUT, DatapointBedWarsHotbar.class).setValue(DatapointBedWarsHotbar.defaultHotbar);
@@ -53,8 +53,8 @@ public class HotbarManagerView extends StatelessView {
         layout.slots(
             Layouts.rectangle(18, 26),
             (_, _) -> ItemStacks.item(Material.GRAY_STAINED_GLASS_PANE, 1, """
-                <8>⬆ <7>Categories
-                <8>⬇ <7>Hotbar""")
+                <8>⬆ <7>类别
+                <8>⬇ <7>快捷栏""")
         );
 
 
@@ -68,11 +68,11 @@ public class HotbarManagerView extends StatelessView {
                 slot,
                 (s, c) -> ItemStacks.item(finalItemType.getMaterial(), 1, """
                     <a>{}
-                    <7>Drag this to a hotbar slot below to
-                    <7>favor that slot when purchasing an
-                    <7>item in this category or on spawn.
+                    <7>将其拖到下方的快捷栏格子，
+                    <7>购买该类别的物品或重生时
+                    <7>会优先放入该格子。
 
-                    <e>Click to drag!""", finalItemType.pretty()), (clickContext, context) -> {
+                    <e>点击拖动！""", finalItemType.pretty()), (clickContext, context) -> {
                     final HypixelPlayer player = context.player();
                     ItemStack cursorItem = player.getInventory().getCursorItem();
                     if (!cursorItem.isAir() && getItemTypeFromCursor(cursorItem) == null) {
@@ -93,16 +93,16 @@ public class HotbarManagerView extends StatelessView {
 
                     if (type == null) {
                         return ItemStacks.item(Material.AIR, 1, """
-                            <7>Empty Hotbar Slot
-                            <7>Drag a category item here to
-                            <7>prioritize this hotbar slot.""");
+                            <7>空快捷栏格子
+                            <7>将类别物品拖到这里，
+                            <7>即可优先使用此快捷栏格子。""");
                     }
 
                     return ItemStacks.item(type.getMaterial(), 1, """
                         <a>{}
-                        <7>{} items will prioritize this slot!
+                        <7>{}物品将优先放入此格子！
 
-                        <e>Click to remove!""", type.pretty(), type.pretty());
+                        <e>点击移除！""", type.pretty(), type.pretty());
                 },
                 (clickContext, c) -> {
                     final HypixelPlayer player = c.player();
@@ -147,7 +147,7 @@ public class HotbarManagerView extends StatelessView {
     private ItemStack.Builder buildCursorItem(DatapointBedWarsHotbar.HotbarItemType itemType) {
         return ItemStacks.item(itemType.getMaterial(), 1, """
             <a>{}
-            <7>Drag this to the hotbar slot you want to favor {} items in!""", itemType.pretty(), itemType.pretty());
+            <7>将其拖到你希望优先放置{}物品的快捷栏格子！""", itemType.pretty(), itemType.pretty());
     }
 
     private DatapointBedWarsHotbar.HotbarItemType getItemTypeFromCursor(ItemStack cursorItem) {

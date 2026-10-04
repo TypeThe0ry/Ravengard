@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
         labels = "ban tempban banip tempbanip",
         permission = Rank.STAFF,
         description = "Ban a player from the server.",
-        usage = "/ban <player> [duration] <reason>",
+        usage = "/ban <玩家> [时长] <原因>",
         allowsConsole = false
 )
 public class BanCommand extends HypixelCommand {
@@ -42,13 +42,13 @@ public class BanCommand extends HypixelCommand {
         ArgumentString durationArg = ArgumentType.String("duration");
         Argument<String> reasonArg = ArgumentType.String("reason").setSuggestionCallback((sender, context, suggestion) -> {
             for (BanType type : BanType.values()) {
-                suggest(suggestion, type.name(), "<c>{} <7>| Wipe: {}", type.getReason(), type.isWipe());
+                suggest(suggestion, type.name(), "<c>{} <7>| 清档：{}", type.getReason(), type.isWipe());
             }
         });
         Argument<String[]> extraArg = ArgumentType.StringArray("extra").setSuggestionCallback((sender, context, suggestion) -> {
             for (PunishmentTag tag : PunishmentTag.values()) {
                 suggest(suggestion, "-" + tag.getShortCode(), "<e>{} <7>| {}", tag.getShortCode(),
-                        tag.getDescription() != null ? tag.getDescription() : "No description");
+                        tag.getDescription() != null ? tag.getDescription() : "无描述");
             }
         });
 

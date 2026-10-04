@@ -7,10 +7,10 @@ import net.swofty.commons.text.Text;
 
 @Getter
 public enum SeasonType {
-    HOLIDAY("Holiday", NamedTextColor.RED, "Christmas/Winter event"),
-    EASTER("Easter", NamedTextColor.AQUA, "Easter/Spring event"),
-    SUMMER("Summer", NamedTextColor.YELLOW, "Summer event"),
-    HALLOWEEN("Halloween", NamedTextColor.GOLD, "Halloween event");
+    HOLIDAY("节日", NamedTextColor.RED, "圣诞/冬季活动"),
+    EASTER("复活节", NamedTextColor.AQUA, "复活节/春季活动"),
+    SUMMER("夏日", NamedTextColor.YELLOW, "夏日活动"),
+    HALLOWEEN("万圣节", NamedTextColor.GOLD, "万圣节活动");
 
     private final String displayName;
     private final TextColor color;
@@ -32,6 +32,6 @@ public enum SeasonType {
     }
 
     public Text getFormattedName() {
-        return Text.of("<color:{}>{} Achievement", color, displayName);
+        return Text.of("<color:{}>{}成就", color, displayName);
     }
 }

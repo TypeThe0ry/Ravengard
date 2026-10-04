@@ -43,7 +43,7 @@ public class GuildManager {
     public static void invitePlayer(HypixelPlayer inviter, String targetName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(inviter, "<c>Couldn't find a player with that name!");
+            sendError(inviter, "<c>找不到该名字的玩家！");
             return;
         }
         GuildInviteRequestEvent event = new GuildInviteRequestEvent(inviter.getUuid(), targetUUID);
@@ -53,7 +53,7 @@ public class GuildManager {
     public static void acceptInvite(HypixelPlayer player, String inviterName) {
         @Nullable UUID inviterUUID = HypixelDataHandler.getPotentialUUIDFromName(inviterName);
         if (inviterUUID == null) {
-            sendError(player, "<c>Couldn't find a player with that name!");
+            sendError(player, "<c>找不到该名字的玩家！");
             return;
         }
         GuildAcceptInviteRequestEvent event = new GuildAcceptInviteRequestEvent(player.getUuid(), inviterUUID);
@@ -68,7 +68,7 @@ public class GuildManager {
     public static void kickPlayer(HypixelPlayer kicker, String targetName, String reason) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(kicker, "<c>Couldn't find a player with that name!");
+            sendError(kicker, "<c>找不到该名字的玩家！");
             return;
         }
         GuildKickRequestEvent event = new GuildKickRequestEvent(kicker.getUuid(), targetUUID, reason);
@@ -83,7 +83,7 @@ public class GuildManager {
     public static void promotePlayer(HypixelPlayer promoter, String targetName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(promoter, "<c>Couldn't find a player with that name!");
+            sendError(promoter, "<c>找不到该名字的玩家！");
             return;
         }
         GuildPromoteRequestEvent event = new GuildPromoteRequestEvent(promoter.getUuid(), targetUUID);
@@ -93,7 +93,7 @@ public class GuildManager {
     public static void demotePlayer(HypixelPlayer demoter, String targetName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(demoter, "<c>Couldn't find a player with that name!");
+            sendError(demoter, "<c>找不到该名字的玩家！");
             return;
         }
         GuildDemoteRequestEvent event = new GuildDemoteRequestEvent(demoter.getUuid(), targetUUID);
@@ -103,7 +103,7 @@ public class GuildManager {
     public static void transferOwnership(HypixelPlayer owner, String targetName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(owner, "<c>Couldn't find a player with that name!");
+            sendError(owner, "<c>找不到该名字的玩家！");
             return;
         }
         GuildTransferRequestEvent event = new GuildTransferRequestEvent(owner.getUuid(), targetUUID);
@@ -137,7 +137,7 @@ public class GuildManager {
     public static void setRank(HypixelPlayer setter, String targetName, String rankName) {
         @Nullable UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(targetName);
         if (targetUUID == null) {
-            sendError(setter, "<c>Couldn't find a player with that name!");
+            sendError(setter, "<c>找不到该名字的玩家！");
             return;
         }
         GuildSetRankRequestEvent event = new GuildSetRankRequestEvent(setter.getUuid(), targetUUID, rankName);
@@ -167,7 +167,7 @@ public class GuildManager {
         if (target.equalsIgnoreCase("everyone")) return "everyone";
         UUID targetUUID = HypixelDataHandler.getPotentialUUIDFromName(target);
         if (targetUUID == null) {
-            sendError(player, "<c>Couldn't find a player with that name!");
+            sendError(player, "<c>找不到该名字的玩家！");
             return null;
         }
         return targetUUID.toString();

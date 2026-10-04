@@ -16,13 +16,13 @@ public class LobbyCommand implements SimpleCommand {
     public void execute(Invocation invocation) {
         CommandSource source = invocation.source();
         if (!(source instanceof Player player)) {
-            source.sendMessage(Text.of("<c>This command can only be used by players."));
+            source.sendMessage(Text.of("<c>该命令只能由玩家使用。"));
             return;
         }
 
         String[] args = invocation.arguments();
         if (args.length > 1) {
-            player.sendMessage(Text.of("<c>Usage: /lobby [game]"));
+            player.sendMessage(Text.of("<c>用法：/lobby [游戏]"));
             return;
         }
 
@@ -38,7 +38,7 @@ public class LobbyCommand implements SimpleCommand {
             destination = RavengardOnlyRouting.lobbyDestination(
                 currentType, LobbyDestination.resolveFromAlias(args[0]));
             if (destination == null) {
-                player.sendMessage(Text.of("<c>Unknown lobby destination. Try /lobby bw, /lobby sw, /lobby bedwars, /lobby skywars."));
+                player.sendMessage(Text.of("<c>未知的大厅目标。可尝试 /lobby bw、/lobby sw、/lobby bedwars、/lobby skywars。"));
                 return;
             }
         }

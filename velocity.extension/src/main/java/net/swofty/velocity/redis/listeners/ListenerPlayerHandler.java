@@ -4,7 +4,6 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ServerConnection;
 import net.kyori.adventure.text.serializer.json.JSONComponentSerializer;
 import net.swofty.commons.ServerType;
-import net.swofty.commons.StringUtility;
 import net.swofty.commons.UnderstandableProxyServer;
 import net.swofty.commons.protocol.RedisProtocol;
 import net.swofty.commons.protocol.objects.proxy.from.RunEventProtocol;
@@ -64,11 +63,11 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
                 ServerType type = ServerType.valueOf((String) data.get("type"));
                 if (!GameManager.hasType(type) || !GameManager.isAnyEmpty(type)) {
                     return new PlayerHandlerProtocol.Response(Map.of(), false,
-                            "There are no " + StringUtility.toNormalCase(type.name()) + " servers available");
+                            "当前没有可用的 " + type.formatName() + " 服务器");
                 }
                 GameManager.GameServer server = net.swofty.velocity.gamemanager.BalanceConfigurations.getServerFor(player, type);
                 if (server == null || !server.hasEmptySlots()) {
-                    return new PlayerHandlerProtocol.Response(Map.of(), false, "No destination server available");
+                    return new PlayerHandlerProtocol.Response(Map.of(), false, "没有可用的目标服务器");
                 }
                 return new PlayerHandlerProtocol.Response(
                         Map.of("server_uuid", server.internalID().toString()), true, null);
@@ -99,20 +98,20 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
 
                 if (serverInfo == null) {
                     player.sendMessage(Text.of(
-                        "<c>We encountered an issue while attempting to locate the server on the network. Please try again later."
+                        "<c>在网络中查找服务器时出现问题，请稍后再试。"
                     ));
                     return new PlayerHandlerProtocol.Response(Map.of(), false,
-                            "The destination server could not be located on the network");
+                            "无法在网络中找到目标服务器");
                 }
 
-                player.sendMessage(Text.of("<7>Sending to server {}...", serverInfo.displayName()));
+                player.sendMessage(Text.of("<7>正在传送到服务器 {}……", serverInfo.displayName()));
 
                 if (!serverInfo.hasEmptySlots()) {
                     player.sendMessage(Text.of(
-                        "<c>Attempted to connect to {}, but there are no empty slots available. Please try again later.",
+                        "<c>尝试连接到 {}，但没有空余位置。请稍后再试。",
                         serverInfo.displayName()
                     ));
-                    return new PlayerHandlerProtocol.Response(Map.of(), false, "The destination server is full");
+                    return new PlayerHandlerProtocol.Response(Map.of(), false, "目标服务器已满");
                 }
 
                 if (data.get("document") instanceof String document) {
@@ -126,7 +125,7 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
                     var cacheResponse = new DataRequest(server.toString(), "player-transfer-data", payload).await().join();
                     if (cacheResponse.data() == null || !cacheResponse.data().optBoolean("cached")) {
                         return new PlayerHandlerProtocol.Response(Map.of(), false,
-                                "The destination server did not acknowledge your data");
+                                "目标服务器未确认你的数据");
                     }
                 }
 
@@ -137,7 +136,7 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
                 } catch (Exception exception) {
                     Throwable cause = exception.getCause() != null ? exception.getCause() : exception;
                     return new PlayerHandlerProtocol.Response(Map.of(), false,
-                        "Transfer failed: " + cause.getMessage());
+                        "传送失败：" + cause.getMessage());
                 } finally {
                     transferHandler.removeFromDisregard();
                 }
@@ -149,8 +148,8 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
                     || new TransferHandler(player).isInLimbo()
                     || !GameManager.isAnyEmpty(type)) {
                     player.sendMessage(Text.of(
-                        "<c>Attempted to transfer to a {} server, but there are no empty slots available. Please try again later.",
-                        StringUtility.toNormalCase(type.name())
+                        "<c>尝试传送到 {} 服务器，但没有空余位置，请稍后再试。",
+                        type.formatName()
                     ));
                     return EMPTY;
                 }

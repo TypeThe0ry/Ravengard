@@ -5,9 +5,9 @@ import net.minestom.server.item.Material;
 
 @Getter
 public enum AchievementType {
-    CHALLENGE("Challenge", "One-time achievements", Material.DIAMOND),
-    TIERED("Tiered", "Multi-tier progressive achievements", Material.DIAMOND_BLOCK),
-    SEASONAL("Seasonal", "Event-specific achievements", Material.MAGMA_CREAM);
+    CHALLENGE("挑战", "一次性成就", Material.DIAMOND),
+    TIERED("分级", "多级递进成就", Material.DIAMOND_BLOCK),
+    SEASONAL("季节", "限时活动成就", Material.MAGMA_CREAM);
 
     private final String displayName;
     private final String description;

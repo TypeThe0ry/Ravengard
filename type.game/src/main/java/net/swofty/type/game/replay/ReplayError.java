@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum ReplayError {
-    UNSUPPORTED_CODEC(3, "UNSUPPORTED CODEC {}"),
-    REPLAY_NOT_FOUND(404, "REPLAY NOT FOUND"),
-    JAVA_EXCEPTION(500, "UNKNOWN EXCEPTION"),
-    REPLAY_INCOMPLETE(501, "REPLAY INCOMPLETE"),
+    UNSUPPORTED_CODEC(3, "不支持的编解码器 {}"),
+    REPLAY_NOT_FOUND(404, "未找到回放"),
+    JAVA_EXCEPTION(500, "未知异常"),
+    REPLAY_INCOMPLETE(501, "回放不完整"),
     ;
 
     private final int code;

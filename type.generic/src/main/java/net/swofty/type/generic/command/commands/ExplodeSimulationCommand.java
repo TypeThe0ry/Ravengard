@@ -10,7 +10,7 @@ import net.swofty.type.generic.user.categories.Rank;
 import net.swofty.type.generic.utility.AnimatedExplosion;
 
 @CommandParameters(labels = "explodesimulation", description = "Simulates an explosion with falling blocks",
-        usage = "/explodesimulation <radius> [knockbackStrength]",
+        usage = "/explodesimulation <半径> [击退强度]",
         permission = Rank.STAFF,
         allowsConsole = false)
 public class ExplodeSimulationCommand extends HypixelCommand {
@@ -39,11 +39,11 @@ public class ExplodeSimulationCommand extends HypixelCommand {
     private void executeExplosion(HypixelPlayer player, int radius, double knockbackStrength) {
         Instance instance = player.getInstance();
         if (instance == null) {
-            player.sendMessage("<c>No instance found!");
+            player.sendMessage("<c>未找到实例！");
             return;
         }
 
         int blockCount = AnimatedExplosion.create(instance, player.getPosition(), radius, knockbackStrength, player);
-        player.sendMessage("<a>Explosion simulated! <7>({} blocks affected)", blockCount);
+        player.sendMessage("<a>已模拟爆炸！<7>（影响 {} 个方块）", blockCount);
     }
 }

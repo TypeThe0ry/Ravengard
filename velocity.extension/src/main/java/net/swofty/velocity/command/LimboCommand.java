@@ -15,7 +15,7 @@ public class LimboCommand implements SimpleCommand {
         if (!(source instanceof Player player)) {
             return;
         }
-        player.sendMessage(Text.of("<7>Sending to Ravengard Lobby..."));
+        player.sendMessage(Text.of("<7>正在传送到天穹余烬大厅……"));
         new TransferHandler(player).transferTo(ServerType.RAVENGARD_LOBBY);
     }
 }

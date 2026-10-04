@@ -117,43 +117,43 @@ public abstract class CollectibleSelectionView extends StatefulPaginatedView<Col
 
         if (isPreviewSupported(player, item)) {
             lore.add(Text.empty());
-            lore.add(Text.of("<e>Right-Click to preview!"));
+            lore.add(Text.of("<e>右键预览！"));
         }
 
         if (hasDetailSection) {
             lore.add(Text.empty());
 
             if (event != null) {
-                lore.add(Text.of("<7>Event: <b>{}", event.displayName()));
+                lore.add(Text.of("<7>活动：<b>{}", event.displayName()));
                 if (showRarity) {
                     lore.add(Text.empty());
                 }
             }
 
             if (showRarity) {
-                lore.add(Text.of("<7>Rarity: {}", item.rarity().formattedName()));
+                lore.add(Text.of("<7>稀有度：{}", item.rarity().formattedName()));
             }
 
             lore.add(Text.empty());
         }
 
         if (selectable) {
-            lore.add(Text.of(selected ? "<a>Selected!" : "<e>Click to select!"));
+            lore.add(Text.of(selected ? "<a>已选择！" : "<e>点击选择！"));
 
             if (favoriteable) {
-                lore.add(Text.of("<e>Shift-click to toggle favorite!"));
+                lore.add(Text.of("<e>Shift+点击切换收藏！"));
             }
         } else {
             if (!hasDetailSection) {
                 lore.add(Text.empty());
             }
 
-            String reason = check.reason() != null ? check.reason() : "<c>Locked.";
+            String reason = check.reason() != null ? check.reason() : "<c>未解锁。";
             lore.addAll(legacyLines(reason));
 
             if (showInsufficientTokens) {
                 lore.add(Text.empty());
-                lore.addAll(Text.of("<c><wrap:38>You don't have enough tokens to buy that!</wrap>").lines());
+                lore.addAll(Text.of("<c><wrap:38>你的代币不足，无法购买！</wrap>").lines());
             }
         }
 
@@ -175,14 +175,14 @@ public abstract class CollectibleSelectionView extends StatefulPaginatedView<Col
             && (click.click() instanceof Click.LeftShift || click.click() instanceof Click.RightShift)) {
             CollectibleSelectionCheck check = selectionCheck(click.player(), item);
             if (!check.selectable()) {
-                String reason = check.reason() != null ? check.reason() : "Locked.";
+                String reason = check.reason() != null ? check.reason() : "未解锁。";
                 click.player().sendMessage(bottomLineFailureMessage(reason));
                 ctx.session(State.class).refresh();
                 return;
             }
 
             boolean favorite = toggleFavorite(click.player(), item);
-            click.player().sendMessage(favorite ? "<a>Added to favorites." : "<c>Removed from favorites.");
+            click.player().sendMessage(favorite ? "<a>已加入收藏。" : "<c>已移出收藏。");
             ctx.session(State.class).refresh();
             return;
         }
@@ -214,18 +214,18 @@ public abstract class CollectibleSelectionView extends StatefulPaginatedView<Col
         Components.backOrClose(layout, 48, ctx);
 
         layout.slot(49, (s, c) -> ItemStacks.item(Material.EMERALD, 1, """
-            <7>Total {}: <2>{:,}
+            <7>{}总计：<2>{:,}
             <6>https://store.hypixel.net""", tokenCurrencyLabel(), tokenBalance(c.player())));
 
         layout.slot(50, (s, c) -> ItemStacks.item(Material.HOPPER, 1,
-            "<6>Sorted by: <a>{}\n"
-                + "<7>Sort order: <a>{}\n"
+            "<6>排序方式：<a>{}\n"
+                + "<7>排序顺序：<a>{}\n"
                 + "\n"
-                + "<7>Next sort: <a>{}\n"
-                + "<e>Left click to use!\n"
+                + "<7>下一种排序：<a>{}\n"
+                + "<e>左键使用！\n"
                 + "\n"
-                + "<7>Owned items first: " + (s.ownedFirst() ? "<a>Yes" : "<c>No") + "\n"
-                + "<e>Right click to toggle!",
+                + "<7>已拥有的优先：" + (s.ownedFirst() ? "<a>是" : "<c>否") + "\n"
+                + "<e>右键切换！",
             s.sortMode().displayName, s.sortMode().displayName, s.sortMode().next().displayName
         ), (click, context) -> {
             if (click.click() instanceof Click.Right) {
@@ -252,7 +252,7 @@ public abstract class CollectibleSelectionView extends StatefulPaginatedView<Col
     }
 
     protected String tokenCurrencyLabel() {
-        return "Tokens";
+        return "代币";
     }
 
     protected boolean isCategoryFavoriteable(CollectibleCategory category) {
@@ -356,12 +356,12 @@ public abstract class CollectibleSelectionView extends StatefulPaginatedView<Col
     }
 
     private boolean isCostReason(String reason) {
-        return reason != null && reason.contains("Cost:");
+        return reason != null && reason.contains("花费：");
     }
 
     private Text bottomLineFailureMessage(String message) {
         if (message == null || message.isBlank()) {
-            return Text.of("<c>Action failed.");
+            return Text.of("<c>操作失败。");
         }
 
         String normalized = message.replace("\r\n", "\n").replace('\r', '\n');
@@ -381,7 +381,7 @@ public abstract class CollectibleSelectionView extends StatefulPaginatedView<Col
             return Text.of("<c>{}", line);
         }
 
-        return Text.of("<c>Action failed.");
+        return Text.of("<c>操作失败。");
     }
 
     public record SelectionOutcome(boolean success, String message) {
@@ -395,9 +395,9 @@ public abstract class CollectibleSelectionView extends StatefulPaginatedView<Col
     }
 
     public enum SortMode {
-        HIGHEST_RARITY_FIRST("Highest rarity first"),
-        A_TO_Z("A to Z"),
-        LOWEST_RARITY_FIRST("Lowest rarity first");
+        HIGHEST_RARITY_FIRST("稀有度从高到低"),
+        A_TO_Z("名称 A-Z"),
+        LOWEST_RARITY_FIRST("稀有度从低到高");
 
         private final String displayName;
 

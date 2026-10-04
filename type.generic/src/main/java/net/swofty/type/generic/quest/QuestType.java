@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum QuestType {
-    DAILY("Daily", "Resets every day at midnight UTC"),
-    WEEKLY("Weekly", "Resets every Thursday at midnight UTC"),
-    SPECIAL_DAILY("Special Daily", "Special daily quests with unique rewards"),
-    CHALLENGE("Challenge", "Can be completed multiple times per day, once per game");
+    DAILY("每日", "每天 UTC 零点重置"),
+    WEEKLY("每周", "每周四 UTC 零点重置"),
+    SPECIAL_DAILY("特殊每日", "带有独特奖励的特殊每日任务"),
+    CHALLENGE("挑战", "每天可完成多次，每局限一次");
 
     private final String displayName;
     private final String description;

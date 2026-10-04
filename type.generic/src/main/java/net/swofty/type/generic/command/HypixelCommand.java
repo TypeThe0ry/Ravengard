@@ -85,7 +85,7 @@ public abstract class HypixelCommand {
         boolean passes = dataHandler.get(HypixelDataHandler.Data.RANK, DatapointRank.class).getValue().isEqualOrHigherThan(params.permission());
 
         if (!passes) {
-            player.sendMessage("<c>You do not have permission to use this command.");
+            player.sendMessage("<c>你没有权限使用此命令。");
         }
 
         return passes;
@@ -143,7 +143,7 @@ public abstract class HypixelCommand {
 
         private void install(HypixelCommand command) {
             setDefaultExecutor((sender, _) ->
-                    sender.sendMessage(Text.of("<c>Usage: {}", command.getParams().usage())));
+                    sender.sendMessage(Text.of("<c>用法：{}", command.getParams().usage())));
 
             setCondition((commandSender, _) -> {
                 if (commandSender instanceof ConsoleSender) {
