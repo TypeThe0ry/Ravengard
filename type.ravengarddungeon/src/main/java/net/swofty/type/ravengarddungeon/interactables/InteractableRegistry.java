@@ -114,6 +114,7 @@ public final class InteractableRegistry {
                     && !(candidate instanceof DungeonChest)
                     && !(candidate instanceof DungeonDoor)
                     && !(candidate instanceof DungeonSatchel)
+                    && !(candidate instanceof DungeonRevivalStatue)
                     || candidate.getInteraction().getInstance() != player.getInstance()) {
                 continue;
             }

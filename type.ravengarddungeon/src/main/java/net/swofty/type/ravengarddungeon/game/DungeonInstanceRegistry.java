@@ -346,6 +346,10 @@ public final class DungeonInstanceRegistry {
             org.tinylog.Logger.info("Registered interactables: {} proximity mob encounters, {} door chunks loaded, {} chests converted, {} captured satchels cleared",
                     mobs, chunks.size(), chests, satchels);
             org.tinylog.Logger.info("Registered {} dynamic cyan-room extraction points", extractions.size());
+            int statues = net.swofty.type.ravengarddungeon.interactables.DungeonRevivalStatue.spawnAll(
+                    dungeonInstance.getInstance(), dungeonInstance.getGame(),
+                    TypeRavengardDungeonLoader.getGame().getConfig().objects());
+            org.tinylog.Logger.info("Registered {} revival statues", statues);
         } catch (Exception exception) {
             org.tinylog.Logger.error(exception, "Failed to spawn dungeon interactables");
         }
@@ -371,8 +375,10 @@ public final class DungeonInstanceRegistry {
             net.swofty.type.ravengarddungeon.interactables.DungeonExtraction.spawn(
                     instance, staticGame, extraction);
         }
-        org.tinylog.Logger.info("Registered static dungeon interactables: {} proximity mob encounters, {} chests, {} extraction points, {} captured satchels cleared",
-                mobs, chests, extractions.size(), satchels);
+        int statues = staticGame == null ? 0
+                : net.swofty.type.ravengarddungeon.interactables.DungeonRevivalStatue.spawnAll(instance, staticGame, config.objects());
+        org.tinylog.Logger.info("Registered static dungeon interactables: {} proximity mob encounters, {} chests, {} extraction points, {} revival statues, {} captured satchels cleared",
+                mobs, chests, extractions.size(), statues, satchels);
         MinecraftServer.getSchedulerManager().buildTask(() -> {
             EncounterRuntime runtime = ENCOUNTERS.get(instance);
             if (runtime != null && staticGame != null

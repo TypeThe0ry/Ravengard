@@ -26,6 +26,8 @@ entries:
   "your loot could not be saved": "无法保存你的战利品"
   "<a>Extraction successful! Your loot has been secured.": "<a>撤离成功！你的战利品已保存。"
   "<c>Extraction failed: {}.": "<c>撤离失败：{}。"
+  "<a>{} <a>revived <f>{}<a>!": "<a>{} <a>复活了 <f>{}<a>！"
+  "<c>None of your teammates need reviving.": "<c>没有需要复活的队友。"
 
   # ---- 侧边栏 / Boss 栏状态 ----
   "Explore": "探索"
@@ -53,6 +55,7 @@ entries:
   "Closing Door": "正在关门"
   "Opening Door": "正在开门"
   "Extracting": "正在撤离"
+  "Reviving": "正在复活"
   "Opening": "正在开启"
   "Searching Body": "正在搜索尸体"
   "Dead Body": "尸体"

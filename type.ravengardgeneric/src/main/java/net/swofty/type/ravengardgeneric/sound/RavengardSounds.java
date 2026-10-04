@@ -20,6 +20,7 @@ public final class RavengardSounds {
         EXTRACTION_CHANNEL("feature.portal.exit.ambience", Sound.Source.BLOCK, 0.8f, 1.0f),
         EXTRACTION_SUCCESS("feature.portal.exit.spawn", Sound.Source.PLAYER, 1.0f, 1.0f),
         EXTRACTION_FAIL("feature.portal.exit.close", Sound.Source.PLAYER, 1.0f, 1.0f),
+        REVIVE("action.revive", Sound.Source.PLAYER, 1.0f, 1.0f),
         MATCH_COUNTDOWN("action.alert.timpani", Sound.Source.PLAYER, 0.8f, 1.0f),
         MATCH_START("music.game.start", Sound.Source.MUSIC, 1.0f, 1.0f),
         DUNGEON_AMBIENCE("music.game.dungeon_ambience", Sound.Source.MUSIC, 0.8f, 1.0f),

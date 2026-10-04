@@ -248,6 +248,43 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         }
     }
 
+    public boolean hasFallenTeammates(RavengardDungeonPlayer reviver) {
+        return canInteract(reviver) && !fallenTeammates(reviver).isEmpty();
+    }
+
+    /** Brings the reviver's fallen teammates back at a Revival Statue; returns how many came back. */
+    public int reviveTeammates(RavengardDungeonPlayer reviver, Pos at) {
+        if (!canInteract(reviver)) return 0;
+        List<RavengardDungeonPlayer> fallen = fallenTeammates(reviver);
+        for (RavengardDungeonPlayer revived : fallen) {
+            revived.stopSpectating();
+            revived.setSpectatingTeammate(null);
+            revived.setDungeonDead(false);
+            revived.setGameMode(GameMode.SURVIVAL);
+            revived.heal();
+            revived.teleport(at);
+            RavengardSounds.play(revived, RavengardSounds.Cue.REVIVE);
+            for (RavengardDungeonPlayer teammate : teammatesOf(reviver)) {
+                teammate.sendMessage("<a>{} <a>revived <f>{}<a>!", reviver.getUsername(), revived.getUsername());
+            }
+        }
+        if (!fallen.isEmpty()) {
+            RavengardSounds.play(reviver, RavengardSounds.Cue.REVIVE);
+            players.values().forEach(this::updateHud);
+            org.tinylog.Logger.info("Ravengard revival: game={} reviver={} revived={}", getGameId(),
+                    reviver.getUsername(), fallen.stream().map(RavengardDungeonPlayer::getUsername).toList());
+        }
+        return fallen.size();
+    }
+
+    private List<RavengardDungeonPlayer> fallenTeammates(RavengardDungeonPlayer reviver) {
+        return teammatesOf(reviver).stream()
+                .filter(candidate -> !candidate.getUuid().equals(reviver.getUuid()))
+                .filter(RavengardDungeonPlayer::isDungeonDead)
+                .filter(candidate -> candidate.getInstance() == instance)
+                .toList();
+    }
+
     public boolean canInteract(RavengardDungeonPlayer player) {
         return state == GameState.IN_PROGRESS && startedAtNanos != 0
                 && players.containsKey(player.getUuid()) && !player.isDungeonDead()
