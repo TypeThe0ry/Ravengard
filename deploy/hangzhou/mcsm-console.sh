@@ -14,7 +14,7 @@ compose start
 compose ps --format '{{.Name}}  {{.Status}}'
 echo "[adventure] console ready: status | players | stop"
 
-compose logs -f --tail 30 proxy ravengard_lobby ravengard_dungeon &
+docker compose logs -f --tail 30 proxy ravengard_lobby ravengard_dungeon &
 logs=$!
 trap 'kill "$logs" 2>/dev/null' EXIT
 
