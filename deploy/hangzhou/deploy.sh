@@ -4,7 +4,7 @@
 # configuration/ and localization/ trees end up identical to the repository's (with the
 # public resource pack URL from deploy/hangzhou/config.docker.yml).
 #
-# usage: deploy/hangzhou/deploy.sh [--force]   (--force restarts even with players online)
+# usage: deploy/hangzhou/deploy.sh [--force|--full]   (--force restarts even with players online; --full allows a full upload)
 set -euo pipefail
 
 HOST=${RAVENGARD_HOST:-root@t15.sjcmc.cn}
@@ -78,7 +78,12 @@ changed=$(join -1 2 -2 2 -a 1 -e - -o 0,1.1,2.1 "$STAGE.local" "$STAGE.remote" |
 removed=$(join -1 2 -2 2 -v 2 "$STAGE.local" "$STAGE.remote" | awk '{print $1}' \
     | grep -E '^(configuration|localization)/' || true)
 rm -f "$STAGE.local" "$STAGE.remote"
-echo "$(echo "$changed" | grep -c . || true) changed, $(echo "$removed" | grep -c . || true) removed"
+changed_count=$(echo "$changed" | grep -c . || true)
+echo "$changed_count changed, $(echo "$removed" | grep -c . || true) removed"
+if [ "$changed_count" -gt 500 ] && [ "$FORCE" != "--full" ]; then
+    echo "refusing to upload $changed_count files; the host listing is probably incomplete (re-run, or pass --full)" >&2
+    exit 1
+fi
 
 if [ -n "$changed" ]; then
     echo "== uploading changes"
