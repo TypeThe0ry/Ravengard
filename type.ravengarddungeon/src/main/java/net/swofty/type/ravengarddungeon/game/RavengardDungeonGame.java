@@ -37,6 +37,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
     /** Players who queued as a party, by their party leader, so they land on one team. */
     private final Map<UUID, UUID> partyLeaders = new java.util.concurrent.ConcurrentHashMap<>();
     static final int COUNTDOWN_SECONDS = 60;
+    private static final int[] COUNTDOWN_ANNOUNCEMENTS = {60, 45, 30, 20, 15, 10, 5, 4, 3, 2, 1};
     public static final List<Pos> SPAWN_POINTS = List.of(
             new Pos(-188.5, 66, -134.5),
             new Pos(-188.5, 66, -81.5),
@@ -274,7 +275,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
 
     @Override
     protected CountdownConfig getCountdownConfig() {
-        return CountdownConfig.simple(COUNTDOWN_SECONDS);
+        return new CountdownConfig(COUNTDOWN_SECONDS, COUNTDOWN_ANNOUNCEMENTS, COUNTDOWN_SECONDS, -1);
     }
 
     @Override
@@ -761,6 +762,11 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             if (player.isDungeonDead() || player.isDead() || player.getPosition().y() >= VOID_Y) continue;
             if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) continue;
             player.damage(net.minestom.server.entity.damage.DamageType.OUT_OF_WORLD, Float.MAX_VALUE);
+            if (!player.isDead()) continue;
+            for (RavengardDungeonPlayer viewer : players.values()) {
+                viewer.sendMessage((viewer.getDungeonTeam() == player.getDungeonTeam() ? "<e>" : "<f>")
+                        + "{} <7>掉入了虚空！", player.getUsername());
+            }
         }
     }
 

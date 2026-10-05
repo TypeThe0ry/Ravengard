@@ -164,8 +164,12 @@ public class GUIShop extends RavengardView {
         }
         player.getInventory().addItemStack(RavengardItem.of(type, player, entry.boost()));
         RavengardProfiles.saveActive(player);
-        player.sendMessage(Text.of("<a>你花费 {} 购买了 <f>{}<a>！",
-                RavengardItem.crowns(entry.price(), ""), RavengardItem.displayName(type)));
+        if (entry.price() == 0) {
+            player.sendMessage(Text.of("<a>你免费领取了 <f>{}<a>！", RavengardItem.displayName(type)));
+        } else {
+            player.sendMessage(Text.of("<a>你花费 {} 购买了 <f>{}<a>！",
+                    RavengardItem.crowns(entry.price(), ""), RavengardItem.displayName(type)));
+        }
     }
 
     static RavengardButton banner(RavengardShop shop) {
