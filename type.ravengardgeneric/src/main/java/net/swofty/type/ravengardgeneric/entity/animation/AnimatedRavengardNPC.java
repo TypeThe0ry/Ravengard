@@ -36,6 +36,9 @@ public class AnimatedRavengardNPC extends RavengardNPC {
     private Vec currentOffset = Vec.ZERO;
     private float lastYaw = Float.NaN;
     private final Map<Integer, float[]> lastSentRotation = new HashMap<>();
+    private RavengardWalkCycle walkCycle;
+    private int walkTick;
+    private boolean limbsSwinging;
     private RavengardAnimationPhase phase = RavengardAnimationPhase.IDLE;
     private int frame;
     private int moveFrame;
@@ -103,6 +106,14 @@ public class AnimatedRavengardNPC extends RavengardNPC {
         }
 
         baseYaw = getConfiguration().getPosition().yaw();
+        List<String> partNames = new ArrayList<>();
+        List<Vec> partTranslations = new ArrayList<>();
+        for (RavengardAnimationClip.Part part : clip.parts()) {
+            String model = part.base().model();
+            partNames.add(model.substring(model.lastIndexOf('/') + 1));
+            partTranslations.add(vec(part.base().translation()));
+        }
+        walkCycle = new RavengardWalkCycle(partNames, partTranslations);
         if (clip.walkSpeed() > 0) {
             roaming = new RavengardRoaming(
                     getConfiguration().getPosition(),
@@ -117,7 +128,7 @@ public class AnimatedRavengardNPC extends RavengardNPC {
     @Override
     public void onClick(RavengardPlayer player) {
         if (clip.joinsQueue()) {
-            net.swofty.type.ravengardgeneric.queue.RavengardQueue.join(player);
+            net.swofty.type.ravengardgeneric.queue.RavengardQueue.chooseMode(player);
             return;
         }
         // once the introduction has been heard, shopkeepers go straight to their shop
@@ -282,6 +293,7 @@ public class AnimatedRavengardNPC extends RavengardNPC {
         }
 
         applyMovement();
+        swingLimbs();
 
         if (phase != RavengardAnimationPhase.TALK) {
             RavengardAnimationPhase desired = isWalking()
@@ -323,6 +335,28 @@ public class AnimatedRavengardNPC extends RavengardNPC {
                     home.z() + currentOffset.z(),
                     roaming.yaw(),
                     home.pitch()));
+        }
+    }
+
+    /** Rigs captured without frames for a part get a walk cycle on it while they roam. */
+    private void swingLimbs() {
+        if (walkCycle == null) return;
+        boolean walking = isWalking() && phase == RavengardAnimationPhase.WALK;
+        if (!walking && !limbsSwinging) return;
+        walkTick = walking ? walkTick + 1 : 0;
+        limbsSwinging = walking;
+        for (int i = 0; i < animatedParts.size() && i < clip.parts().size(); i++) {
+            RavengardAnimationClip.Part part = clip.parts().get(i);
+            List<RavengardAnimationClip.Frame> frames = part.phase(RavengardAnimationPhase.WALK);
+            if ((frames != null && !frames.isEmpty()) || !walkCycle.animates(i)) continue;
+            RavengardWalkCycle.Pose pose = walkCycle.pose(i, vec(part.base().translation()),
+                    part.base().leftRotation(), walkTick);
+            animatedParts.get(i).editEntityMeta(ItemDisplayMeta.class, meta -> {
+                meta.setTransformationInterpolationDuration(2);
+                meta.setTransformationInterpolationStartDelta(0);
+                meta.setTranslation(pose.translation());
+                meta.setLeftRotation(pose.leftRotation());
+            });
         }
     }
 

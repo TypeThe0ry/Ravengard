@@ -294,7 +294,8 @@ public final class RavengardProfiles {
         if (!inventory.isEmpty()) {
             inventory.forEach((slot, snbt) -> {
                 try {
-                    ItemStack stack = ItemStack.fromItemNBT(TagStringIO.tagStringIO().asCompound(snbt));
+                    ItemStack stack = net.swofty.type.ravengardgeneric.item.RavengardItem.migrated(
+                            ItemStack.fromItemNBT(TagStringIO.tagStringIO().asCompound(snbt)));
                     if (RavengardMenuItem.isMenuItem(stack)) {
                         return;
                     }

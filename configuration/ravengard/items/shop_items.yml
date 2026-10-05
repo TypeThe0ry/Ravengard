@@ -693,7 +693,7 @@ items:
         classes: [KNIGHT, WARRIOR]
   - id: TOPAZ_GEMSTONE
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '黄玉宝石'
     item_model: hypixel_ravengard:item/gameplay/trinkets/topaz
     value: 6
@@ -705,7 +705,7 @@ items:
         standard_item_type: TRINKET
   - id: RUBY_JEWEL
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '红宝石'
     item_model: hypixel_ravengard:item/gameplay/trinkets/ruby
     value: 5
@@ -805,7 +805,7 @@ items:
 
   - id: BRONZE_HALBERD
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '青铜戟'
     item_model: hypixel_ravengard:item/weapons/halberds/bronze/bronze_halberd
     value: 5
@@ -820,7 +820,7 @@ items:
 
   - id: BRONZE_MACE
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '青铜钉锤'
     item_model: hypixel_ravengard:item/weapons/maces/bronze/bronze_mace
     value: 4
@@ -877,7 +877,7 @@ items:
 
   - id: KNIGHT_SWORD
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '骑士剑'
     item_model: hypixel_ravengard:item/weapons/swords/knights/knights_sword
     value: 4
@@ -936,7 +936,7 @@ items:
 
   - id: RUSTY_KNIFE
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '生锈小刀'
     item_model: hypixel_ravengard:item/weapons/knives/rusty/rusty_knife
     default_statistics:
@@ -950,7 +950,7 @@ items:
 
   - id: RUSTY_SWORD
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '生锈剑'
     item_model: hypixel_ravengard:item/weapons/swords/rusty/rusty_sword
     default_statistics:
@@ -965,7 +965,7 @@ items:
   - id: COMMON_SPIKED_MACE
     tracked_id: COMMON_SPIKED_MACE
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '尖刺钉锤'
     item_model: hypixel_ravengard:item/weapons/maces/spiked/spiked_mace
     value: 3
@@ -993,7 +993,7 @@ items:
 
   - id: WEATHERED_ORB
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '陈旧宝珠'
     item_model: hypixel_ravengard:item/weapons/orbs/weathered/weathered_orb
     value: 4
@@ -1009,7 +1009,7 @@ items:
 
   - id: WOODEN_STAFF
     rarity: COMMON
-    material: stick
+    material: blaze_rod
     display_name: '木法杖'
     item_model: hypixel_ravengard:item/weapons/staves/wooden/wooden_staff
     value: 3
@@ -1025,7 +1025,7 @@ items:
 
   - id: BRONZE_DAGGER
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '青铜匕首'
     item_model: hypixel_ravengard:item/weapons/daggers/bronze/bronze_dagger
     value: 7
@@ -1040,7 +1040,7 @@ items:
 
   - id: BRONZE_GREATSWORD
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '青铜巨剑'
     item_model: hypixel_ravengard:item/weapons/greatswords/bronze/bronze_greatsword
     value: 8
@@ -1111,7 +1111,7 @@ items:
 
   - id: GOLD_GREATSWORD
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '黄金巨剑'
     item_model: hypixel_ravengard:item/weapons/greatswords/gold/gold_greatsword
     value: 11
@@ -1126,7 +1126,7 @@ items:
 
   - id: GOLD_KNIFE
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '黄金小刀'
     item_model: hypixel_ravengard:item/weapons/knives/gold/gold_knife
     value: 15
@@ -1141,7 +1141,7 @@ items:
 
   - id: GOLD_MACE
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '黄金钉锤'
     item_model: hypixel_ravengard:item/weapons/maces/gold/gold_mace
     value: 12
@@ -1156,7 +1156,7 @@ items:
 
   - id: GOLD_SWORD
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '黄金剑'
     item_model: hypixel_ravengard:item/weapons/swords/gold/gold_sword
     value: 14
@@ -1188,7 +1188,7 @@ items:
   - id: UNCOMMON_IRON_HALBERD
     tracked_id: UNCOMMON_IRON_HALBERD
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '铁戟'
     item_model: hypixel_ravengard:item/weapons/halberds/iron/iron_halberd
     value: 7
@@ -1204,7 +1204,7 @@ items:
   - id: UNCOMMON_IRON_SWORD
     tracked_id: UNCOMMON_IRON_SWORD
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '铁剑'
     item_model: hypixel_ravengard:item/weapons/swords/iron/iron_sword
     value: 5
@@ -1278,7 +1278,7 @@ items:
   - id: UNCOMMON_RUSTY_HALBERD
     tracked_id: UNCOMMON_RUSTY_HALBERD
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '生锈戟'
     item_model: hypixel_ravengard:item/weapons/halberds/rusty/rusty_halberd
     value: 4
@@ -1293,7 +1293,7 @@ items:
 
   - id: SILVER_DAGGER
     rarity: UNCOMMON
-    material: stick
+    material: blaze_rod
     display_name: '白银匕首'
     item_model: hypixel_ravengard:item/weapons/daggers/silver/silver_dagger
     value: 12

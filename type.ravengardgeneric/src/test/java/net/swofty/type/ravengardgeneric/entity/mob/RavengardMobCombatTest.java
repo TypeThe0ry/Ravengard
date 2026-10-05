@@ -75,7 +75,7 @@ class RavengardMobCombatTest {
 
         mob.attack(target, false);
 
-        assertEquals(before - 2, target.getHealth(), 0.001);
+        assertEquals(before - 1.5f, target.getHealth(), 0.001);
         assertSame(mob, target.getLastDamageSource().getAttacker());
         assertSame(mob, target.getLastDamageSource().getSource());
 
@@ -136,7 +136,7 @@ class RavengardMobCombatTest {
         try {
             org.junit.jupiter.api.Assertions.assertFalse(mob.damage(
                     net.minestom.server.entity.damage.DamageType.PLAYER_ATTACK, 100));
-            assertEquals(100, mob.getHealth(), 0.001);
+            assertEquals(100 * RavengardMob.HEALTH_FACTOR, mob.getHealth(), 0.001);
             org.junit.jupiter.api.Assertions.assertFalse(mob.isDead());
         } finally {
             MinecraftServer.getGlobalEventHandler().removeListener(listener);
@@ -151,7 +151,7 @@ class RavengardMobCombatTest {
                 ignored -> callbacks.incrementAndGet());
         Entity attacker = new Entity(EntityType.ZOMBIE);
         mob.damage(net.minestom.server.entity.damage.Damage.fromEntity(attacker, 40));
-        assertEquals(60, mob.getHealth(), 0.001);
+        assertEquals(100 * RavengardMob.HEALTH_FACTOR - 40, mob.getHealth(), 0.001);
         mob.damage(net.minestom.server.entity.damage.Damage.fromEntity(attacker, 60));
         assertEquals(0, mob.getHealth(), 0.001);
         assertEquals(1, callbacks.get());

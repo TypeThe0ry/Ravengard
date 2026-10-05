@@ -91,7 +91,7 @@ class ActionPlayerBowTest {
         listener.onEntityCollision(new ProjectileCollideWithEntityEvent(
                 arrow, net.minestom.server.coordinate.Pos.ZERO, mob));
 
-        assertEquals(91, mob.getHealth(), 0.0001);
+        assertEquals(100 * net.swofty.type.ravengardgeneric.entity.mob.RavengardMob.HEALTH_FACTOR - 9, mob.getHealth(), 0.0001);
         assertTrue(arrow.isRemoved());
         org.junit.jupiter.api.Assertions.assertSame(shooter, mob.getLastDamageSource().getAttacker());
     }
@@ -116,7 +116,7 @@ class ActionPlayerBowTest {
             instance.getEntities().forEach(entity -> entity.tick(now));
         }
 
-        assertTrue(mob.getHealth() < 100, "arrow ended at " + arrow.getPosition() + " removed=" + arrow.isRemoved());
+        assertTrue(mob.getHealth() < 100 * net.swofty.type.ravengardgeneric.entity.mob.RavengardMob.HEALTH_FACTOR, "arrow ended at " + arrow.getPosition() + " removed=" + arrow.isRemoved());
 
         mob.removeRig();
         MinecraftServer.getInstanceManager().unregisterInstance(instance);

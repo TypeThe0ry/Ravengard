@@ -27,7 +27,6 @@ import java.util.function.Predicate;
 public final class DungeonInstanceRegistry {
     public static final int MAX_INSTANCES = 4;
     private static final int STANDARD_ROOM_COUNT = 120;
-    private static final int STANDARD_MAX_PLAYERS = 5;
 
     private static final Map<UUID, DungeonInstance> INSTANCES = new ConcurrentHashMap<>();
 
@@ -127,6 +126,9 @@ public final class DungeonInstanceRegistry {
             this.game = new RavengardDungeonGame(shared, TypeRavengardDungeonLoader.getGame().getConfig(),
                     spawnPoints, extractions);
             this.game.setPendingJoins(() -> Math.max(0, players.size() - game.getPlayers().size()));
+            if (!mode.equals("ADMIN")) {
+                this.game.setMatchMode(net.swofty.type.ravengardgeneric.queue.RavengardMatchMode.of(mode));
+            }
             double[] bounds = bounds(generated);
             this.game.configureDeathWall(bounds[0], bounds[1], bounds[2]);
         }
@@ -169,11 +171,11 @@ public final class DungeonInstanceRegistry {
         }
 
         public boolean isAcceptingJoins() {
-            return !retiring && mode.equals("STANDARD") && game.getState().isWaiting()
+            return !retiring && !mode.equals("ADMIN") && game.getState().isWaiting()
                     && !(game.getCountdown().isActive()
                     && game.getCountdown().getRemainingSeconds() <= LATE_JOIN_CUTOFF_SECONDS)
                     && game.getAvailableSlots() > 0
-                    && players.size() < STANDARD_MAX_PLAYERS;
+                    && players.size() < game.getMaxPlayers();
         }
         private static final int LATE_JOIN_CUTOFF_SECONDS = 5;
 
@@ -268,7 +270,8 @@ public final class DungeonInstanceRegistry {
         CompletableFuture<Void> ready = RavengardDungeonGenerator.stampSwaps(generated, instance);
 
         DungeonInstance dungeonInstance = new DungeonInstance(
-                mode.startsWith("ADMIN") ? "ADMIN" : "STANDARD", seed, instance, shared, generated, ready);
+                mode.startsWith("ADMIN") ? "ADMIN" : net.swofty.type.ravengardgeneric.queue.RavengardMatchMode.of(mode).name(),
+                seed, instance, shared, generated, ready);
         ready.thenRun(() -> spawnInteractables(dungeonInstance));
         INSTANCES.put(dungeonInstance.getGameId(), dungeonInstance);
         return dungeonInstance;
@@ -1862,7 +1865,10 @@ public final class DungeonInstanceRegistry {
         }
         player.sendMessage("<7>正在准备你的地牢（种子 <f>{}<7>）……", instance.getSeed());
         boolean aerial = instance.getMode().equals("ADMIN");
-        instance.whenReady().whenComplete((ignored, error) -> player.scheduler().scheduleNextTick(() -> {
+        CompletableFuture<Void> partyKnown = aerial || instance.getGame().getMatchMode().teamSize() <= 1
+                ? CompletableFuture.completedFuture(null)
+                : CompletableFuture.runAsync(() -> rememberParty(player, instance), PARTY_LOOKUPS);
+        instance.whenReady().thenCombine(partyKnown, (ready, known) -> null).whenComplete((ignored, error) -> player.scheduler().scheduleNextTick(() -> {
             if (error != null) {
                 instance.markPlayerLeft(player.getUuid());
                 PENDING_TELEPORTS.remove(player.getUuid());
@@ -1872,6 +1878,20 @@ public final class DungeonInstanceRegistry {
             }
             joinPlayerWhenPlayReady(player, instance, aerial, 0);
         }));
+    }
+
+    private static final java.util.concurrent.Executor PARTY_LOOKUPS = runnable -> Thread.ofVirtual().start(runnable);
+
+    /** A party queues together and plays together: its members share their leader as a team key. */
+    private static void rememberParty(HypixelPlayer player, DungeonInstance instance) {
+        try {
+            net.swofty.commons.party.FullParty party = net.swofty.type.generic.party.PartyManager.getPartyFromPlayer(player);
+            if (party != null && party.getParticipants().size() > 1) {
+                instance.getGame().setPartyLeader(player.getUuid(), party.getLeader().getUuid());
+            }
+        } catch (RuntimeException exception) {
+            org.tinylog.Logger.warn("Could not look up the party of {}: {}", player.getUsername(), exception.getMessage());
+        }
     }
 
     private static void joinPlayerWhenPlayReady(HypixelPlayer player, DungeonInstance instance,
@@ -1925,7 +1945,8 @@ public final class DungeonInstanceRegistry {
             player.sendMessage("<a>已进入地牢 <f>{}<a>（{} 个房间，模式 {}）。",
                     instance.getGameId().toString().substring(0, 8),
                     instance.getGenerated().dungeon().getRoomCount(),
-                    instance.getMode().equals("ADMIN") ? "管理员" : "标准");
+                    instance.getMode().equals("ADMIN") ? "管理员"
+                            : net.swofty.type.ravengardgeneric.queue.RavengardMatchMode.of(instance.getMode()).displayName());
             scheduleChunkRefresh(player, instance);
         } finally {
             PENDING_TELEPORTS.remove(player.getUuid());

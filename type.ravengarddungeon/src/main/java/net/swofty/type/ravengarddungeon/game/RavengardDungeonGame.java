@@ -26,11 +26,17 @@ import net.swofty.type.ravengardgeneric.profile.RavengardRunState;
 import net.swofty.type.ravengardgeneric.sound.RavengardSounds;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
-    private static final int TEAM_SIZE = 3;
+    private volatile net.swofty.type.ravengardgeneric.queue.RavengardMatchMode matchMode =
+            net.swofty.type.ravengardgeneric.queue.RavengardMatchMode.TRIOS;
+    /** Players who queued as a party, by their party leader, so they land on one team. */
+    private final Map<UUID, UUID> partyLeaders = new java.util.concurrent.ConcurrentHashMap<>();
+    static final int COUNTDOWN_SECONDS = 60;
     public static final List<Pos> SPAWN_POINTS = List.of(
             new Pos(-188.5, 66, -134.5),
             new Pos(-188.5, 66, -81.5),
@@ -163,10 +169,12 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         Game.JoinResult result = super.join(player);
         if (result instanceof Game.JoinResult.Success) {
             int playerIndex = players.size() - 1;
-            player.setDungeonTeam(openTeam(player));
+            int team = openTeam(player);
+            player.setDungeonTeam(team);
             player.setDungeonDead(false);
             RavengardRunState.begin(player.getUuid(), getGameId());
-            Pos spawn = spawnPoints.get(playerIndex % spawnPoints.size());
+            Pos spawn = spawnPoints.get((matchMode.teamSize() > 1 ? team : playerIndex) % spawnPoints.size());
+            announceJoin(player);
             player.setRespawnPoint(spawn);
             players.values().forEach(this::updateHud);
             if (player.getInstance() == instance) {
@@ -196,21 +204,59 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         return result;
     }
 
-    private int openTeam(RavengardDungeonPlayer joining) {
-        int[] sizes = new int[Math.max(1, (getMaxPlayers() + TEAM_SIZE - 1) / TEAM_SIZE)];
+    /** A party member joins their party's team; anyone else fills the first team with room left over by parties. */
+    int openTeam(RavengardDungeonPlayer joining) {
+        int teamSize = matchMode.teamSize();
+        int[] sizes = new int[Math.max(1, (getMaxPlayers() + teamSize - 1) / teamSize)];
+        Map<Integer, UUID> teamParty = new java.util.HashMap<>();
         for (RavengardDungeonPlayer member : players.values()) {
             if (member == joining || member.getDungeonTeam() < 0 || member.getDungeonTeam() >= sizes.length) continue;
             sizes[member.getDungeonTeam()]++;
+            UUID leader = partyLeaders.get(member.getUuid());
+            if (leader != null) teamParty.put(member.getDungeonTeam(), leader);
+        }
+        UUID party = partyLeaders.get(joining.getUuid());
+        if (party != null) {
+            for (int team = 0; team < sizes.length; team++) {
+                if (party.equals(teamParty.get(team)) && sizes[team] < teamSize) return team;
+            }
+            for (int team = 0; team < sizes.length; team++) {
+                if (sizes[team] == 0) return team;
+            }
         }
         for (int team = 0; team < sizes.length; team++) {
-            if (sizes[team] < TEAM_SIZE) return team;
+            if (sizes[team] < teamSize && !teamParty.containsKey(team)) return team;
+        }
+        for (int team = 0; team < sizes.length; team++) {
+            if (sizes[team] < teamSize) return team;
         }
         return 0;
     }
 
+    public void setMatchMode(net.swofty.type.ravengardgeneric.queue.RavengardMatchMode mode) {
+        this.matchMode = mode;
+    }
+
+    public net.swofty.type.ravengardgeneric.queue.RavengardMatchMode getMatchMode() {
+        return matchMode;
+    }
+
+    public void setPartyLeader(UUID player, UUID leader) {
+        if (leader == null) partyLeaders.remove(player);
+        else partyLeaders.put(player, leader);
+    }
+
+    private void announceJoin(RavengardDungeonPlayer joined) {
+        int count = players.size();
+        for (RavengardDungeonPlayer viewer : players.values()) {
+            viewer.sendMessage("<e>{}<7> 加入了游戏！（<a>{}<7>/<a>{}<7>）",
+                    joined.getUsername(), count, getMaxPlayers());
+        }
+    }
+
     @Override
     public int getMaxPlayers() {
-        return 21;
+        return matchMode.maxPlayers();
     }
 
     @Override
@@ -228,7 +274,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
 
     @Override
     protected CountdownConfig getCountdownConfig() {
-        return CountdownConfig.simple(30);
+        return CountdownConfig.simple(COUNTDOWN_SECONDS);
     }
 
     @Override
@@ -420,6 +466,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         }
         if (startedAtNanos == 0 && !tryBeginActiveRun()) return;
         enforceSpectators();
+        killFallenIntoTheVoid();
         applyDeathWall();
         ExtractionPortals current = portals;
         if (current != null && state == GameState.IN_PROGRESS) current.tick(getElapsedSeconds());
@@ -704,6 +751,17 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         spectator.setGameMode(GameMode.SPECTATOR);
         spectator.setSpectatingTeammate(teammate.getUuid());
         spectator.spectate(teammate);
+    }
+
+    /** Below the dungeon floor there is nothing but void; anyone falling past it dies there. */
+    static final double VOID_Y = 40.0;
+
+    private void killFallenIntoTheVoid() {
+        for (RavengardDungeonPlayer player : players.values()) {
+            if (player.isDungeonDead() || player.isDead() || player.getPosition().y() >= VOID_Y) continue;
+            if (player.getGameMode() != GameMode.SURVIVAL && player.getGameMode() != GameMode.ADVENTURE) continue;
+            player.damage(net.minestom.server.entity.damage.DamageType.OUT_OF_WORLD, Float.MAX_VALUE);
+        }
     }
 
     private void enforceSpectators() {

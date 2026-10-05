@@ -18,6 +18,7 @@ import java.util.UUID;
  */
 public final class DungeonMinimapIcons {
     private static final String PORTAL = "";
+    private static final String TEAMMATE = "";
     private static final double MINIMAP_REACH = 127.0;
     private static final double TAB_MAP_ORIGIN = 256.0;
 
@@ -30,28 +31,46 @@ public final class DungeonMinimapIcons {
     }
 
     static Component minimap(RavengardHudState state) {
-        return minimap(portals(state.getPlayerUuid()), state.getWorldX(), state.getWorldZ());
+        RavengardDungeonGame game = gameOf(state.getPlayerUuid());
+        if (game == null) return Component.empty();
+        return minimap(game.getOpenExtractionPoints(), teammates(game, state.getPlayerUuid()),
+                state.getWorldX(), state.getWorldZ());
     }
 
-    static Component minimap(List<Pos> portals, double playerX, double playerZ) {
+    static Component minimap(List<Pos> portals, List<Pos> teammates, double playerX, double playerZ) {
         Component icons = Component.empty();
         for (Pos portal : portals) {
-            double dx = portal.x() - playerX;
-            double dz = portal.z() - playerZ;
-            if (Math.abs(dx) > MINIMAP_REACH || Math.abs(dz) > MINIMAP_REACH) continue;
-            icons = icons.append(icon((dx + 128.0) * 2.0, (dz + 128.0) * 2.0));
+            Component icon = minimapIcon(PORTAL, portal, playerX, playerZ, 0);
+            if (icon != null) icons = icons.append(icon);
+        }
+        for (Pos teammate : teammates) {
+            Component icon = minimapIcon(TEAMMATE, teammate, playerX, playerZ, rotation(teammate.yaw()));
+            if (icon != null) icons = icons.append(icon);
         }
         return icons;
     }
 
-    static Component tabMap(RavengardHudState state) {
-        return tabMap(portals(state.getPlayerUuid()));
+    private static Component minimapIcon(String glyph, Pos at, double playerX, double playerZ, int rotation) {
+        double dx = at.x() - playerX;
+        double dz = at.z() - playerZ;
+        if (Math.abs(dx) > MINIMAP_REACH || Math.abs(dz) > MINIMAP_REACH) return null;
+        return icon(glyph, (dx + 128.0) * 2.0, (dz + 128.0) * 2.0, rotation);
     }
 
-    static Component tabMap(List<Pos> portals) {
+    static Component tabMap(RavengardHudState state) {
+        RavengardDungeonGame game = gameOf(state.getPlayerUuid());
+        if (game == null) return Component.empty();
+        return tabMap(game.getOpenExtractionPoints(), teammates(game, state.getPlayerUuid()));
+    }
+
+    static Component tabMap(List<Pos> portals, List<Pos> teammates) {
         Component icons = Component.empty();
         for (Pos portal : portals) {
-            icons = icons.append(icon(portal.x() + TAB_MAP_ORIGIN, portal.z() + TAB_MAP_ORIGIN));
+            icons = icons.append(icon(PORTAL, portal.x() + TAB_MAP_ORIGIN, portal.z() + TAB_MAP_ORIGIN, 0));
+        }
+        for (Pos teammate : teammates) {
+            icons = icons.append(icon(TEAMMATE, teammate.x() + TAB_MAP_ORIGIN, teammate.z() + TAB_MAP_ORIGIN,
+                    rotation(teammate.yaw())));
         }
         return icons;
     }
@@ -60,21 +79,36 @@ public final class DungeonMinimapIcons {
         return (clamp9((int) Math.round(x)) << 15) | (clamp9((int) Math.round(z)) << 6);
     }
 
-    private static Component icon(double x, double z) {
-        return Component.text(PORTAL)
+    /** The marker's facing in the low six bits, sixty-four steps a turn, as the player marker uses. */
+    static int rotation(float yaw) {
+        float turned = ((yaw % 360f) + 360f) % 360f;
+        return Math.round(turned / (360f / 64f)) & 0x3F;
+    }
+
+    private static Component icon(String glyph, double x, double z, int rotation) {
+        return Component.text(glyph)
                 .font(RavengardFont.RAVENGARD)
-                .color(TextColor.color(packed(x, z)))
+                .color(TextColor.color(packed(x, z) | rotation))
                 .shadowColor(ShadowColor.shadowColor(0));
     }
 
-    private static List<Pos> portals(UUID player) {
-        if (player == null) return List.of();
+    private static RavengardDungeonGame gameOf(UUID player) {
+        if (player == null) return null;
         for (DungeonInstanceRegistry.DungeonInstance candidate : DungeonInstanceRegistry.all()) {
-            if (candidate.getPlayers().contains(player)) {
-                return candidate.getGame().getOpenExtractionPoints();
-            }
+            if (candidate.getPlayers().contains(player)) return candidate.getGame();
         }
-        return List.of();
+        return null;
+    }
+
+    /** Living teammates other than the player, where they stand and face. */
+    static List<Pos> teammates(RavengardDungeonGame game, UUID player) {
+        var self = game.getPlayers().stream().filter(candidate -> candidate.getUuid().equals(player)).findFirst().orElse(null);
+        if (self == null) return List.of();
+        return game.getPlayers().stream()
+                .filter(other -> !other.getUuid().equals(player) && !other.isDungeonDead()
+                        && other.getDungeonTeam() == self.getDungeonTeam())
+                .map(other -> other.getPosition())
+                .toList();
     }
 
     private static int clamp9(int value) {

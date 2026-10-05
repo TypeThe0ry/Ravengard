@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * seeded by the cycle number so the roll is stable within the cycle, and purchases run the
  * shelf entry down until it greys out in place the way the captures show. Quantities per entry
  * are not observable from captures; one each matches how quickly the live shelves sell out.
+ * Free gear never runs out: the shelf is shared by the whole server, and every new mercenary
+ * needs it.
  */
 public final class RavengardShopStock {
     public static final long CYCLE_MILLIS = 30 * 60 * 1000;
@@ -64,9 +66,11 @@ public final class RavengardShopStock {
             // pools smaller than the shelf repeat, the way the alchemist's five slots carry
             // duplicates of its three items
             RavengardShop.PoolEntry picked = pool.get(index % pool.size());
-            double boost = random.nextDouble() < BOOST_CHANCE
+            boolean free = picked.price() == 0;
+            double boost = !free && random.nextDouble() < BOOST_CHANCE
                     ? BOOSTS[random.nextInt(BOOSTS.length)] : 1.0;
-            entries.add(new Entry(slots.get(index), picked.item(), picked.price(), STOCK_PER_ENTRY, boost));
+            entries.add(new Entry(slots.get(index), picked.item(), picked.price(),
+                    free ? Integer.MAX_VALUE : STOCK_PER_ENTRY, boost));
         }
         return new Shelf(cycle, List.copyOf(entries));
     }

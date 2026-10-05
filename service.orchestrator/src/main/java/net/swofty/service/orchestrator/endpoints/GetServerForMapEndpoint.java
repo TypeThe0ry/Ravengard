@@ -110,9 +110,11 @@ public class GetServerForMapEndpoint implements RedisMessageHandler
 		}
 	}
 
-	// a standard dungeon holds five players; requests are serialised so two players who queue
-	// in the same second share one instance instead of each creating their own
-	private static final int RAVENGARD_DUNGEON_MAX_PLAYERS = 5;
+	// a run holds eight solo players or three teams of three; requests are serialised so two
+	// players who queue in the same second share one instance instead of each creating their own
+	private static int ravengardMaxPlayers(String mode) {
+		return mode.equals("SOLO") ? 8 : 9;
+	}
 	private static final Object RAVENGARD_ALLOCATION = new Object();
 
 	private GetServerForMapProtocol.GetServerForMapResponse handleRavengardDungeon(
@@ -125,13 +127,15 @@ public class GetServerForMapEndpoint implements RedisMessageHandler
 	private GetServerForMapProtocol.GetServerForMapResponse allocateRavengardDungeon(
 			GetServerForMapProtocol.GetServerForMapMessage body) {
 		try {
-			String mode = body.mode() == null || body.mode().isEmpty() ? "STANDARD" : body.mode();
+			String requested = body.mode() == null || body.mode().isEmpty() ? "TRIOS" : body.mode();
+			String mode = requested.equals("STANDARD") ? "TRIOS" : requested;
+			boolean matchmade = mode.equals("SOLO") || mode.equals("TRIOS");
 			int neededSlots = body.neededSlots() > 0 ? body.neededSlots() : 1;
 
-			// standard queue joins share an open instance when one exists
-			if (mode.equals("STANDARD")) {
+			// queue joins share an open run of the same mode when one exists
+			if (matchmade) {
 				OrchestratorCache.GameWithServer existing = OrchestratorCache.findExisting(
-						ServerType.RAVENGARD_DUNGEON, RAVENGARD_DUNGEON_MAX_PLAYERS, null, neededSlots, "STANDARD");
+						ServerType.RAVENGARD_DUNGEON, ravengardMaxPlayers(mode), null, neededSlots, mode);
 				if (existing != null) {
 					OrchestratorCache.GameServerState hosting = OrchestratorCache.getServerByUuid(existing.serverUuid());
 					if (hosting != null) {
@@ -160,8 +164,8 @@ public class GetServerForMapEndpoint implements RedisMessageHandler
 			InstantiateGamePushProtocol.Response response = responseFuture.get(60, java.util.concurrent.TimeUnit.SECONDS);
 			if (response != null && response.success()) {
 				OrchestratorCache.registerNewGame(server, java.util.UUID.fromString(response.gameId()),
-						ServerType.RAVENGARD_DUNGEON, mode.equals("STANDARD") ? "generated" : body.map(), mode,
-						mode.equals("STANDARD") ? neededSlots : 0);
+						ServerType.RAVENGARD_DUNGEON, matchmade ? "generated" : body.map(), mode,
+						matchmade ? neededSlots : 0);
 				return new GetServerForMapProtocol.GetServerForMapResponse(
 						toProxyServer(server), response.gameId(), true, null);
 			}

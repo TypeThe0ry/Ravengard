@@ -26,6 +26,8 @@ public class ActionPlayerCombat implements HypixelEventClass {
     private static final float FIST_DAMAGE = 1f;
     private static final double DEFAULT_ATTACK_SPEED = 4.0;
     static final double MIN_ATTACK_INTERVAL_FRACTION = 0.5;
+    /** Blocks a second (over twenty) a full strength swing pushes a mob back. */
+    static final double MELEE_KNOCKBACK = 0.35;
     private static final ConcurrentHashMap<UUID, Long> LAST_ATTACK_NANOS = new ConcurrentHashMap<>();
 
     @PhasedEvent(node = EventNodes.ENTITY, requireDataLoaded = true, phase = EventPhase.GAMEPLAY)
@@ -92,9 +94,8 @@ public class ActionPlayerCombat implements HypixelEventClass {
         if (RavengardAbilityService.consumeBuff(player, RavengardAbility.POISON_DAGGER)) {
             RavengardSpells.damageOverTime(player, mob, 7, 6, net.minestom.server.particle.Particle.ITEM_SLIME);
         }
-        if (RavengardAbilityService.hasBuff(player, RavengardAbility.CARNAGE)) {
-            RavengardSpells.knockback(mob, player.getPosition(), 0.8);
-        }
+        boolean carnage = RavengardAbilityService.hasBuff(player, RavengardAbility.CARNAGE);
+        RavengardSpells.knockback(mob, player.getPosition(), MELEE_KNOCKBACK * strength * (carnage ? 2 : 1));
     }
 
     /** Attacks a second as the item data gives it (not scaled by stars, as the tooltip shows); fists swing at {@value #DEFAULT_ATTACK_SPEED}. */

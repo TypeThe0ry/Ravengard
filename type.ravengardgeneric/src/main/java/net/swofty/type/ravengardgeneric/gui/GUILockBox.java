@@ -239,7 +239,8 @@ public class GUILockBox extends RavengardView {
 
     private static ItemStack fromSnbt(String snbt) {
         try {
-            return ItemStack.fromItemNBT(TagStringIO.tagStringIO().asCompound(snbt));
+            return net.swofty.type.ravengardgeneric.item.RavengardItem.migrated(
+                    ItemStack.fromItemNBT(TagStringIO.tagStringIO().asCompound(snbt)));
         } catch (Exception exception) {
             Logger.error(exception, "Could not restore a lock box item");
             return ItemStack.AIR;

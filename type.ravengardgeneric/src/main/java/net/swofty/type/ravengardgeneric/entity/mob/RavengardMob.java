@@ -37,8 +37,10 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final TextColor BAR_FULL = TextColor.color(0x5FEC7B);
     private static final TextColor BAR_EMPTY = TextColor.color(0x3D3D3D);
     private static final int BAR_SEGMENTS = 10;
-    private static final float PLAYER_DAMAGE_PER_HIT = 2f;
-    private static final int ATTACK_COOLDOWN_TICKS = 30;
+    private static final float PLAYER_DAMAGE_PER_HIT = 1.5f;
+    private static final int ATTACK_COOLDOWN_TICKS = 40;
+    /** The A playtest found the captured health far too tanky against the starter weapons. */
+    public static final double HEALTH_FACTOR = 0.6;
     private static final int FLASH_TICKS = 9;
     private static final int FLASH_COLOR = 0xFF6666;
     private static final int BASE_COLOR = 0xFFFFFF;
@@ -237,7 +239,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         if (clip.animation("idle") == null && clip.animation("walk") != null) {
             this.currentAnimation = "walk";
         }
-        this.maxHealth = clip.health() <= 0 ? 100 : clip.health();
+        this.maxHealth = (clip.health() <= 0 ? 100 : clip.health()) * HEALTH_FACTOR;
         this.health = maxHealth;
         setInvisible(true);
         setSilent(true);
@@ -680,7 +682,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     }
 
     private Component barText() {
-        int full = (int) Math.ceil(BAR_SEGMENTS * Math.max(0, health) / maxHealth);
+        int full = Math.clamp((long) Math.ceil(BAR_SEGMENTS * Math.max(0, health) / maxHealth - 1e-9), 0, BAR_SEGMENTS);
         return Component.text("■".repeat(full)).color(BAR_FULL)
                 .append(Component.text("■".repeat(BAR_SEGMENTS - full)).color(BAR_EMPTY));
     }

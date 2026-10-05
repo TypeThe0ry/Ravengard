@@ -97,6 +97,17 @@ public final class RavengardItem {
     }
 
     /** Shop menus include the crown value line; the item itself never carries it. */
+    /**
+     * Weapons used to be sticks under their model, which Litematica takes as its tool; saved ones
+     * become blaze rods like newly made ones.
+     */
+    public static ItemStack migrated(ItemStack stack) {
+        if (stack.material() != net.minestom.server.item.Material.STICK) return stack;
+        String model = stack.get(DataComponents.ITEM_MODEL);
+        return model != null && model.startsWith("hypixel_ravengard:item/")
+                ? stack.withMaterial(net.minestom.server.item.Material.BLAZE_ROD) : stack;
+    }
+
     /** The client's attack cooldown indicator follows the weapon's attack speed (players swing at 4 a second bare-handed). */
     static net.minestom.server.item.component.AttributeList attackSpeedModifier(double attacksPerSecond) {
         return new net.minestom.server.item.component.AttributeList(new net.minestom.server.item.component.AttributeList.Modifier(
