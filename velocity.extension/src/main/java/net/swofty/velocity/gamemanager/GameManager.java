@@ -26,6 +26,16 @@ public class GameManager {
     @Getter
     private static final Map<ServerType, List<GameServer>> servers = new ConcurrentHashMap<>();
     private static final ServerPingTracker pingTracker = new ServerPingTracker(MISSED_PINGS_BEFORE_REMOVAL);
+    private static final long SUSPENDED_LIFETIME_MILLIS = Duration.ofMinutes(10).toMillis();
+    /**
+     * Servers dropped for missing pings. Backends only register once at startup, so one that merely
+     * stalled for a few seconds (loading a dungeon, a long GC) is kept being pinged and comes back
+     * as soon as it answers again, instead of staying unreachable until it restarts.
+     */
+    private static final Map<UUID, SuspendedServer> suspended = new ConcurrentHashMap<>();
+
+    private record SuspendedServer(ServerType type, GameServer server, long since) {
+    }
 
     public static GameServer addServer(ServerType type, UUID serverID, String host, int port, int maxPlayers) {
         host = (host == null || host.isEmpty()) ? ConfigProvider.settings().getHostName() : host; // if host is null then get from config
@@ -49,6 +59,7 @@ public class GameManager {
     private static GameServer register(ServerType type, UUID serverID, String host,
                                        @Nullable java.net.InetAddress address, int port, int maxPlayers) {
         pingTracker.forget(serverID);
+        suspended.remove(serverID);
         port = port == -1 ? getNextAvailablePort() : port;    // if port is -1 then get next available port
         RegisteredServer registeredServer = SkyBlockVelocity.getServer().registerServer(
                 new ServerInfo(serverID.toString(), address == null
@@ -166,12 +177,37 @@ public class GameManager {
                         );
                         List<GameServer> currentServers = servers.get(serverType);
                         if (currentServers == null || !currentServers.remove(registeredServer)) return;
+                        suspended.put(registeredServer.internalID(),
+                                new SuspendedServer(serverType, registeredServer, System.currentTimeMillis()));
 
                         TestFlowManager.handleServerDisconnect(registeredServer.internalID);
                     }).delay(Duration.ofMillis(PING_DEADLINE_MILLIS)).schedule();
                 });
             });
+            new ArrayList<>(suspended.values()).forEach(GameManager::pingSuspended);
         }).repeat(Duration.ofMillis(SLEEP_TIME)).schedule();
+    }
+
+    private static void pingSuspended(SuspendedServer entry) {
+        UUID id = entry.server().internalID();
+        if (System.currentTimeMillis() - entry.since() > SUSPENDED_LIFETIME_MILLIS) {
+            suspended.remove(id, entry);
+            return;
+        }
+        RedisClient.requestServer(id, new PingServerProtocol(), new PingServerProtocol.Request())
+                .thenRun(() -> restore(entry));
+    }
+
+    private static void restore(SuspendedServer entry) {
+        synchronized (GameManager.class) {
+            if (!suspended.remove(entry.server().internalID(), entry)) return;
+            if (getFromUUID(entry.server().internalID()) != null) return;
+            pingTracker.forget(entry.server().internalID());
+            servers.computeIfAbsent(entry.type(), _ -> new CopyOnWriteArrayList<>()).add(entry.server());
+        }
+        org.tinylog.Logger.info("Server {} answered pings again after {}ms; restored",
+                entry.server().registeredServer().getServerInfo().getName(),
+                System.currentTimeMillis() - entry.since());
     }
 
     private static int getNextAvailableDisplayName() {
