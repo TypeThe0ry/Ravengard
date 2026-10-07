@@ -62,6 +62,7 @@ public class TypeRavengardDungeonLoader implements RavengardTypeLoader {
         } catch (IOException e) {
             throw new IllegalStateException("Could not load Ravengard dungeon map: " + polarPath);
         }
+        net.swofty.type.ravengarddungeon.world.VoidSeal.apply(temp);
         game = new RavengardDungeonGame(instance, config,
                 RavengardDungeonGame.SPAWN_POINTS,
                 DungeonInstanceRegistry.officialExtractionAnchors());

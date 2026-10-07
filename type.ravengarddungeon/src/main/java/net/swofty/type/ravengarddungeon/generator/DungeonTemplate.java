@@ -47,9 +47,9 @@ public final class DungeonTemplate {
         if (section.isEmpty()) return Block.AIR;
         String[] palette = section.blockPalette();
         int paletteIndex = 0;
-        int[] data = section.blockData();
-        if (data != null && palette.length > 1) {
-            paletteIndex = data[((y & 15) << 8) | ((z & 15) << 4) | (x & 15)];
+        if (palette.length > 1) {
+            int[] data = section.blockData();
+            if (data != null) paletteIndex = data[((y & 15) << 8) | ((z & 15) << 4) | (x & 15)];
         }
         String state = palette[paletteIndex];
         if (state.endsWith("air")) return Block.AIR;

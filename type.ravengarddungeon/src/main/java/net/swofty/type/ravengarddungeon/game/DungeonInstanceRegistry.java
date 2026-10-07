@@ -267,6 +267,7 @@ public final class DungeonInstanceRegistry {
         } catch (java.io.IOException exception) {
             throw new IllegalStateException("Could not load dungeon city base", exception);
         }
+        net.swofty.type.ravengarddungeon.world.VoidSeal.apply(instance);
         CompletableFuture<Void> ready = RavengardDungeonGenerator.stampSwaps(generated, instance);
 
         DungeonInstance dungeonInstance = new DungeonInstance(
