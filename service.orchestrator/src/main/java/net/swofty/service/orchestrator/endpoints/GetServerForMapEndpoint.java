@@ -110,10 +110,10 @@ public class GetServerForMapEndpoint implements RedisMessageHandler
 		}
 	}
 
-	// a run holds eight solo players or three teams of three; requests are serialised so two
+	// a run holds twelve solo players or three teams of three; requests are serialised so two
 	// players who queue in the same second share one instance instead of each creating their own
 	private static int ravengardMaxPlayers(String mode) {
-		return mode.equals("SOLO") ? 8 : 9;
+		return mode.equals("SOLO") ? 12 : 9;
 	}
 	private static final Object RAVENGARD_ALLOCATION = new Object();
 

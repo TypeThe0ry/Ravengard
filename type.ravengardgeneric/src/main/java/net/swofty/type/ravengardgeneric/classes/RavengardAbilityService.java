@@ -96,6 +96,16 @@ public final class RavengardAbilityService {
         }
     }
 
+    /** How much of an ability's cooldown has passed, from 0 just after use to 1 once it is ready again. */
+    public static float cooldownProgress(RavengardPlayer player, RavengardAbility ability) {
+        Map<RavengardAbility, Long> cooldowns = COOLDOWNS.get(player.getUuid());
+        long readyAt = cooldowns == null ? 0L : cooldowns.getOrDefault(ability, 0L);
+        long total = ability.getCooldownSeconds() * 1000L;
+        long left = readyAt - System.currentTimeMillis();
+        if (left <= 0 || total <= 0) return 1f;
+        return Math.clamp(1f - left / (float) total, 0f, 1f);
+    }
+
     /** How long a "next attack" ability waits for that attack. */
     static final int NEXT_ATTACK_WINDOW_SECONDS = 15;
 

@@ -227,6 +227,8 @@ public final class RavengardHud {
 
         int abilityOne = 0;
         int abilityTwo = 0;
+        float abilityOneProgress = 1f;
+        float abilityTwoProgress = 1f;
         if (player instanceof net.swofty.type.ravengardgeneric.user.RavengardPlayer ravengardPlayer
                 && !ravengardPlayer.isTutorial()) {
             net.swofty.type.ravengardgeneric.classes.RavengardClass playerClass =
@@ -236,12 +238,22 @@ public final class RavengardHud {
                         .equippedAbility(ravengardPlayer, 0);
                 var second = net.swofty.type.ravengardgeneric.classes.RavengardKit
                         .equippedAbility(ravengardPlayer, 1);
-                if (first != null) abilityOne = first.getHudCodePoint();
-                if (second != null) abilityTwo = second.getHudCodePoint();
+                if (first != null) {
+                    abilityOne = first.getHudCodePoint();
+                    abilityOneProgress = net.swofty.type.ravengardgeneric.classes.RavengardAbilityService
+                            .cooldownProgress(ravengardPlayer, first);
+                }
+                if (second != null) {
+                    abilityTwo = second.getHudCodePoint();
+                    abilityTwoProgress = net.swofty.type.ravengardgeneric.classes.RavengardAbilityService
+                            .cooldownProgress(ravengardPlayer, second);
+                }
             }
         }
         state.setAbilityOne(abilityOne);
         state.setAbilityTwo(abilityTwo);
+        state.setAbilityOneProgress(abilityOneProgress);
+        state.setAbilityTwoProgress(abilityTwoProgress);
 
         if (player instanceof net.swofty.type.ravengardgeneric.user.RavengardPlayer ravengardPlayer) {
             state.setCrowns(ravengardPlayer.getCrowns());

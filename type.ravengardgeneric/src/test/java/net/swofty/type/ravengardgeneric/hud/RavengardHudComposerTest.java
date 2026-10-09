@@ -62,4 +62,27 @@ class RavengardHudComposerTest {
             assertEquals(ability, RavengardKit.abilityFrom(item));
         }
     }
+    @Test
+    void spellIconsFillAsTheirCooldownRunsDown() {
+        RavengardHudState state = new RavengardHudState();
+        state.setAbilityOne(RavengardAbility.FIREBALL.getHudCodePoint());
+        state.setAbilityTwo(RavengardAbility.RECOVERY.getHudCodePoint());
+        state.setAbilityOneProgress(0.5f);
+        state.setAbilityTwoProgress(1f);
+
+        var slots = RavengardHudComposer.compose(state).values().stream()
+                .filter(line -> line.children().size() == 2).findFirst().orElseThrow();
+        var first = slots.children().get(0).children().get(0).color().value();
+        var second = slots.children().get(1).children().get(0).color().value();
+
+        assertEquals(0xFEFB00 | 127, first);
+        assertEquals(0xFEFCFF, second);
+    }
+
+    @Test
+    void aReadyAbilityIsNeverEncodedAsCoolingDown() {
+        assertEquals(0xFF, RavengardHudComposer.cooldownByte(1f));
+        assertEquals(0xFE, RavengardHudComposer.cooldownByte(0.9999f));
+        assertEquals(0, RavengardHudComposer.cooldownByte(0f));
+    }
 }

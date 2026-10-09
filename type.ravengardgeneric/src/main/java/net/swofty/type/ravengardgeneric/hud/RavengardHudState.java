@@ -14,6 +14,8 @@ public class RavengardHudState {
     private int crowns;
     private int abilityOne;
     private int abilityTwo;
+    private float abilityOneProgress = 1f;
+    private float abilityTwoProgress = 1f;
     private int maxStamina = 100;
 
     private String clock = "00:00";

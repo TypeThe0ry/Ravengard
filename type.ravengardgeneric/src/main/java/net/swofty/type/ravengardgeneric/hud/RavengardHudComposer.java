@@ -176,6 +176,11 @@ public final class RavengardHudComposer {
     private static final int SLOT_TWO_BACKGROUND = 0xFEFCFF;
     private static final int SLOT_TWO_ICON = 0xFEFC00;
 
+    /** The pack reads an icon's blue channel as its cooldown progress, and 255 as ready. */
+    static int cooldownByte(float progress) {
+        return progress >= 1f ? 0xFF : Math.clamp((int) (progress * 255f), 0, 0xFE);
+    }
+
     private static Component spellSlots(RavengardHudState state) {
         if (state.getAbilityOne() == 0 && state.getAbilityTwo() == 0) {
             return Component.empty();
@@ -186,14 +191,16 @@ public final class RavengardHudComposer {
                     .font(RavengardFont.RAVENGARD)
                     .color(net.kyori.adventure.text.format.TextColor.color(SLOT_ONE_BACKGROUND))
                     .append(Component.text(new String(Character.toChars(state.getAbilityOne())))
-                            .color(net.kyori.adventure.text.format.TextColor.color(SLOT_ONE_ICON))));
+                            .color(net.kyori.adventure.text.format.TextColor.color(
+                                    SLOT_ONE_ICON | cooldownByte(state.getAbilityOneProgress())))));
         }
         if (state.getAbilityTwo() != 0) {
             line = line.append(Component.text(new String(Character.toChars(SPELL_BACKGROUND)))
                     .font(RavengardFont.RAVENGARD)
                     .color(net.kyori.adventure.text.format.TextColor.color(SLOT_TWO_BACKGROUND))
                     .append(Component.text(new String(Character.toChars(state.getAbilityTwo())))
-                            .color(net.kyori.adventure.text.format.TextColor.color(SLOT_TWO_ICON))));
+                            .color(net.kyori.adventure.text.format.TextColor.color(
+                                    SLOT_TWO_ICON | cooldownByte(state.getAbilityTwoProgress())))));
         }
         return line;
     }

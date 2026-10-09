@@ -47,6 +47,7 @@ class RavengardTeamAssignmentTest {
         assertEquals(first.getDungeonTeam(), second.getDungeonTeam());
         assertEquals(0, other.getDungeonTeam(), "strangers fill the strangers' team, not the party's");
         assertEquals(9, setup.game().getMaxPlayers());
+        assertEquals(6, setup.game().getMinPlayers());
     }
 
     @Test
@@ -56,7 +57,8 @@ class RavengardTeamAssignmentTest {
         var b = place(setup, "b", null);
         var c = place(setup, "c", null);
         assertEquals(List.of(0, 1, 2), List.of(a.getDungeonTeam(), b.getDungeonTeam(), c.getDungeonTeam()));
-        assertEquals(8, setup.game().getMaxPlayers());
+        assertEquals(12, setup.game().getMaxPlayers());
+        assertEquals(1, setup.game().getMinPlayers());
     }
 
     private record Setup(RavengardDungeonGame game, Map<UUID, RavengardDungeonPlayer> members) {

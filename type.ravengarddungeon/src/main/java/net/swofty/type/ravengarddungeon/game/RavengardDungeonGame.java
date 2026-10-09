@@ -10,6 +10,10 @@ import net.minestom.server.timer.Task;
 import net.minestom.server.timer.TaskSchedule;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
+import net.swofty.type.ravengardgeneric.queue.RavengardMatchMode;
 import net.swofty.commons.ServerType;
 import net.swofty.type.game.game.AbstractGame;
 import net.swofty.type.game.game.CountdownConfig;
@@ -25,6 +29,7 @@ import net.swofty.type.ravengardgeneric.profile.RavengardProfiles;
 import net.swofty.type.ravengardgeneric.profile.RavengardRunState;
 import net.swofty.type.ravengardgeneric.sound.RavengardSounds;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -32,6 +37,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
+    private net.minestom.server.timer.Task waitingTask;
     private volatile net.swofty.type.ravengardgeneric.queue.RavengardMatchMode matchMode =
             net.swofty.type.ravengardgeneric.queue.RavengardMatchMode.TRIOS;
     /** Players who queued as a party, by their party leader, so they land on one team. */
@@ -93,6 +99,8 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         this.extractionPoints = List.copyOf(extractionPoints == null ? List.of() : extractionPoints);
         java.util.UUID gameUuid = java.util.UUID.fromString(getGameId());
         this.deathWallSeed = gameUuid.getMostSignificantBits() ^ gameUuid.getLeastSignificantBits();
+        this.waitingTask = MinecraftServer.getSchedulerManager().buildTask(this::showWaitingTitle)
+                .repeat(TaskSchedule.seconds(1)).schedule();
     }
 
     private static void onGameEvent(Object event) {
@@ -176,6 +184,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
             RavengardRunState.begin(player.getUuid(), getGameId());
             Pos spawn = spawnPoints.get((matchMode.teamSize() > 1 ? team : playerIndex) % spawnPoints.size());
             announceJoin(player);
+            speedUpCountdown();
             player.setRespawnPoint(spawn);
             players.values().forEach(this::updateHud);
             if (player.getInstance() == instance) {
@@ -247,6 +256,26 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         else partyLeaders.put(player, leader);
     }
 
+    private void speedUpCountdown() {
+        if (countdown.isActive() && players.size() >= matchMode.fastStartPlayers()) {
+            countdown.accelerate(RavengardMatchMode.FAST_COUNTDOWN_SECONDS);
+        }
+    }
+
+    private void showWaitingTitle() {
+        if (state.isInProgress() || state.isEnding()) {
+            if (waitingTask != null) waitingTask.cancel();
+            return;
+        }
+        if (state != GameState.WAITING) return;
+        int missing = Math.max(0, getMinPlayers() - players.size());
+        Title title = Title.title(
+                Component.text("等待玩家中……", NamedTextColor.YELLOW, TextDecoration.BOLD),
+                Component.text("当前 " + players.size() + " 人，还差 " + missing + " 人开始", NamedTextColor.GRAY),
+                Title.Times.times(Duration.ZERO, Duration.ofMillis(1500), Duration.ofMillis(300)));
+        players.values().stream().filter(RavengardDungeonGame::isPlayReady).forEach(player -> player.showTitle(title));
+    }
+
     private void announceJoin(RavengardDungeonPlayer joined) {
         int count = players.size();
         for (RavengardDungeonPlayer viewer : players.values()) {
@@ -262,7 +291,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
 
     @Override
     public int getMinPlayers() {
-        return 1;
+        return matchMode.minPlayers();
     }
 
     public Pos getSpawnPoint(int index) {

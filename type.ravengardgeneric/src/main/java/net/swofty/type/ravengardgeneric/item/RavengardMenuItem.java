@@ -21,10 +21,10 @@ public final class RavengardMenuItem {
 
     public static ItemStack build() {
         return ItemStacks.raw(Material.NETHER_STAR, """
-                        <9>Ravengard Menu <7>(Right Click)
+                        <9>天穹余烬菜单 <7>（右键）
 
-                        <7>View your lock box, manage skills,
-                        <7>craft, and more!""")
+                        <7>查看保险箱、管理技能、
+                        <7>制作物品等！""")
                 .set(DataComponents.UNBREAKABLE, net.minestom.server.utils.Unit.INSTANCE)
                 .set(DataComponents.TOOLTIP_STYLE, "hypixel_ravengard:rare")
                 .set(DataComponents.TOOLTIP_DISPLAY, new TooltipDisplay(false, Set.of(
