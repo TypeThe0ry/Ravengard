@@ -43,6 +43,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
     /** Players who queued as a party, by their party leader, so they land on one team. */
     private final Map<UUID, UUID> partyLeaders = new java.util.concurrent.ConcurrentHashMap<>();
     static final int COUNTDOWN_SECONDS = 60;
+    static final int EXTRACTION_EXPERIENCE = 20;
     private static final int[] COUNTDOWN_ANNOUNCEMENTS = {60, 45, 30, 20, 15, 10, 5, 4, 3, 2, 1};
     public static final List<Pos> SPAWN_POINTS = List.of(
             new Pos(-188.5, 66, -134.5),
@@ -720,6 +721,7 @@ public class RavengardDungeonGame extends AbstractGame<RavengardDungeonPlayer> {
         removePlayerFromDungeon(player);
         resetDungeonState(player);
         player.sendMessage("<a>撤离成功！你的战利品已保存。");
+        RavengardProfiles.awardExperience(player, EXTRACTION_EXPERIENCE, "成功撤离");
         org.tinylog.Logger.info("Ravengard extraction successful: game={} player={} remainingPlayers={}",
                 getGameId(), player.getUsername(), players.size());
         player.sendTo(ServerType.RAVENGARD_LOBBY);

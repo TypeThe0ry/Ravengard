@@ -91,6 +91,41 @@ public final class RavengardProfileStorage {
         }
     }
 
+    /** What an experience award did to a profile: where its level and experience ended up, and how many levels it gained. */
+    public record Progress(int level, int experience, int levelsGained) {
+    }
+
+    /**
+     * Adds experience to one profile, carrying it over into levels the way the menus show it
+     * (a level takes ten times itself) and giving an ability point for every level gained. Only
+     * the three fields it changes are written, so it is safe while a run holds the rest.
+     */
+    public static Progress addExperience(UUID profileId, int amount) {
+        if (profileId == null || amount <= 0) return null;
+        Progress[] result = new Progress[1];
+        try {
+            SwoftyData.profile().transaction(profileId, transaction -> {
+                int level = decodeInt(transaction.get(RavengardProfileFields.LEVEL), 1);
+                int experience = decodeInt(transaction.get(RavengardProfileFields.EXPERIENCE), 0) + amount;
+                int points = decodeInt(transaction.get(RavengardProfileFields.ABILITY_POINTS), 0);
+                int gained = 0;
+                while (experience >= level * 10) {
+                    experience -= level * 10;
+                    level++;
+                    points++;
+                    gained++;
+                }
+                transaction.set(RavengardProfileFields.LEVEL, RavengardProfileFields.INTEGER.serialize(level));
+                transaction.set(RavengardProfileFields.EXPERIENCE, RavengardProfileFields.INTEGER.serialize(experience));
+                transaction.set(RavengardProfileFields.ABILITY_POINTS, RavengardProfileFields.INTEGER.serialize(points));
+                result[0] = new Progress(level, experience, gained);
+            });
+        } finally {
+            release(profileId);
+        }
+        return result[0];
+    }
+
     public static void addPlaytime(UUID profileId, long seconds) {
         if (profileId == null || seconds <= 0) return;
         try {

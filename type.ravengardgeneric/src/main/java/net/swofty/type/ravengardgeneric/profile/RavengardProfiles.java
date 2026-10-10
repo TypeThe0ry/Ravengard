@@ -240,6 +240,27 @@ public final class RavengardProfiles {
         RavengardProfileStorage.addDiscoveredRegion(player.getSelectedProfile(), region.name());
     }
 
+    /** Gives the active profile experience for a defeated mob, a kill or an extraction, and tells the player. */
+    public static void awardExperience(RavengardPlayer player, int amount, String reason) {
+        RavengardDataHandler handler = player.getRavengardDataHandler();
+        UUID profileId = handler == null ? null : handler.getCurrentProfileId();
+        if (profileId == null || amount <= 0) return;
+        RavengardProfileStorage.Progress progress;
+        try {
+            progress = RavengardProfileStorage.addExperience(profileId, amount);
+        } catch (RuntimeException exception) {
+            Logger.warn(exception, "Could not give {} experience to {}", amount, player.getUsername());
+            return;
+        }
+        if (progress == null) return;
+        player.setRavengardLevel(progress.level());
+        player.sendMessage("<7>{}：<e>+{} 经验", reason, amount);
+        if (progress.levelsGained() > 0) {
+            player.sendMessage("<6>升级！<7>你的职业升到了 <e>{} <7>级，获得 <b>{} 个技能点<7>。",
+                    progress.level(), progress.levelsGained());
+        }
+    }
+
     public static int getCrowns(RavengardPlayer player) {
         return player.getCrowns();
     }

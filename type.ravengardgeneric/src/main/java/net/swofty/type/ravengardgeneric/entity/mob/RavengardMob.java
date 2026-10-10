@@ -39,6 +39,8 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final int BAR_SEGMENTS = 10;
     private static final float PLAYER_DAMAGE_PER_HIT = 1.5f;
     private static final int ATTACK_COOLDOWN_TICKS = 30;
+    private static final int MOB_EXPERIENCE = 2;
+    private static final int ELITE_EXPERIENCE = 5;
     /** The A playtest found the captured health far too tanky against the starter weapons. */
     public static final double HEALTH_FACTOR = 0.6;
     private static final int FLASH_TICKS = 9;
@@ -473,8 +475,19 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         return true;
     }
 
+    private void rewardKiller() {
+        net.minestom.server.entity.damage.Damage last = getLastDamageSource();
+        net.minestom.server.entity.Entity attacker = last == null ? null
+                : last.getAttacker() != null ? last.getAttacker() : last.getSource();
+        if (attacker instanceof net.swofty.type.ravengardgeneric.user.RavengardPlayer killer && !killer.isTutorial()) {
+            net.swofty.type.ravengardgeneric.profile.RavengardProfiles.awardExperience(killer,
+                    appearanceType.endsWith("_elite") ? ELITE_EXPERIENCE : MOB_EXPERIENCE, "击败怪物");
+        }
+    }
+
     private void beginDeath() {
         dying = true;
+        rewardKiller();
         RavengardSounds.play(instance, position, RavengardSounds.Cue.MOB_DEATH);
         if (!deathReported) {
             deathReported = true;
