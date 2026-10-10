@@ -55,6 +55,10 @@ public class ActionPlayerCombat implements HypixelEventClass {
             return;
         }
 
+        if (ActionPlayerStaff.isMagicWeapon(type)) {
+            ActionPlayerStaff.cast(player);
+            return;
+        }
         double attackSpeed = attackSpeed(type);
         if (mob.isDying()) return;
         double strength = attackStrength(player.getUuid(), System.nanoTime(), attackSpeed);

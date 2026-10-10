@@ -2,6 +2,7 @@ package net.swofty.type.ravengardgeneric.event.actions.player;
 
 import net.minestom.server.entity.PlayerHand;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
+import net.minestom.server.event.player.PlayerHandAnimationEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.player.PlayerUseItemEvent;
 import net.swofty.type.generic.event.EventNodes;
@@ -20,13 +21,21 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** Magic weapons attack with a right click: a bolt for their ranged damage, at their ranged attack speed. */
+/** Magic weapons attack with a click, left or right: a bolt for their ranged damage, at their ranged attack speed. */
 public class ActionPlayerStaff implements HypixelEventClass {
     static final Set<String> MAGIC_WEAPONS = Set.of("STAFF", "ORB", "SCEPTRE", "SPELLBOOK", "MAGIC_SWORD");
     private static final ConcurrentHashMap<UUID, Long> READY_AT = new ConcurrentHashMap<>();
 
     @PhasedEvent(node = EventNodes.PLAYER, requireDataLoaded = true, phase = EventPhase.GAMEPLAY)
     public void onUse(PlayerUseItemEvent event) {
+        if (event.getHand() == PlayerHand.MAIN && event.getPlayer() instanceof RavengardPlayer player) {
+            cast(player);
+        }
+    }
+
+    /** A left click swings the arm, in the air or at a mob; a staff has no melee, so it casts instead. */
+    @PhasedEvent(node = EventNodes.PLAYER, requireDataLoaded = true, phase = EventPhase.GAMEPLAY)
+    public void onSwing(PlayerHandAnimationEvent event) {
         if (event.getHand() == PlayerHand.MAIN && event.getPlayer() instanceof RavengardPlayer player) {
             cast(player);
         }
@@ -42,6 +51,11 @@ public class ActionPlayerStaff implements HypixelEventClass {
     @PhasedEvent(node = EventNodes.PLAYER, requireDataLoaded = false, phase = EventPhase.DISCONNECT)
     public void onDisconnect(PlayerDisconnectEvent event) {
         READY_AT.remove(event.getPlayer().getUuid());
+    }
+
+    static boolean isMagicWeapon(RavengardItemType type) {
+        StandardItemComponent standard = type == null ? null : type.component(StandardItemComponent.class);
+        return standard != null && MAGIC_WEAPONS.contains(standard.getStandardItemType());
     }
 
     static void cast(RavengardPlayer player) {
