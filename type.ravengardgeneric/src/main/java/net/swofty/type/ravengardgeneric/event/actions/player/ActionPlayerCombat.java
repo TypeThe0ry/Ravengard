@@ -25,7 +25,8 @@ public class ActionPlayerCombat implements HypixelEventClass {
     private static final double DISPLAY_DAMAGE_SCALE = 4.0;
     private static final float FIST_DAMAGE = 1f;
     private static final double DEFAULT_ATTACK_SPEED = 4.0;
-    static final double MIN_ATTACK_INTERVAL_FRACTION = 0.5;
+    /** No swing lands faster than this, whatever the weapon: ten clicks a second stop being faster than eight. */
+    static final long MIN_SWING_GAP_NANOS = 120_000_000L;
     /** Blocks a second (over twenty) a full strength swing pushes a mob back. */
     static final double MELEE_KNOCKBACK = 0.35;
     private static final ConcurrentHashMap<UUID, Long> LAST_ATTACK_NANOS = new ConcurrentHashMap<>();
@@ -64,7 +65,7 @@ public class ActionPlayerCombat implements HypixelEventClass {
             double weapon = type.statistic(RavengardItemStatistic.DAMAGE) * handler.getStatBoost();
             if (weapon > 0) {
                 damage = (float) Math.max(FIST_DAMAGE,
-                        weapon / DISPLAY_DAMAGE_SCALE * (0.2 + strength * strength * 0.8));
+                        weapon / DISPLAY_DAMAGE_SCALE * strength * strength);
             }
         }
         if (RavengardAbilityService.hasBuff(player, RavengardAbility.DIRECT_HIT)
@@ -104,7 +105,18 @@ public class ActionPlayerCombat implements HypixelEventClass {
         return speed > 0 ? speed : DEFAULT_ATTACK_SPEED;
     }
 
-    /** A swing inside half the weapon's recovery answers with a negative strength and is dropped. */
+    /**
+     * How much of its recovery a weapon needs before a swing lands at all: heavy weapons need nearly half
+     * of it, fast ones a quarter.
+     */
+    static double minimumRecovery(double attackSpeed) {
+        return Math.clamp(0.55 - 0.1 * attackSpeed, 0.25, 0.5);
+    }
+
+    /**
+     * Damage follows the recovery squared, as in current Minecraft: a swing that comes before the weapon
+     * is ready is dropped, and one that comes early is worth far less, so clicking fast earns nothing.
+     */
     static double attackStrength(UUID player, long nowNanos, double attackSpeed) {
         Long previous = LAST_ATTACK_NANOS.get(player);
         if (previous == null) {
@@ -113,7 +125,7 @@ public class ActionPlayerCombat implements HypixelEventClass {
         }
         long elapsed = Math.max(0L, nowNanos - previous);
         double intervalNanos = 1_000_000_000.0 * 20.0 / Math.max(0.1, attackSpeed) / 20.0;
-        if (elapsed < intervalNanos * MIN_ATTACK_INTERVAL_FRACTION) return -1.0;
+        if (elapsed < Math.max(intervalNanos * minimumRecovery(attackSpeed), MIN_SWING_GAP_NANOS)) return -1.0;
         LAST_ATTACK_NANOS.put(player, nowNanos);
         return Math.clamp(elapsed / intervalNanos, 0.0, 1.0);
     }

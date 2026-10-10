@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ActionPlayerCombatCooldownTest {
     @Test
@@ -42,5 +43,33 @@ class ActionPlayerCombatCooldownTest {
                 "default_statistics", java.util.Map.of("ranged_damage", 30.0, "ranged_attack_speed", 0.5)));
         assertEquals(2000, ActionPlayerStaff.cooldownMillis(staff, 1.0));
         assertEquals(1000, ActionPlayerStaff.cooldownMillis(staff, 0.5));
+    }
+    @Test
+    void clickingFastNeverBeatsWaitingForTheWeaponToRecover() {
+        for (double speed : new double[]{0.5, 1.0, 2.0, 4.0}) {
+            double interval = 1.0 / speed;
+            double patient = interval > 0 ? 1.0 / interval : 0;
+            for (double clicksPerSecond : new double[]{4, 8, 12, 20}) {
+                UUID player = UUID.randomUUID();
+                long gap = (long) (1_000_000_000L / clicksPerSecond);
+                double total = 0;
+                ActionPlayerCombat.attackStrength(player, 0L, speed);
+                for (int click = 1; click <= 200; click++) {
+                    double strength = ActionPlayerCombat.attackStrength(player, click * gap, speed);
+                    if (strength >= 0) total += strength * strength;
+                }
+                double perSecond = total / (200.0 / clicksPerSecond);
+                assertTrue(perSecond <= patient * 1.05,
+                        "speed " + speed + " clicking " + clicksPerSecond + "/s dealt " + perSecond
+                                + " full hits a second, waiting deals " + patient);
+            }
+        }
+    }
+
+    @Test
+    void fastWeaponsNeedLessRecoveryThanHeavyOnes() {
+        assertEquals(0.5, ActionPlayerCombat.minimumRecovery(0.5), 1e-9);
+        assertEquals(0.45, ActionPlayerCombat.minimumRecovery(1.0), 1e-9);
+        assertEquals(0.25, ActionPlayerCombat.minimumRecovery(4.0), 1e-9);
     }
 }

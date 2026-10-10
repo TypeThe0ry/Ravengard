@@ -38,7 +38,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final TextColor BAR_EMPTY = TextColor.color(0x3D3D3D);
     private static final int BAR_SEGMENTS = 10;
     private static final float PLAYER_DAMAGE_PER_HIT = 1.5f;
-    private static final int ATTACK_COOLDOWN_TICKS = 40;
+    private static final int ATTACK_COOLDOWN_TICKS = 30;
     /** The A playtest found the captured health far too tanky against the starter weapons. */
     public static final double HEALTH_FACTOR = 0.6;
     private static final int FLASH_TICKS = 9;
@@ -150,6 +150,8 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final int CASTER_COOLDOWN_TICKS = 45;
     private static final double KNOCKBACK_HORIZONTAL = 0.40 * 20;
     private static final double KNOCKBACK_VERTICAL = 0.30 * 20;
+    /** Elite mobs hit harder: they throw a player back this much further. */
+    private static final double ELITE_KNOCKBACK_FACTOR = 1.8;
     // the invisible zombie body is the combat target: scaling it keeps right-clicks passing through
     // to the held item, which an interaction entity would swallow
     static final double COMBAT_SCALE = 1.15;
@@ -347,8 +349,10 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             Vec away = living.getPosition().sub(position).asVec().withY(0);
             if (away.lengthSquared() > 1e-6) {
                 away = away.normalize();
-                living.setVelocity(new Vec(away.x() * KNOCKBACK_HORIZONTAL, KNOCKBACK_VERTICAL,
-                        away.z() * KNOCKBACK_HORIZONTAL));
+                double push = appearanceType.endsWith("_elite") ? ELITE_KNOCKBACK_FACTOR : 1.0;
+                living.setVelocity(new Vec(away.x() * KNOCKBACK_HORIZONTAL * push,
+                        KNOCKBACK_VERTICAL * (1.0 + (push - 1.0) / 2.0),
+                        away.z() * KNOCKBACK_HORIZONTAL * push));
             }
         }
     }
