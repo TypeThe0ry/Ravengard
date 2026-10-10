@@ -245,7 +245,7 @@ public final class CarbonChatBridge {
             case CarbonChatProtocol.CHAT_MESSAGE -> {
                 CarbonChatProtocol.ChatMessage chat = CarbonChatProtocol.readChat(packet.payload());
                 if (GLOBAL_CHANNEL.equals(chat.channelKey())) {
-                    show(GSON.deserialize(chat.componentJson()));
+                    show(withoutItemHovers(GSON.deserialize(chat.componentJson())));
                 }
             }
             case CarbonChatProtocol.LOCAL_PLAYERS -> {
@@ -275,9 +275,26 @@ public final class CarbonChatBridge {
         Player recipient = MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(whisper.to());
         if (recipient == null) return;
         String senderName = findRemote(whisper.from()).map(NetworkPlayer::name).orElse("?");
-        Component line = CarbonChatFormat.whisperFrom(senderName, GSON.deserialize(whisper.componentJson()));
+        Component line = CarbonChatFormat.whisperFrom(senderName, withoutItemHovers(GSON.deserialize(whisper.componentJson())));
         recipient.sendMessage(line);
         rememberConversation(recipient.getUuid(), whisper.from());
+    }
+
+    /**
+     * A shown item in another server's chat arrives as a hover event whose item data this server cannot
+     * write to a client; sending it kills the connection's writer, so it is dropped and the text stays.
+     */
+    static Component withoutItemHovers(Component component) {
+        Component result = component;
+        net.kyori.adventure.text.event.HoverEvent<?> hover = result.hoverEvent();
+        if (hover != null) {
+            if (hover.action() == net.kyori.adventure.text.event.HoverEvent.Action.SHOW_ITEM) {
+                result = result.hoverEvent(null);
+            } else if (hover.value() instanceof Component inner) {
+                result = result.hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(withoutItemHovers(inner)));
+            }
+        }
+        return result.children(result.children().stream().map(CarbonChatBridge::withoutItemHovers).toList());
     }
 
     private static void show(Component line) {
