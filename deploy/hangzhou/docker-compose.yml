@@ -53,6 +53,7 @@ services:
       UPSTREAM_FORWARDING_SECRET: ${UPSTREAM_FORWARDING_SECRET:?UPSTREAM_FORWARDING_SECRET is required}
       JAVA_TOOL_OPTIONS: -Xms128m -Xmx384m
     mem_limit: 700m
+    cpu_shares: 2048
     ports:
       - "127.0.0.1:25571:25565"
     depends_on:
@@ -82,6 +83,7 @@ services:
       <<: [*forwarding_env, *zh_cn_env]
       SERVICE_CMD: java -Xms256m -Xmx1200m -jar HypixelCore.jar RAVENGARD_LOBBY
     mem_limit: 1700m
+    cpu_shares: 2048
     depends_on:
       proxy: {condition: service_healthy}
     volumes:
@@ -99,6 +101,7 @@ services:
       <<: [*forwarding_env, *zh_cn_env]
       SERVICE_CMD: java -Xms256m -Xmx2500m -XX:+ExitOnOutOfMemoryError -jar HypixelCore.jar RAVENGARD_DUNGEON
     mem_limit: 3200m
+    cpu_shares: 4096
     depends_on:
       proxy: {condition: service_healthy}
     volumes:

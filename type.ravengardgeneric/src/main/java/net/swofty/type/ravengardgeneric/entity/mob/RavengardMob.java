@@ -603,6 +603,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
             RavengardMobClip.Part part = clip.parts().get(partIndex);
             Entity display = new Entity(EntityType.ITEM_DISPLAY);
             display.setNoGravity(true);
+            display.setHasPhysics(false);
             display.setAutoViewable(true);
             display.editEntityMeta(ItemDisplayMeta.class, meta -> {
                 meta.setItemStack(partItem(part, BASE_COLOR));
@@ -630,6 +631,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
 
         healthBar = new LivingEntity(EntityType.TEXT_DISPLAY);
         healthBar.setNoGravity(true);
+        healthBar.setHasPhysics(false);
         healthBar.setAutoViewable(true);
         healthBar.editEntityMeta(TextDisplayMeta.class, meta -> {
             meta.setText(barText());
