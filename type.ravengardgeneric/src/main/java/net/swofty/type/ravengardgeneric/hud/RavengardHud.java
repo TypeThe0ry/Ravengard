@@ -66,6 +66,7 @@ public final class RavengardHud {
         LAST_SENT.remove(player.getUuid());
         LAST_TITLE.remove(player.getUuid());
         TAB_HIDDEN.remove(player.getUuid());
+        TAB_HIDE_TICKS.remove(player.getUuid());
         TAB_HIDDEN.values().forEach(hidden -> hidden.remove(player.getUuid()));
     }
 
@@ -186,10 +187,19 @@ public final class RavengardHud {
 
     private static final Map<UUID, Set<UUID>> TAB_HIDDEN = new ConcurrentHashMap<>();
 
+    private static final Map<UUID, Integer> TAB_HIDE_TICKS = new ConcurrentHashMap<>();
+    private static final int TAB_REHIDE_TICKS = 20;
+
+    /**
+     * Takes every player off the tab list, which only carries the map. The network's tab plugin
+     * lists entries again when it restyles a name or rebuilds the list, so the rows are hidden
+     * again every second rather than once.
+     */
     private static void hideTabList(HypixelPlayer player) {
         Set<UUID> hidden = TAB_HIDDEN.computeIfAbsent(player.getUuid(), ignored -> ConcurrentHashMap.newKeySet());
+        boolean again = TAB_HIDE_TICKS.merge(player.getUuid(), 1, Integer::sum) % TAB_REHIDE_TICKS == 0;
         for (var online : MinecraftServer.getConnectionManager().getOnlinePlayers()) {
-            if (!hidden.add(online.getUuid())) {
+            if (!hidden.add(online.getUuid()) && !again) {
                 continue;
             }
             player.sendPacket(new net.minestom.server.network.packet.server.play.PlayerInfoUpdatePacket(
