@@ -59,18 +59,10 @@ public final class RavengardQueue {
         return QUEUED.containsKey(player.getUuid()) || SEARCHING.contains(player.getUuid());
     }
 
-    /** Offers the two modes as clickable choices in chat. */
+    /** Opens the menu that offers the two modes. */
     public static void chooseMode(RavengardPlayer player) {
-        Component line = Component.text("选择匹配模式：", NamedTextColor.GRAY);
-        for (RavengardMatchMode mode : RavengardMatchMode.values()) {
-            line = line.append(Component.text("[" + mode.displayName() + "]", NamedTextColor.GREEN)
-                            .clickEvent(ClickEvent.runCommand("/play " + mode.name().toLowerCase()))
-                            .hoverEvent(HoverEvent.showText(Component.text(mode.teamSize() == 1
-                                    ? "独自一人，与所有人为敌"
-                                    : "三人一队，可与队伍成员一同匹配", NamedTextColor.YELLOW))))
-                    .append(Component.text(" "));
-        }
-        player.sendMessage(line);
+        net.swofty.type.generic.gui.v2.ViewNavigator.get(player)
+                .push(new net.swofty.type.ravengardgeneric.gui.GUIPlayMode());
     }
 
     public static void join(RavengardPlayer player) {

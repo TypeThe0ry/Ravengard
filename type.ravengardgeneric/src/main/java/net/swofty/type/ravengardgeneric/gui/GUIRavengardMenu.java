@@ -43,8 +43,7 @@ public class GUIRavengardMenu extends RavengardView {
                         if (net.swofty.type.ravengardgeneric.queue.RavengardQueue.isQueued(player)) {
                             net.swofty.type.ravengardgeneric.queue.RavengardQueue.leave(player);
                         } else {
-                            player.closeInventory();
-                            net.swofty.type.ravengardgeneric.queue.RavengardQueue.chooseMode(player);
+                            net.swofty.type.generic.gui.v2.ViewNavigator.get(player).push(new GUIPlayMode());
                         }
                     },
                     java.time.Duration.ofSeconds(1));
