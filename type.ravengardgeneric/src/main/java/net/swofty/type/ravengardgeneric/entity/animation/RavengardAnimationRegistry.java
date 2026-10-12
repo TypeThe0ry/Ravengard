@@ -130,6 +130,7 @@ public final class RavengardAnimationRegistry {
             Map.entry("collector", "收藏家"),
             Map.entry("free_gear", "免费装备"),
             Map.entry("harbor_master", "港务长"),
+            Map.entry("potion_seller", "药剂商人"),
             Map.entry("queue", "点我加入游戏"),
             Map.entry("ravenport_guard", "渡鸦港卫兵"),
             Map.entry("ship_captain", "船长"),

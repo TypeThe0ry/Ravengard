@@ -55,14 +55,21 @@ public class GUIShop extends RavengardView {
             placeStock(layout, slot);
         }
 
-        layout.autoUpdating(SLOT_HOURGLASS,
-                (state2, ctx2) -> RavengardItems.button(RavengardButton.HOURGLASS)
-                        .label("库存刷新")
-                        .lore("<7>此商店的库存将在以下时间后刷新：")
-                        .lore(Text.of("<e>{}", net.swofty.type.ravengardgeneric.shop.RavengardShopStock.refreshText()))
-                        .origin(SLOT_HOURGLASS)
-                        .toBuilder(),
-                java.time.Duration.ofSeconds(1));
+        if (shop.permanent()) {
+            place(layout, SLOT_HOURGLASS, RavengardItems.button(RavengardButton.HOURGLASS)
+                    .label("常驻商店")
+                    .lore("<7>此商店的货物永不刷新，",
+                            "<7>也不会售罄。"));
+        } else {
+            layout.autoUpdating(SLOT_HOURGLASS,
+                    (state2, ctx2) -> RavengardItems.button(RavengardButton.HOURGLASS)
+                            .label("库存刷新")
+                            .lore("<7>此商店的库存将在以下时间后刷新：")
+                            .lore(Text.of("<e>{}", net.swofty.type.ravengardgeneric.shop.RavengardShopStock.refreshText(shop)))
+                            .origin(SLOT_HOURGLASS)
+                            .toBuilder(),
+                    java.time.Duration.ofSeconds(1));
+        }
 
         place(layout, SLOT_BUY, RavengardItems.button(RavengardButton.BUY)
                 .label("购买")

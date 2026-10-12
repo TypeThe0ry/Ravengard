@@ -25,21 +25,26 @@ public final class RavengardShopStock {
     private RavengardShopStock() {
     }
 
-    public static long cycle() {
-        return System.currentTimeMillis() / CYCLE_MILLIS;
+    static long cycleMillis(RavengardShop shop) {
+        return shop.refreshMinutes() > 0 ? shop.refreshMinutes() * 60_000L : CYCLE_MILLIS;
     }
 
-    public static long untilRefreshMillis() {
-        return CYCLE_MILLIS - (System.currentTimeMillis() % CYCLE_MILLIS);
+    public static long cycle(RavengardShop shop) {
+        return shop.permanent() ? 0 : System.currentTimeMillis() / cycleMillis(shop);
     }
 
-    public static String refreshText() {
-        long millis = untilRefreshMillis();
+    public static long untilRefreshMillis(RavengardShop shop) {
+        long length = cycleMillis(shop);
+        return length - (System.currentTimeMillis() % length);
+    }
+
+    public static String refreshText(RavengardShop shop) {
+        long millis = untilRefreshMillis(shop);
         return (millis / 60000) + " 分 " + (millis / 1000 % 60) + " 秒";
     }
 
     public static synchronized Shelf shelf(RavengardShop shop) {
-        long current = cycle();
+        long current = cycle(shop);
         Shelf shelf = SHELVES.get(shop.id());
         if (shelf == null || shelf.cycle() != current) {
             shelf = roll(shop, current);
@@ -58,7 +63,8 @@ public final class RavengardShopStock {
     private static Shelf roll(RavengardShop shop, long cycle) {
         Random random = new Random(Objects.hash(shop.id(), cycle));
         List<RavengardShop.PoolEntry> pool = new ArrayList<>(shop.pool());
-        Collections.shuffle(pool, random);
+        if (!shop.permanent()) Collections.shuffle(pool, random);
+        int stock = shop.stockPerEntry() > 0 ? shop.stockPerEntry() : STOCK_PER_ENTRY;
 
         List<Entry> entries = new ArrayList<>();
         List<Integer> slots = shop.shelfSlots();
@@ -66,11 +72,12 @@ public final class RavengardShopStock {
             // pools smaller than the shelf repeat, the way the alchemist's five slots carry
             // duplicates of its three items
             RavengardShop.PoolEntry picked = pool.get(index % pool.size());
+            boolean unlimited = picked.price() == 0 || shop.permanent();
             boolean free = picked.price() == 0;
-            double boost = !free && random.nextDouble() < BOOST_CHANCE
+            double boost = !unlimited && random.nextDouble() < BOOST_CHANCE
                     ? BOOSTS[random.nextInt(BOOSTS.length)] : 1.0;
             entries.add(new Entry(slots.get(index), picked.item(), picked.price(),
-                    free ? Integer.MAX_VALUE : STOCK_PER_ENTRY, boost));
+                    unlimited ? Integer.MAX_VALUE : stock, boost));
         }
         return new Shelf(cycle, List.copyOf(entries));
     }

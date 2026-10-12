@@ -1,0 +1,16 @@
+id: potions
+title: '药剂商人'
+banner: alchemist
+permanent: true
+shelf_slots: [4, 5, 6, 7, 8]
+pool:
+  - item: APPLE
+    price: 6
+  - item: COMMON_BANDAGE
+    price: 12
+  - item: BANDAGE
+    price: 24
+  - item: HEALTH_POTION
+    price: 30
+  - item: UNCOMMON_HEALTH_POTION
+    price: 45

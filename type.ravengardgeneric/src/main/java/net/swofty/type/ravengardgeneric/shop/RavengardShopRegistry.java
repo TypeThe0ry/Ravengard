@@ -34,7 +34,10 @@ public final class RavengardShopRegistry {
                             ((Number) entry.get("price")).intValue()));
                 }
                 SHOPS.put(id, new RavengardShop(id, String.valueOf(data.get("title")),
-                        String.valueOf(data.get("banner")), List.copyOf(shelf), List.copyOf(pool)));
+                        String.valueOf(data.get("banner")), List.copyOf(shelf), List.copyOf(pool),
+                        Boolean.TRUE.equals(data.get("permanent")),
+                        data.get("refresh_minutes") instanceof Number minutes ? minutes.intValue() : 0,
+                        data.get("stock_per_entry") instanceof Number stock ? stock.intValue() : 0));
             }
             Logger.info("Loaded {} Ravengard shops", SHOPS.size());
         } catch (Exception exception) {
