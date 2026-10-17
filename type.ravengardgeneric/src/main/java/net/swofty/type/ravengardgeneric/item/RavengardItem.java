@@ -102,10 +102,24 @@ public final class RavengardItem {
      * become blaze rods like newly made ones.
      */
     public static ItemStack migrated(ItemStack stack) {
+        return withWornModel(withBlazeRod(stack));
+    }
+
+    private static ItemStack withBlazeRod(ItemStack stack) {
         if (stack.material() != net.minestom.server.item.Material.STICK) return stack;
         String model = stack.get(DataComponents.ITEM_MODEL);
         return model != null && model.startsWith("hypixel_ravengard:item/")
                 ? stack.withMaterial(net.minestom.server.item.Material.BLAZE_ROD) : stack;
+    }
+
+    /** Armour saved before its piece had a worn model shows plain leather until it gets one. */
+    private static ItemStack withWornModel(ItemStack stack) {
+        if (stack.isAir() || stack.get(DataComponents.EQUIPPABLE) != null) return stack;
+        RavengardItemType type = new net.swofty.type.ravengardgeneric.item.attribute.RavengardItemAttributeHandler(stack).getType();
+        var component = type == null ? null
+                : type.component(net.swofty.type.ravengardgeneric.item.components.EquippableComponent.class);
+        var equippable = component == null ? null : component.equippable(type);
+        return equippable == null ? stack : stack.with(DataComponents.EQUIPPABLE, equippable);
     }
 
     /** The client's attack cooldown indicator follows the weapon's attack speed (players swing at 4 a second bare-handed). */

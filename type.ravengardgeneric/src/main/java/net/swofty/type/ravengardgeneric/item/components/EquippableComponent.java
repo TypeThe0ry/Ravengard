@@ -31,14 +31,19 @@ public class EquippableComponent implements RavengardItemComponent {
 
     @Override
     public ItemStack.Builder apply(ItemStack.Builder builder, RavengardItemType type) {
+        Equippable equippable = equippable(type);
+        return equippable == null ? builder : builder.set(DataComponents.EQUIPPABLE, equippable);
+    }
+
+    public Equippable equippable(RavengardItemType type) {
         StandardItemComponent standard = type.component(StandardItemComponent.class);
         EquipmentSlot slot = standard == null ? null : standard.equipmentSlot();
         if (assetId == null || slot == null) {
-            return builder;
+            return null;
         }
-        return builder.set(DataComponents.EQUIPPABLE, new Equippable(slot,
+        return new Equippable(slot,
                 Equippable.DEFAULT_EQUIP_SOUND, assetId, null, null,
                 false, false, false, false, false,
-                Equippable.DEFAULT_SHEARING_SOUND));
+                Equippable.DEFAULT_SHEARING_SOUND);
     }
 }

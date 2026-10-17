@@ -263,6 +263,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:leather
       - id: CLASS_RESTRICTED
         classes: [KNIGHT, HUNTER, ASSASSIN, WARRIOR]
   - id: STUDDED_BREECHES
@@ -276,6 +278,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:studded
       - id: CLASS_RESTRICTED
         classes: [KNIGHT, WARRIOR]
   - id: LIGHT_BOOTS
@@ -289,6 +293,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:light
       - id: CLASS_RESTRICTED
         classes: [HUNTER, ASSASSIN]
   - id: ROGUE_COAT
@@ -302,6 +308,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:rogue
       - id: CLASS_RESTRICTED
         classes: [ASSASSIN]
   - id: DOUBLET
@@ -315,6 +323,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:doublet
       - id: CLASS_RESTRICTED
         classes: [ASSASSIN, HUNTER, KNIGHT]
   - id: PADDED_TUNIC
@@ -328,6 +338,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:padded_leather
       - id: CLASS_RESTRICTED
         classes: [HUNTER, KNIGHT]
   - id: QUILTED_LEGGINGS
@@ -341,6 +353,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:quilted
       - id: CLASS_RESTRICTED
         classes: [HUNTER, ASSASSIN]
   - id: KNIGHTS_HAUBERK
@@ -354,6 +368,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:knights
       - id: CLASS_RESTRICTED
         classes: [KNIGHT]
   - id: LIGHT_LEGGINGS
@@ -367,6 +383,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:light
       - id: CLASS_RESTRICTED
         classes: [HUNTER, ASSASSIN]
   - id: PADDED_LEGGINGS
@@ -380,6 +398,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:padded_leather
       - id: CLASS_RESTRICTED
         classes: [HUNTER, KNIGHT]
   - id: SOLDIERS_SABATONS
@@ -393,6 +413,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:soldier
       - id: CLASS_RESTRICTED
         classes: [KNIGHT]
   - id: MARKSMAN_BOOTS
@@ -406,6 +428,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:marksman
       - id: CLASS_RESTRICTED
         classes: [HUNTER]
   - id: BANDAGE
@@ -570,6 +594,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:leather_harness
       - id: CLASS_RESTRICTED
         classes: [WARRIOR]
   - id: SOLDIERS_GREAVES
@@ -583,6 +609,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:soldier
       - id: CLASS_RESTRICTED
         classes: [KNIGHT, WARRIOR]
   - id: WAR_BOOTS
@@ -596,6 +624,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:war
       - id: CLASS_RESTRICTED
         classes: [WARRIOR]
   - id: WAR_LEGGINGS
@@ -609,6 +639,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:war
       - id: CLASS_RESTRICTED
         classes: [WARRIOR]
   - id: LEATHER_BOOTS
@@ -622,6 +654,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:leather
   - id: STUDDED_BOOTS
     rarity: UNCOMMON
     material: leather_boots
@@ -633,6 +667,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:studded
       - id: CLASS_RESTRICTED
         classes: [KNIGHT, WARRIOR]
   - id: KNIGHTS_SABATONS
@@ -646,6 +682,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:knights
       - id: CLASS_RESTRICTED
         classes: [KNIGHT]
 
@@ -689,6 +727,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:studded
       - id: CLASS_RESTRICTED
         classes: [KNIGHT, WARRIOR]
   - id: TOPAZ_GEMSTONE
@@ -728,6 +768,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:apprentice
       - id: CLASS_RESTRICTED
         class: SORCERER
 
@@ -743,6 +785,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:apprentice
       - id: CLASS_RESTRICTED
         class: SORCERER
 
@@ -757,6 +801,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:apprentice
       - id: CLASS_RESTRICTED
         class: SORCERER
 
@@ -772,6 +818,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:apprentice
       - id: CLASS_RESTRICTED
         class: SORCERER
 
@@ -857,6 +905,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:assassin_starter
       - id: CLASS_RESTRICTED
         class: ASSASSIN
 
@@ -901,6 +951,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:leather
       - id: CLASS_RESTRICTED
         classes: [KNIGHT, HUNTER, ASSASSIN, WARRIOR]
 
@@ -916,6 +968,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:leather
       - id: CLASS_RESTRICTED
         classes: [KNIGHT, HUNTER, ASSASSIN, WARRIOR]
 
@@ -931,6 +985,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:light
       - id: CLASS_RESTRICTED
         classes: [HUNTER, ASSASSIN]
 
@@ -988,6 +1044,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:hunter_starter
       - id: CLASS_RESTRICTED
         class: HUNTER
 
@@ -1064,6 +1122,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:chainmail
       - id: CLASS_RESTRICTED
         class: KNIGHT
 
@@ -1078,6 +1138,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:ember
       - id: CLASS_RESTRICTED
         class: SORCERER
 
@@ -1092,6 +1154,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:ember
       - id: CLASS_RESTRICTED
         class: SORCERER
 
@@ -1106,6 +1170,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:ember
       - id: CLASS_RESTRICTED
         class: SORCERER
 
@@ -1229,6 +1295,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:leather_harness
       - id: CLASS_RESTRICTED
         class: WARRIOR
 
@@ -1244,6 +1312,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: CHESTPLATE
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:leather
       - id: CLASS_RESTRICTED
         classes: [KNIGHT, HUNTER, ASSASSIN, WARRIOR]
 
@@ -1258,6 +1328,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:onyx
       - id: CLASS_RESTRICTED
         class: SORCERER
 
@@ -1272,6 +1344,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: LEGGINGS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:plate
       - id: CLASS_RESTRICTED
         class: KNIGHT
 
@@ -1318,6 +1392,8 @@ items:
     components:
       - id: STANDARD_ITEM
         standard_item_type: BOOTS
+      - id: EQUIPPABLE
+        asset_id: hypixel_ravengard:soldier
       - id: CLASS_RESTRICTED
         class: KNIGHT
 
