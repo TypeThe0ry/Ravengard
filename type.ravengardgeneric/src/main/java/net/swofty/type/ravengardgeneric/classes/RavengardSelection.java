@@ -86,8 +86,26 @@ public final class RavengardSelection {
         syncAbilities(player, value);
     }
 
+    /** The class's default pair, unless the profile has equipped two of its own abilities that it owns. */
+    public static List<RavengardAbility> equippedChoice(RavengardPlayer player, RavengardClass value) {
+        var state = net.swofty.type.ravengardgeneric.data.RavengardProfileStorage.abilities(player.getSelectedProfile());
+        if (state.equipped().size() == 2) {
+            RavengardAbility first = RavengardAbility.fromKey(state.equipped().get(0));
+            RavengardAbility second = RavengardAbility.fromKey(state.equipped().get(1));
+            if (owns(value, state.unlocked(), first) && owns(value, state.unlocked(), second) && first != second) {
+                return List.of(first, second);
+            }
+        }
+        return value.defaultAbilities();
+    }
+
+    public static boolean owns(RavengardClass value, java.util.Set<String> unlocked, RavengardAbility ability) {
+        return ability != null && ability.getOwner() == value
+                && (value.defaultAbilities().contains(ability) || unlocked.contains(ability.name()));
+    }
+
     public static void syncAbilities(RavengardPlayer player, RavengardClass value) {
-        List<RavengardAbility> abilities = value.defaultAbilities();
+        List<RavengardAbility> abilities = equippedChoice(player, value);
         int[] slots = {RavengardKit.SLOT_ABILITY_ONE, RavengardKit.SLOT_ABILITY_TWO};
         for (int index = 0; index < slots.length && index < abilities.size(); index++) {
             player.getInventory().setItemStack(slots[index], RavengardKit.ability(abilities.get(index), slots[index]));

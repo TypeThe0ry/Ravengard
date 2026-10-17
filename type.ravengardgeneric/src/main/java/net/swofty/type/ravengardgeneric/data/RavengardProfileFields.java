@@ -35,6 +35,11 @@ public final class RavengardProfileFields {
     public static final PlayerField<String> LOCK_BOX = field("lock_box");
     public static final PlayerField<String> LOCK_BOX_TIER = field("lock_box_tier");
 
+    public static final PlayerField<String> UNLOCKED_ABILITIES = field("unlocked_abilities");
+    public static final PlayerField<String> EQUIPPED_ABILITIES = field("equipped_abilities");
+    /** Kept by the ability page itself rather than written with the rest of a profile. */
+    public static final List<PlayerField<String>> ABILITY_FIELDS = List.of(UNLOCKED_ABILITIES, EQUIPPED_ABILITIES);
+
     public static final List<PlayerField<String>> PROFILE_FIELDS = List.of(
             OWNER, CREATED, CLASS, LEVEL, EXPERIENCE, CROWNS,
             ABILITY_POINTS, TUTORIAL, PLAYTIME_SECONDS, INTROS, DISCOVERED_REGIONS, INVENTORY,

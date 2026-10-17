@@ -85,6 +85,9 @@ public final class RavengardProfileStorage {
                 for (PlayerField<String> field : RavengardProfileFields.PROFILE_FIELDS) {
                     transaction.set(field, null);
                 }
+                for (PlayerField<String> field : RavengardProfileFields.ABILITY_FIELDS) {
+                    transaction.set(field, null);
+                }
             });
         } finally {
             unload(profileId);
@@ -189,6 +192,53 @@ public final class RavengardProfileStorage {
         try {
             SwoftyData.profile().set(profileId, RavengardProfileFields.LOCK_BOX_TIER,
                     RavengardProfileFields.INTEGER.serialize(tier));
+        } finally {
+            release(profileId);
+        }
+    }
+
+    /** The abilities a profile has bought, the two it has equipped in order, and its unspent points. */
+    public record AbilityState(Set<String> unlocked, List<String> equipped, int points) {
+    }
+
+    public static AbilityState abilities(UUID profileId) {
+        if (profileId == null) return new AbilityState(Set.of(), List.of(), 0);
+        try {
+            return new AbilityState(
+                    new LinkedHashSet<>(decodeNames(read(profileId, RavengardProfileFields.UNLOCKED_ABILITIES))),
+                    decodeNames(read(profileId, RavengardProfileFields.EQUIPPED_ABILITIES)),
+                    readInt(profileId, RavengardProfileFields.ABILITY_POINTS, 0));
+        } finally {
+            release(profileId);
+        }
+    }
+
+    /** Spends one ability point on an ability; false when there is no point to spend or it is already owned. */
+    public static boolean unlockAbility(UUID profileId, String ability) {
+        if (profileId == null || ability == null) return false;
+        boolean[] unlocked = new boolean[1];
+        try {
+            SwoftyData.profile().transaction(profileId, transaction -> {
+                int points = decodeInt(transaction.get(RavengardProfileFields.ABILITY_POINTS), 0);
+                Set<String> names = new LinkedHashSet<>(decodeNames(transaction.get(RavengardProfileFields.UNLOCKED_ABILITIES)));
+                if (points < 1 || !names.add(ability)) return;
+                transaction.set(RavengardProfileFields.ABILITY_POINTS, RavengardProfileFields.INTEGER.serialize(points - 1));
+                transaction.set(RavengardProfileFields.UNLOCKED_ABILITIES, encodeNames(names));
+                unlocked[0] = true;
+            });
+        } finally {
+            release(profileId);
+        }
+        return unlocked[0];
+    }
+
+    public static void equipAbilities(UUID profileId, String first, String second) {
+        if (profileId == null) return;
+        try {
+            SwoftyData.profile().transaction(profileId, transaction -> {
+                transaction.set(RavengardProfileFields.EQUIPPED_ABILITIES,
+                        RavengardProfileFields.STRING_ARRAY.serialize(new String[]{first, second}));
+            });
         } finally {
             release(profileId);
         }

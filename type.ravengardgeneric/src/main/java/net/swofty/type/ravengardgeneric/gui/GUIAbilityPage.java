@@ -50,15 +50,18 @@ public class GUIAbilityPage extends RavengardView {
         }
 
         List<RavengardAbility> abilities = playerClass.getAbilities();
+        RavengardProfileStorage.AbilityState owned = RavengardProfileStorage.abilities(player.getSelectedProfile());
         for (int index = 0; index < ABILITY_SLOTS.length && index < abilities.size(); index++) {
             RavengardAbility ability = abilities.get(index);
             int equippedSlot = RavengardKit.equippedAbility(player, 0) == ability ? 1
                     : RavengardKit.equippedAbility(player, 1) == ability ? 2 : 0;
+            boolean unlocked = net.swofty.type.ravengardgeneric.classes.RavengardSelection
+                    .owns(playerClass, owned.unlocked(), ability);
 
-            RavengardItems.Builder button = equippedSlot > 0
+            RavengardItems.Builder button = unlocked
                     ? RavengardItems.button(ability)
                             .label(Text.of("<a>{}", ability.getDisplayName()))
-                            .lore("<a><l>已装备")
+                            .lore(equippedSlot > 0 ? "<a><l>已装备" : "<a><l>已解锁")
                     : RavengardItems.button(RavengardButton.ABILITY_LOCKED)
                             .label(Text.of("<c>{}", ability.getDisplayName()))
                             .lore("<c><l>未解锁");
@@ -69,15 +72,25 @@ public class GUIAbilityPage extends RavengardView {
                     .lore(Text.of("<7>冷却：<e>{}", ability.getCooldownText()))
                     .blankLine();
 
-            if (equippedSlot > 0) {
-                button.lore(Text.of("<c>已装备在<e>第 {} 槽<c>！", equippedSlot));
+            if (equippedSlot == abilitySlot) {
+                button.lore(Text.of("<a>已装备在<e>第 {} 槽<a>！", equippedSlot));
+                place(layout, ABILITY_SLOTS[index], button);
+            } else if (unlocked) {
+                button.lore(Text.of("<e>点击装备到第 {} 槽！", abilitySlot));
+                interactive(layout, ABILITY_SLOTS[index], button,
+                        (click, viewContext) -> equip(viewContext, ability));
+            } else if (owned.points() >= 1) {
+                button.lore("<7>花费：<e>1<b> 技能点")
+                        .blankLine()
+                        .lore("<e>点击解锁！");
+                interactive(layout, ABILITY_SLOTS[index], button,
+                        (click, viewContext) -> unlock(viewContext, ability));
             } else {
                 button.lore("<7>花费：<e>1<b> 技能点")
                         .blankLine()
                         .lore("<c>技能点不足，无法购买该技能！");
+                place(layout, ABILITY_SLOTS[index], button);
             }
-
-            place(layout, ABILITY_SLOTS[index], button);
         }
 
         RavengardProfile active = RavengardProfileStorage.byId(player.getSelectedProfile());
@@ -104,5 +117,36 @@ public class GUIAbilityPage extends RavengardView {
                                 .build()));
 
         backButton(layout);
+    }
+
+    private void unlock(ViewContext viewContext, RavengardAbility ability) {
+        if (!(viewContext.player() instanceof RavengardPlayer player)) return;
+        if (!RavengardProfileStorage.unlockAbility(player.getSelectedProfile(), ability.name())) {
+            player.sendMessage("<c>技能点不足，无法解锁该技能！");
+            return;
+        }
+        player.sendMessage(Text.of("<a>已解锁技能 <f>{}<a>！", ability.getDisplayName()));
+        net.swofty.type.generic.gui.v2.ViewNavigator.get(player).replace(new GUIAbilityPage(abilitySlot));
+    }
+
+    /** Puts the ability in this page's slot; if it sat in the other slot, the two swap. */
+    private void equip(ViewContext viewContext, RavengardAbility ability) {
+        if (!(viewContext.player() instanceof RavengardPlayer player)) return;
+        RavengardClass playerClass = player.getRavengardClass();
+        if (playerClass == null) return;
+        int here = abilitySlot - 1;
+        RavengardAbility current = RavengardKit.equippedAbility(player, here);
+        RavengardAbility other = RavengardKit.equippedAbility(player, 1 - here);
+        RavengardAbility[] pair = new RavengardAbility[2];
+        pair[here] = ability;
+        pair[1 - here] = other == ability ? current : other;
+        if (pair[0] == null || pair[1] == null) return;
+        player.getInventory().setItemStack(RavengardKit.SLOT_ABILITY_ONE,
+                RavengardKit.ability(pair[0], RavengardKit.SLOT_ABILITY_ONE));
+        player.getInventory().setItemStack(RavengardKit.SLOT_ABILITY_TWO,
+                RavengardKit.ability(pair[1], RavengardKit.SLOT_ABILITY_TWO));
+        RavengardProfileStorage.equipAbilities(player.getSelectedProfile(), pair[0].name(), pair[1].name());
+        player.sendMessage(Text.of("<a>已将 <f>{} <a>装备到第 {} 槽！", ability.getDisplayName(), abilitySlot));
+        net.swofty.type.generic.gui.v2.ViewNavigator.get(player).replace(new GUIAbilityPage(abilitySlot));
     }
 }
