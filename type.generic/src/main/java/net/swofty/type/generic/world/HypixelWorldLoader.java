@@ -180,6 +180,17 @@ public final class HypixelWorldLoader {
         return loaded;
     }
 
+    private static CompoundBinaryTag modernBlockState(CompoundBinaryTag blockState) {
+        if (blockState.get("id") != null || blockState.get("Name") == null) {
+            return blockState;
+        }
+        CompoundBinaryTag.Builder modern = CompoundBinaryTag.builder().put("id", blockState.get("Name"));
+        if (blockState.get("Properties") != null) {
+            modern.put("properties", blockState.get("Properties"));
+        }
+        return modern.build();
+    }
+
     private static boolean loadDisplay(CompoundBinaryTag data, SharedInstance instance) {
         String id = data.getString("id", "");
         Entity entity;
@@ -188,7 +199,7 @@ public final class HypixelWorldLoader {
             entity.editEntityMeta(BlockDisplayMeta.class, meta -> {
                 applyDisplayMeta(data, meta);
                 if (data.get("block_state") instanceof CompoundBinaryTag blockState) {
-                    Block block = Block.STATE_STRUCT_CODEC.decode(Transcoder.NBT, blockState)
+                    Block block = Block.STATE_STRUCT_CODEC.decode(Transcoder.NBT, modernBlockState(blockState))
                             .orElseThrow("Invalid block display state");
                     meta.setBlockState(block);
                 }
