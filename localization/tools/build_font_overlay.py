@@ -24,6 +24,8 @@ OFFICIAL_LANG = os.path.join(os.path.dirname(ROOT), 'configuration', 'resourcepa
 LANG_DIR = os.path.join(PACK, 'assets', 'minecraft', 'lang')
 CLIENT_LANG = os.path.join(CATALOG, 'client_lang.json')
 OFFICIAL_MCMETA = os.path.join(os.path.dirname(ROOT), 'configuration', 'resourcepacks', 'ravengard', 'pack.mcmeta')
+# Minecraft 26.3 resource pack format (major); the overlay carries the 26.3 shader port, see README/CHANGELOG
+CLIENT_PACK_FORMAT = 97
 
 REPOSITORY = os.path.dirname(ROOT)
 SOURCE_DIRS = [os.path.join(module, 'src', 'main') for module in
@@ -76,11 +78,9 @@ def main():
         advances = {char: -CJK_ADVANCE * factor for char in chars}
         with open(os.path.join(FONT_DIR, name + '.json'), 'w', encoding='utf-8') as out:
             json.dump({'providers': [{'type': 'space', 'advances': advances}]}, out, ensure_ascii=False, indent=1)
-    official = json.load(open(OFFICIAL_MCMETA, encoding='utf-8'))['pack']
     mcmeta = {'pack': {
-        'pack_format': official['pack_format'],
-        'min_format': official.get('min_format', official['pack_format']),
-        'max_format': official.get('max_format', official['pack_format']),
+        'min_format': CLIENT_PACK_FORMAT,
+        'max_format': CLIENT_PACK_FORMAT,
         'description': {'color': 'gray', 'text': 'Ellan艾尔岚服务器搜打撤材质包'},
     }}
     with open(os.path.join(PACK, 'pack.mcmeta'), 'w', encoding='utf-8') as out:

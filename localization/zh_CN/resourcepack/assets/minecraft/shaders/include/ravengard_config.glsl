@@ -1,3 +1,6 @@
+#ifndef RAVENGARD_RAVENGARD_CONFIG_GLSL
+#define RAVENGARD_RAVENGARD_CONFIG_GLSL
+
 // =============================================================================
 // CONFIGS - Design knobs that can be tweaked to change the look and feel of the UI
 // =============================================================================
@@ -203,3 +206,5 @@ const int UI_CORNER_ID_CAST_BAR_PROGRESS   = 0xFEFD08;
 const int UI_CORNER_ID_GENERIC_54          = 0xFEFD09;
 const int UI_CORNER_ID_INVENTORY           = 0xFEFD0A;
 const int UI_CORNER_ID_HOTBAR              = 0xFEFD0B;
+
+#endif
