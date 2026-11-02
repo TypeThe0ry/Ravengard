@@ -1,5 +1,6 @@
 package net.swofty.type.skyblockgeneric.event.actions.entity;
 
+import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.event.entity.EntityDamageEvent;
 import net.minestom.server.network.packet.server.play.DamageEventPacket;
 import net.swofty.type.generic.event.EventNodes;
@@ -15,7 +16,7 @@ public class ActionAnimateEntityDamage implements HypixelEventClass {
         event.setCancelled(false);
 
         event.getEntity().sendPacketToViewersAndSelf(new DamageEventPacket(event.getEntity().getEntityId(),
-                        0,
+                        DamageType.GENERIC,
                         0,
                         0,
                         null));

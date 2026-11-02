@@ -266,7 +266,7 @@ class RestoredDisplaysGeneratorTest {
 
     @SuppressWarnings("removal")
     private static boolean wall(Block block) {
-        return !block.compare(Block.BARRIER) && block.isSolid();
+        return !block.compare(Block.BARRIER) && block.solid();
     }
 
     /** The source footprint turned clockwise (as seen from above) {@code turns} quarter turns. */

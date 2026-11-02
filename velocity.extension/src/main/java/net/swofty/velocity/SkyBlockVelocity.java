@@ -450,7 +450,7 @@ public class SkyBlockVelocity {
         event.setPing(new ServerPing(
             event.getPing().getVersion(),
             new ServerPing.Players(server.getPlayerCount(), 200000, List.of()),
-            Text.legacy("§f                 §aHypixel 网络 §c[1.8/26.2]\n§f   §6§l空岛生存 0.27 TORRHUS & SAFARI §7| §e§l夏日活动").asComponent(),
+            Text.legacy("§f                 §aHypixel 网络 §c[1.8/26.3]\n§f   §6§l空岛生存 0.27 TORRHUS & SAFARI §7| §e§l夏日活动").asComponent(),
             event.getPing().getFavicon().orElse(null)
         ));
     }

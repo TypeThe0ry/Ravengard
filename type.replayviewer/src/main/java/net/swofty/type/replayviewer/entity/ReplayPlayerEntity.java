@@ -120,7 +120,7 @@ public class ReplayPlayerEntity extends LivingEntity {
 
     public void takeVisualDamage() {
         sendPacketToViewersAndSelf(new DamageEventPacket(
-            getEntityId(), MinecraftServer.getDamageTypeRegistry().getId(DamageType.PLAYER_ATTACK.asKey()),
+            getEntityId(), DamageType.PLAYER_ATTACK,
             0,
             0,
             getPosition()

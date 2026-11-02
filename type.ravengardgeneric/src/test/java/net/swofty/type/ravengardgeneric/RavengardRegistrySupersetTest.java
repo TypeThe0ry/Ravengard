@@ -33,7 +33,7 @@ class RavengardRegistrySupersetTest {
     @Test
     void lobbyRegistryContainsDungeonBiome() {
         assertNotEquals(-1, MinecraftServer.getBiomeRegistry()
-                .getId(RegistryKey.unsafeOf("hypixel:sewer")));
+                .getId(RegistryKey.of("hypixel:sewer")));
     }
 
     @Test

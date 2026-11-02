@@ -334,7 +334,8 @@ public final class VanillaExplosionSupplier implements ExplosionSupplier {
                                 WeightedList.of(
                                     new WeightedList.Entry<>(new ExplosionPacket.BlockParticleInfo(Particle.POOF, 0.5f, 1.0f), 1),
                                     new WeightedList.Entry<>(new ExplosionPacket.BlockParticleInfo(Particle.SMOKE, 1.0f, 1.0f), 1)
-                                )
+                                ),
+                                true
                             )
                         );
                     }

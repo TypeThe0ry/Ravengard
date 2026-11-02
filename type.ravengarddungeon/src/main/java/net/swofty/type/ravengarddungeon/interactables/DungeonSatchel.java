@@ -118,8 +118,8 @@ public final class DungeonSatchel extends DungeonInteractable {
         int top = (int) Math.floor(referenceY) + 1;
         try {
             for (int y = top; y >= top - 9; y--) {
-                if (!instance.getBlock(x, y, z).isSolid()) continue;
-                if (!instance.getBlock(x, y + 1, z).isSolid() && !instance.getBlock(x, y + 2, z).isSolid()) {
+                if (!instance.getBlock(x, y, z).solid()) continue;
+                if (!instance.getBlock(x, y + 1, z).solid() && !instance.getBlock(x, y + 2, z).solid()) {
                     return y + 1;
                 }
                 return null;

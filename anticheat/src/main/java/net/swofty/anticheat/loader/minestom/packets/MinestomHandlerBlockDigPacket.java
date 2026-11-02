@@ -37,6 +37,7 @@ public class MinestomHandlerBlockDigPacket
     private BlockDigPacket.Status mapStatus(ClientPlayerActionPacket.Status status) {
         return switch (status) {
             case STARTED_DIGGING -> BlockDigPacket.Status.STARTED_DIGGING;
+            case CHANGED_DIGGING_DIRECTION -> BlockDigPacket.Status.CHANGED_DIGGING_DIRECTION;
             case CANCELLED_DIGGING -> BlockDigPacket.Status.CANCELLED_DIGGING;
             case FINISHED_DIGGING -> BlockDigPacket.Status.FINISHED_DIGGING;
             case DROP_ITEM_STACK -> BlockDigPacket.Status.DROP_ITEM_STACK;
