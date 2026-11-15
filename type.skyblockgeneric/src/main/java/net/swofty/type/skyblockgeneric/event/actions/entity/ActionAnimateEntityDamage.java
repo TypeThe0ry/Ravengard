@@ -16,9 +16,9 @@ public class ActionAnimateEntityDamage implements HypixelEventClass {
         event.setCancelled(false);
 
         event.getEntity().sendPacketToViewersAndSelf(new DamageEventPacket(event.getEntity().getEntityId(),
-                        DamageType.GENERIC,
-                        0,
-                        0,
+                        event.getDamage().getType(),
+                        event.getDamage().getAttacker() == null ? null : event.getDamage().getAttacker().getEntityId(),
+                        event.getDamage().getSource() == null ? null : event.getDamage().getSource().getEntityId(),
                         null));
     }
 }

@@ -1,7 +1,7 @@
 package net.swofty.pvp.feature.explosion;
 
 import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.minestom.server.ServerFlag;
+import net.minestom.server.property.ServerProperties;
 import net.minestom.server.collision.BoundingBox;
 import net.minestom.server.collision.CollisionUtils;
 import net.minestom.server.coordinate.BlockVec;
@@ -278,7 +278,7 @@ public final class VanillaExplosionSupplier implements ExplosionSupplier {
                                 dz * knockback
                             );
 
-                            int tps = ServerFlag.SERVER_TICKS_PER_SECOND;
+                            int tps = ServerProperties.SERVER_TICKS_PER_SECOND.get();
                             if (entity instanceof Player player) {
                                 if (!player.getGameMode().invulnerable() && !player.isFlying()) {
                                     playerKnockback.put(player, knockbackVec);

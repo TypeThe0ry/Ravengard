@@ -12,7 +12,9 @@ public class MinestomHandlerAnimationPacket
 
     @Override
     public SwoftyPacket buildSwoftyPacket(UUID uuid, ClientPunchPacket packet) {
-        return new AnimationPacket(uuid, AnimationPacket.Hand.MAIN_HAND);
+        AnimationPacket.Hand hand = AnimationPacket.Hand.MAIN_HAND;
+
+        return new AnimationPacket(uuid, hand);
     }
 
     @Override
