@@ -205,7 +205,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         return clip.animation("charge") != null ? "charge" : "attack_purple";
     }
     private static final double CHARGE_MIN_RANGE = 3.0;
-    private static final double CHARGE_MAX_RANGE = 7.0;
+    private static final double CHARGE_MAX_RANGE = 5.5;
     private static final double CHARGE_HIT_RANGE = 2.4;
     private static final double MELEE_STANDOFF = 1.2;
     private static final double MELEE_REACH = 1.8;
@@ -213,10 +213,15 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
     private static final double CROWD_SPACING = 0.9;
     private static final double CROWD_PUSH_PER_TICK = 0.1;
     private static final double CHARGE_SPEED_MULTIPLIER = 3.0;
-    private static final int CHARGE_TICKS = 8;
+    private static final int CHARGE_TICKS = 10;
     private static final int CHARGE_COOLDOWN_TICKS = 100;
     private int chargeTicksLeft;
     private int chargeCooldown;
+
+    /** The configured walk speed is already in blocks per tick, which is what the navigator consumes. */
+    private double baseSpeed() {
+        return clip.walkSpeed();
+    }
 
     public RavengardMob(RavengardMobClip clip, Pos position) {
         this(clip, position, clip.name(), ignored -> {});
@@ -251,7 +256,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         getAttribute(net.minestom.server.entity.attribute.Attribute.SCALE).setBaseValue(COMBAT_SCALE);
         setBoundingBox(COMBAT_HITBOX_WIDTH, COMBAT_HITBOX_HEIGHT, COMBAT_HITBOX_WIDTH);
         getAttribute(net.minestom.server.entity.attribute.Attribute.MOVEMENT_SPEED)
-                .setBaseValue(Math.max(0.15, clip.walkSpeed() * 2));
+                .setBaseValue(baseSpeed());
         getAttribute(net.minestom.server.entity.attribute.Attribute.MAX_HEALTH)
                 .setBaseValue((float) maxHealth);
         setHealth((float) maxHealth);
@@ -430,7 +435,7 @@ public class RavengardMob extends net.minestom.server.entity.EntityCreature {
         if (chargeCooldown > 0) chargeCooldown--;
         Entity target = getTarget();
         var speed = getAttribute(net.minestom.server.entity.attribute.Attribute.MOVEMENT_SPEED);
-        double base = Math.max(0.15, clip.walkSpeed() * 2);
+        double base = baseSpeed();
         if (chargeTicksLeft > 0) {
             chargeTicksLeft--;
             boolean arrived = target != null && !target.isRemoved()

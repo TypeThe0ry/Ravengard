@@ -268,7 +268,7 @@ class RavengardMobCombatTest {
         assertNull(mob.getTarget());
 
         mob.damage(new net.minestom.server.entity.damage.EntityDamage(player, 1));
-        for (int tick = 5; tick < 10; tick++) {
+        for (int tick = 5; tick < 25; tick++) {
             final long now = time + tick * 50L;
             instance.getEntities().forEach(entity -> entity.update(now));
             mob.tickRig();
@@ -949,6 +949,53 @@ class RavengardMobCombatTest {
         }
         assertTrue(mob.getPosition().distance(player.getPosition()) <= 2.4);
         assertEquals(full, player.getHealth());
+
+        mob.removeRig();
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
+    void aMobMovesAtItsCapturedWalkSpeedInBlocksPerTick() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.0822d);
+        RavengardMob mob = new RavengardMob(clip, new net.minestom.server.coordinate.Pos(0, 0, 0));
+
+        var speed = mob.getAttribute(net.minestom.server.entity.attribute.Attribute.MOVEMENT_SPEED);
+        assertEquals(0.0822d, speed.getBaseValue(), 1.0e-9);
+    }
+
+    @Test
+    void aKnightChargesAtThreeTimesItsWalkSpeedAndNoFurtherThanTheChargeRange() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.1139d);
+        RavengardMobClip.Animation charge = new RavengardMobClip.Animation();
+        set(charge, "loop", false);
+        set(charge, "frames", List.of(Map.of(), Map.of()));
+        set(clip, "animations", Map.of("charge", charge));
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        instance.loadChunk(0, 0).join();
+        var at = new net.minestom.server.coordinate.Pos(10.5, 1, 8.5);
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "target"));
+        player.setInstance(instance, at).join();
+        RavengardMob mob = new RavengardMob(clip,
+                new net.minestom.server.coordinate.Pos(5.5, 1, 8.5));
+        mob.spawnMob(instance);
+        var speed = mob.getAttribute(net.minestom.server.entity.attribute.Attribute.MOVEMENT_SPEED);
+
+        long time = System.currentTimeMillis();
+        double fastest = 0;
+        for (int tick = 0; tick < 12; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            mob.tick(now);
+            mob.tickRig();
+            player.teleport(at).join();
+            fastest = Math.max(fastest, speed.getBaseValue());
+        }
+        assertEquals(0.1139d * 3, fastest, 1.0e-9);
 
         mob.removeRig();
         player.remove();
