@@ -139,45 +139,39 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
         /**
          * Start generic tablist
          */
-        {
-            MinecraftServer.getSchedulerManager().buildTask(() -> {
-                Collection<HypixelPlayer> players = getLoadedPlayers();
-                if (players.isEmpty())
-                    return;
+        MinecraftServer.getSchedulerManager().buildTask(() -> {
+            Collection<HypixelPlayer> players = getLoadedPlayers();
+            if (players.isEmpty())
+                return;
 
 
-                if (loader.headerFooterPerPlayer()) {
-                    return;
-                }
+            if (loader.headerFooterPerPlayer()) {
+                return;
+            }
 
-                loader.headerFooter().ifPresentOrElse(headerFooter -> {
-                    Audiences.players().sendPlayerListHeaderAndFooter(headerFooter.getKey(), headerFooter.getValue());
-                }, () -> {
-                    final long ramUsage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() / (long) 1e6; // bytes to MB
-                    final double TPS = getTicksPerSecond();
+            loader.headerFooter().ifPresentOrElse(headerFooter -> {
+                Audiences.players().sendPlayerListHeaderAndFooter(headerFooter.getKey(), headerFooter.getValue());
+            }, () -> {
+                final long ramUsage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() / (long) 1e6; // bytes to MB
+                final double TPS = getTicksPerSecond();
 
-                    final Text newline = Text.literal("\n");
-                    final Text header = Text.of("<b>你正在游玩 <e><l>MC.HYPIXEL.NET")
-                            .append(newline)
-                            .append(Text.of("<7>内存占用：<8>{} MB", ramUsage))
-                            .append(newline)
-                            .append(Text.of("<7>TPS: <8>{}", TPS))
-                            .append(newline);
-                    final Text footer = newline
-                            .append(Text.of("<a>会员等级、加成等更多内容！<c><l>STORE.HYPIXEL.NET"));
-                    Audiences.players().sendPlayerListHeaderAndFooter(header, footer);
-                });
-            }).repeat(10, TimeUnit.SERVER_TICK).schedule();
-        }
+                final Text newline = Text.literal("\n");
+                final Text header = Text.of("<b>你正在游玩 <e><l>MC.HYPIXEL.NET")
+                        .append(newline)
+                        .append(Text.of("<7>内存占用：<8>{} MB", ramUsage))
+                        .append(newline)
+                        .append(Text.of("<7>TPS: <8>{}", TPS))
+                        .append(newline);
+                final Text footer = newline
+                        .append(Text.of("<a>会员等级、加成等更多内容！<c><l>STORE.HYPIXEL.NET"));
+                Audiences.players().sendPlayerListHeaderAndFooter(header, footer);
+            });
+        }).repeat(10, TimeUnit.SERVER_TICK).schedule();
 
         /**
          * Start Tablist loop
          */
         loader.getTablistManager().runScheduler(MinecraftServer.getSchedulerManager());
-
-        /**
-         * Presence heartbeat to keep friend status fresh
-         */
 
         /**
          * Register databases
@@ -239,7 +233,6 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
             }
         }, TaskSchedule.tick(2), TaskSchedule.tick(2));
 
-        // Ravengard servers register their own player provider
         if (!isRavengardType) {
             // Handle ConnectionManager
             MinecraftServer.getConnectionManager().setPlayerProvider((playerConnection, gameProfile) -> {
