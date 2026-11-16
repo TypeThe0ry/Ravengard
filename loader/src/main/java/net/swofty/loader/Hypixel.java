@@ -11,11 +11,6 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.timer.ExecutionType;
 import net.minestom.server.timer.Scheduler;
 import net.minestom.server.timer.TaskSchedule;
-import net.swofty.anticheat.flag.FlagType;
-import net.swofty.anticheat.loader.PunishmentHandler;
-import net.swofty.anticheat.loader.SwoftyAnticheat;
-import net.swofty.anticheat.loader.SwoftyValues;
-import net.swofty.anticheat.loader.minestom.MinestomLoader;
 import net.swofty.commons.ServerType;
 import net.swofty.commons.TestFlow;
 import net.swofty.commons.config.ConfigProvider;
@@ -27,16 +22,13 @@ import net.swofty.commons.redis.RedisClient;
 import net.swofty.commons.redis.RedisMessageHandler;
 import net.swofty.proxyapi.ProxyAPI;
 import net.swofty.proxyapi.ProxyService;
-import net.swofty.spark.Spark;
 import net.swofty.type.generic.*;
 import net.swofty.type.generic.i18n.HypixelTranslator;
 import net.swofty.type.ravengardgeneric.RavengardGenericLoader;
-import net.swofty.type.skyblockgeneric.SkyBlockGenericLoader;
 import org.reflections.Reflections;
 import org.tinylog.Logger;
 
 import java.net.InetAddress;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -52,7 +44,6 @@ public class Hypixel {
     @Setter
     private static UUID serverUUID;
 
-    private static final boolean ENABLE_SPARK = ConfigProvider.settings().getIntegrations().isSpark();
     private static final long SERVER_NAME_RETRY_MILLIS = 2000;
 
     @SneakyThrows
@@ -146,11 +137,6 @@ public class Hypixel {
         new HypixelGenericLoader(typeLoader).initialize(minecraftServer);
 
         // Initialize TypeLoader
-        SkyBlockGenericLoader skyblockLoader = null;
-        if (typeLoader instanceof SkyBlockTypeLoader) {
-            skyblockLoader = new SkyBlockGenericLoader(typeLoader);
-            skyblockLoader.initialize(minecraftServer);
-        }
         if (typeLoader instanceof RavengardTypeLoader) {
             new RavengardGenericLoader(typeLoader).initialize(minecraftServer);
         }
@@ -159,19 +145,14 @@ public class Hypixel {
         typeLoader.onInitialize(minecraftServer);
 
         // Initialize proxy support
-        SkyBlockGenericLoader.loopThroughPackage("net.swofty.type.generic.redis", RedisMessageHandler.class)
+        HypixelGenericLoader.loopThroughPackage("net.swofty.type.generic.redis", RedisMessageHandler.class)
                 .forEach(proxyAPI::registerProxyHandler);
-        SkyBlockGenericLoader.loopThroughPackage("net.swofty.type.generic.redis.service", RedisMessageHandler.class)
+        HypixelGenericLoader.loopThroughPackage("net.swofty.type.generic.redis.service", RedisMessageHandler.class)
                 .forEach(proxyAPI::registerServiceHandler);
         typeLoader.getProxyHandlers().forEach(proxyAPI::registerProxyHandler);
         typeLoader.getServiceHandlers().forEach(proxyAPI::registerServiceHandler);
-        if (typeLoader instanceof SkyBlockTypeLoader) {
-            SkyBlockGenericLoader.loopThroughPackage("net.swofty.type.skyblockgeneric.redis", RedisMessageHandler.class)
-                    .forEach(proxyAPI::registerProxyHandler);
-            SkyBlockGenericLoader.loopThroughPackage("net.swofty.type.skyblockgeneric.redis.service", RedisMessageHandler.class)
-                    .forEach(proxyAPI::registerServiceHandler);
-        } else if (typeLoader instanceof RavengardTypeLoader) {
-            SkyBlockGenericLoader.loopThroughPackage("net.swofty.type.ravengardgeneric.redis", RedisMessageHandler.class)
+        if (typeLoader instanceof RavengardTypeLoader) {
+            HypixelGenericLoader.loopThroughPackage("net.swofty.type.ravengardgeneric.redis", RedisMessageHandler.class)
                     .forEach(proxyAPI::registerProxyHandler);
         }
         RedisProtocol<?, ?>[] toProxyProtocols = {
@@ -185,18 +166,12 @@ public class Hypixel {
         for (RedisProtocol<?, ?> protocol : toProxyProtocols) {
             RedisClient.registerResponseProtocol(protocol);
         }
-        List<RedisProtocol> protocols = SkyBlockGenericLoader.loopThroughPackage(
+        List<RedisProtocol> protocols = HypixelGenericLoader.loopThroughPackage(
                 "net.swofty.commons.protocol.objects", RedisProtocol.class)
                 .filter(obj -> !obj.getClass().getPackageName().startsWith("net.swofty.commons.protocol.objects.proxy"))
                 .toList();
         protocols.forEach(RedisClient::registerResponseProtocol);
         proxyAPI.start();
-
-        // Start spark if enabled
-        if (ENABLE_SPARK) {
-            Spark.enable(Files.createTempDirectory("spark"));
-            Logger.info("Spark has been enabled");
-        }
 
         // Ensure all services are running
         typeLoader.getRequiredServices().forEach(serviceType -> {
@@ -208,9 +183,6 @@ public class Hypixel {
         });
 
         typeLoader.afterInitialize(minecraftServer);
-        if (skyblockLoader != null) {
-            skyblockLoader.afterInitialize();
-        }
 
         HypixelTranslator translator = new HypixelTranslator();
         GlobalTranslator.translator().addSource(translator);
@@ -232,26 +204,6 @@ public class Hypixel {
 
             acquireServerName(serverType, maxPlayers, options);
             checkProxyConnected();
-
-            // Initialize anticheat
-            if (ConfigProvider.settings().getIntegrations().isAnticheat()) {
-                Thread.startVirtualThread(() -> {
-                    Logger.info("Initializing anticheat...");
-
-                    MinestomLoader minestomLoader = new MinestomLoader();
-                    SwoftyAnticheat.loader(minestomLoader);
-                    SwoftyAnticheat.values(new SwoftyValues());
-                    SwoftyAnticheat.punishmentHandler(new PunishmentHandler() {
-                        @Override
-                        public void onFlag(UUID uuid, FlagType flagType) {
-                            Logger.info("Player " + uuid + " flagged for " + flagType.name());
-                        }
-                    });
-                    SwoftyAnticheat.start();
-
-                    Logger.info("Anticheat initialized");
-                });
-            }
         });
 
         CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS)

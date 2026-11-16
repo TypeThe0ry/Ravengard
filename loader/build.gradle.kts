@@ -24,7 +24,6 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":type.skyblockgeneric"))
 
 
 
@@ -37,8 +36,6 @@ dependencies {
     implementation(project(":type.generic"))
     implementation(project(":commons"))
     implementation(project(":proxy.api"))
-    implementation(project(":spark"))
-    implementation(project(":anticheat"))
     implementation(libs.slf4j.api)
     implementation(libs.tinylog.api)
     implementation(libs.tinylog.impl)
