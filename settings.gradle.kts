@@ -1,4 +1,4 @@
-rootProject.name = "HypixelSkyBlock"
+rootProject.name = "Ravengard"
 include(":packer")
 include(":commons")
 include(":dungeons")
@@ -17,17 +17,6 @@ include(":type.ravengarddungeon")
 
 include(":service.party")
 include(":service.orchestrator")
-
-val clientModRequested = gradle.startParameter.taskNames.any { taskName ->
-    taskName == "clientmod" ||
-        taskName == ":clientmod" ||
-        taskName.startsWith("clientmod:") ||
-        taskName.startsWith(":clientmod:")
-}
-
-if (clientModRequested || gradle.startParameter.projectProperties.containsKey("includeClientmod")) {
-    include(":clientmod")
-}
 
 pluginManagement {
     repositories {

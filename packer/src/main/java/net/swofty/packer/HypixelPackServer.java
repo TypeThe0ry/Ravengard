@@ -1,7 +1,6 @@
 package net.swofty.packer;
 
 import net.swofty.packer.packs.ravengard.RavengardPackDefinition;
-import net.swofty.packer.packs.skyblock.SkyblockPackDefinition;
 import team.unnamed.creative.BuiltResourcePack;
 import team.unnamed.creative.server.ResourcePackServer;
 import team.unnamed.creative.server.handler.ResourcePackRequestHandler;
@@ -33,7 +32,7 @@ public class HypixelPackServer {
         }
 
         List<PackDefinition> definitions = new java.util.ArrayList<>(List.of(
-                RavengardPackDefinition.INSTANCE, SkyblockPackDefinition.INSTANCE));
+                RavengardPackDefinition.INSTANCE));
         if (Files.isDirectory(Path.of(RavengardPackDefinition.LOCALE_OVERLAY_DIRECTORY))) {
             definitions.add(RavengardPackDefinition.withOverlay(RavengardPackDefinition.LOCALE_OVERLAY_DIRECTORY));
         }

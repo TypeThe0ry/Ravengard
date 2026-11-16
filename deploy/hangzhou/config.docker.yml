@@ -4,14 +4,10 @@ mongodb: mongodb://mongodb
 redis-url: redis://redis:6379
 velocity-secret: ixmSUgWOgvs7
 require-auth: false
-spark: false
-anticheat: false
 redis-uri: redis://redis:6379
 limbo:
     host-name: ravengard_lobby
     port: 20006
 resource-packs:
-    skyblockpack:
-        server-url: http://t15.sjcmc.cn:36026
     ravengard:
         server-url: http://t15.sjcmc.cn:36026

@@ -10,10 +10,6 @@ velocity-secret: ixmSUgWOgvs7
 require-auth: false
 # Integrations with services
 integrations:
-    # Whether to enable Spark for performance monitoring
-    spark: false
-    # Whether to enable anti-cheat measures
-    anticheat: false
     # Whether to enable ViaVersion for supporting multiple Minecraft versions. This may cause issues of any kind
     via-version: false
     # The DSN to use for Sentry error tracking. If empty, Sentry will be disabled
@@ -22,5 +18,5 @@ integrations:
 limbo:
     host-name: 127.0.0.1
     port: 65535
-# Resource pack settings keyed by pack name (e.g. testingpack, bedwarspack)
+# Resource pack settings keyed by pack name (e.g. ravengard)
 resource-packs: { }

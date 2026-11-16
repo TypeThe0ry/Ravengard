@@ -8,18 +8,21 @@ RUN apt-get update && apt-get install -y jq netcat-traditional curl && apt-get c
 RUN curl -fSL -o velocity.jar "https://fill-data.papermc.io/v1/objects/0844bcabdcdb4f5b875906fd4c3365bc1bb76918e42bc595ed88ad195258dd75/velocity-4.3.1-45.jar" \
     && echo "0844bcabdcdb4f5b875906fd4c3365bc1bb76918e42bc595ed88ad195258dd75  velocity.jar" | sha256sum -c -
 
-# Locally built JARs, empty for a regular install
 COPY ./DockerFiles/jars /app/prebuilt_jars
 
-# Take SkyBlockProxy.jar from the local build when it is there, download it otherwise
+ARG JAR_BASE_URL=
+
 RUN set -eu; \
     mkdir -p plugins; \
     if [ -f /app/prebuilt_jars/SkyBlockProxy.jar ]; then \
         echo "Using locally built SkyBlockProxy.jar"; \
         cp /app/prebuilt_jars/SkyBlockProxy.jar plugins/SkyBlockProxy.jar; \
-    else \
+    elif [ -n "$JAR_BASE_URL" ]; then \
         echo "Downloading SkyBlockProxy.jar"; \
-        curl -fSL -o plugins/SkyBlockProxy.jar "https://github.com/Swofty-Developments/HypixelRecreation/releases/download/latest/SkyBlockProxy.jar"; \
+        curl -fSL -o plugins/SkyBlockProxy.jar "${JAR_BASE_URL}/SkyBlockProxy.jar"; \
+    else \
+        echo "SkyBlockProxy.jar is missing from DockerFiles/jars; build it first (see README.md) or pass --build-arg JAR_BASE_URL" >&2; \
+        exit 1; \
     fi; \
     rm -rf /app/prebuilt_jars
 
