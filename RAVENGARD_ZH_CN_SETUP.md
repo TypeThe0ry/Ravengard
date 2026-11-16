@@ -32,7 +32,7 @@ docker compose ps
 - `service_orchestrator`
 - `service_party`
 
-Prototype Lobby、PicoLimbo 以及其他游戏服务器不在当前运行集内；玩家默认进入 Ravengard Lobby。
+仓库已不再包含 Prototype Lobby、PicoLimbo 以及其他游戏服务器；玩家默认进入 Ravengard Lobby。
 
 ## 进入 Ravengard
 

@@ -1,0 +1,71 @@
+Ravengard (天穹余烬)
+
+This project is a derivative work of HypixelRecreation, licensed under the
+GNU Affero General Public License, version 3 (see the LICENSE file).
+
+Upstream project
+----------------
+  HypixelRecreation
+  https://github.com/Swofty-Developments/HypixelRecreation
+  Copyright (C) the HypixelRecreation authors, licensed under AGPL-3.0.
+
+Principal upstream authors (from the upstream git history; the full list of
+contributors is recorded in that history)
+----------------------------------------
+  Swofty (Swofty-Developments)
+  ArikSquad (AriDev)
+  ItzKatze
+  Hamza (KingGamerXd)
+  CodRiSFR
+  Aunn
+  Epicportal14
+  TreesOnTop
+  FanFine
+  FreakyFreakyNerd
+  CodeSyntaxCreator
+  Maploop
+  petethepossum
+  Arisamiga
+  and the other contributors of the upstream repository
+
+All copyright notices of the upstream authors remain in effect. This notice
+does not replace or relax any term of the AGPL-3.0.
+
+Modifications in this repository
+--------------------------------
+The upstream project is a multi-gamemode server network (SkyBlock, BedWars,
+SkyWars, Murder Mystery, a prototype lobby, a replay viewer and the services
+behind them). This repository changes it as follows:
+
+  - Adds the Ravengard extraction-dungeon game: the type.ravengardgeneric,
+    type.ravengardlobby and type.ravengarddungeon modules, the Ravengard
+    dungeon generator in the dungeons module, the Ravengard resource pack
+    definition in the packer module, the Chinese localisation overlay under
+    localization/, and the Ravengard data under configuration/ravengard.
+  - Removes everything that Ravengard does not use: all SkyBlock, BedWars,
+    SkyWars and Murder Mystery modules, the prototype/main lobby and replay
+    viewer, the auction house, bazaar, item tracker, dark auction, election,
+    friend, guild, punishment, replay, store and API services, the anticheat,
+    spark and pvp modules, the documentation website, the Fabric client mod,
+    the installer, the store front end, and the related CI workflows,
+    configuration, scripts and Docker services.
+  - Trims the shared modules (commons, type.generic, velocity.extension,
+    service.generic, service.orchestrator) to what Ravengard needs; ServerType
+    now contains only RAVENGARD_LOBBY and RAVENGARD_DUNGEON.
+  - Adds the deployment files under deploy/ and rewrites the README.
+
+Network use (AGPL-3.0, section 13)
+----------------------------------
+If you modify this program and let users interact with it remotely through a
+computer network (for example by operating a public game server), you must
+offer all of those users the complete corresponding source code of your
+modified version.
+
+Third-party components
+----------------------
+Ravengard builds on Minestom, Velocity, ViaVersion and other open source
+libraries, each under its own licence (see the dependency list in
+gradle/libs.versions.toml). Minecraft is a trademark of Mojang Synergies AB.
+This project is not affiliated with, endorsed by or sponsored by Mojang,
+Microsoft or Hypixel. The Ravengard map (.polar) files are excluded from
+version control and are not distributed through this repository.
