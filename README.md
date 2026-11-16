@@ -63,12 +63,12 @@ cp loader/build/libs/HypixelCore.jar \
    service.orchestrator/build/libs/ServiceOrchestrator.jar \
    service.party/build/libs/ServiceParty.jar \
    DockerFiles/jars/
-docker compose up --build -d
+docker compose -f docker-compose.yml -f localization/docker-compose.zh_CN.yml up --build -d
 ```
 
 Compose 会启动 MongoDB、Redis、Velocity 代理（`25565`）、资源包服务（`7270`）、`ravengard_lobby`、`ravengard_dungeon`、`service_orchestrator` 和 `service_party`。用与 `gradle/libs.versions.toml` 中 Minestom 版本匹配的 Minecraft 客户端连接 `127.0.0.1:25565`，启用服务器资源包，在大厅执行 `/play ravengard` 进入地牢。
 
-启用中文资源包覆盖层与更细的运行说明见 [localization/README.md](localization/README.md) 和 [RAVENGARD_ZH_CN_SETUP.md](RAVENGARD_ZH_CN_SETUP.md)。
+上面命令里的 `localization/docker-compose.zh_CN.yml` 必须带上：它把中文资源包覆盖层合并进发给客户端的资源包，其中包含为 Minecraft 26.3 移植的着色器；只用 `docker-compose.yml` 时发出的是官方原版资源包，26.3 客户端会因着色器编译失败而重载资源包失败，HUD 与地图显示成缺贴图方块。更细的运行说明见 [localization/README.md](localization/README.md) 和 [RAVENGARD_ZH_CN_SETUP.md](RAVENGARD_ZH_CN_SETUP.md)。
 
 ## 部署概述
 
