@@ -436,6 +436,43 @@ class RavengardMobCombatTest {
     }
 
     @Test
+    void aWalkingMobCoversItsCapturedWalkSpeedInBlocksPerTickOnFlatGround() throws Exception {
+        RavengardMobClip clip = clip();
+        set(clip, "walkSpeed", 0.1289d);
+        InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
+        instance.setGenerator(unit -> unit.modifier().fillHeight(0, 1, Block.STONE));
+        for (int cx = -1; cx <= 4; cx++) {
+            instance.loadChunk(cx, 0).join();
+        }
+        Player player = new Player(new DummyConnection(),
+                new GameProfile(UUID.randomUUID(), "far"));
+        player.setInstance(instance, new net.minestom.server.coordinate.Pos(15.5, 1, 8.5)).join();
+        player.getAttribute(net.minestom.server.entity.attribute.Attribute.MAX_HEALTH).setBaseValue(1000);
+        player.setHealth(1000);
+        RavengardMob mob = new RavengardMob(clip, new net.minestom.server.coordinate.Pos(2.5, 1, 8.5));
+        mob.spawnMob(instance);
+
+        long time = System.currentTimeMillis();
+        double atTwenty = 0;
+        double atFifty = 0;
+        for (int tick = 0; tick <= 40; tick++) {
+            final long now = time + tick * 50L;
+            instance.tick(now);
+            instance.getEntities().forEach(entity -> entity.update(now));
+            mob.tickRig();
+            if (tick == 10) atTwenty = mob.getPosition().x();
+            if (tick == 40) atFifty = mob.getPosition().x();
+        }
+        double perTick = (atFifty - atTwenty) / 30.0;
+
+        assertTrue(perTick > 0.1289d * 0.75 && perTick < 0.1289d * 1.25, "measured " + perTick + " blocks per tick");
+
+        mob.removeRig();
+        player.remove();
+        MinecraftServer.getInstanceManager().unregisterInstance(instance);
+    }
+
+    @Test
     void capturedDemonImpActsAsAStationaryFireCaster() throws Exception {
         RavengardMobClip clip = clip();
         set(clip, "name", "demon_imp");
