@@ -5,9 +5,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.swofty.commons.StringUtility;
-import net.swofty.commons.skyblock.PackSprite;
-import net.swofty.commons.skyblock.item.Rarity;
-import net.swofty.commons.skyblock.statistics.ItemStatistic;
 
 import java.util.List;
 import java.util.Locale;
@@ -48,43 +45,6 @@ final class TextDomain {
             throw new TextParseException(source, 0, "Unknown " + name + " '" + argument + "'");
         }
         return resolved;
-    }
-
-    private static String normalise(String name) {
-        return name.trim().toUpperCase(Locale.ROOT).replace('-', '_').replace(' ', '_');
-    }
-
-    static Component glyph(String name, String source) {
-        try {
-            return PackSprite.valueOf(normalise(name)).getSprite();
-        } catch (IllegalArgumentException exception) {
-            throw new TextParseException(source, 0, "Unknown SkyBlock glyph '" + name + "'");
-        }
-    }
-
-    static ItemStatistic statistic(String name, String source) {
-        try {
-            return ItemStatistic.valueOf(normalise(name));
-        } catch (IllegalArgumentException exception) {
-            throw new TextParseException(source, 0, "Unknown SkyBlock statistic '" + name + "'");
-        }
-    }
-
-    static Component stat(String name, String value, String source) {
-        ItemStatistic statistic = statistic(name, source);
-        Component display = statistic.getCompleteDisplayName();
-        if (value != null) {
-            display = Component.text(value).appendSpace().append(display).color(statistic.getDisplayColor());
-        }
-        return display;
-    }
-
-    static Component rarity(String name, String source) {
-        Rarity rarity = Rarity.getRarity(normalise(name));
-        if (rarity == null) {
-            throw new TextParseException(source, 0, "Unknown SkyBlock rarity '" + name + "'");
-        }
-        return rarity.getDisplay();
     }
 
     static Component separator(String colour, String source) {

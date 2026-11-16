@@ -160,8 +160,7 @@ public class Hypixel {
                 new PlayerHandlerProtocol(), new ProxyIsOnlineProtocol(),
                 new RegisterServerProtocol(), new FinishedWithPlayerProtocol(),
                 new RequestServersProtocol(), new RegisterTestFlowProtocol(),
-                new TestFlowServerReadyProtocol(), new StaffChatProtocol(),
-                new PunishPlayerProtocol()
+                new TestFlowServerReadyProtocol(), new StaffChatProtocol()
         };
         for (RedisProtocol<?, ?> protocol : toProxyProtocols) {
             RedisClient.registerResponseProtocol(protocol);

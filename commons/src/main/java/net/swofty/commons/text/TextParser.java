@@ -28,8 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <obfuscated>}. {@code <r>} pops every open style, {@code </x>} pops one frame back to the enclosing
  * style, and closing tags may be omitted at the end of the string.
  *
- * Domain tags expand while parsing: {@code <glyph:name>} / {@code <sbglyph:name>},
- * {@code <stat:name[:value]>} / {@code <sbstat:...>}, {@code <rarity:name>}, {@code <sep[:colour]>},
+ * Domain tags expand while parsing: {@code <sep[:colour]>},
  * {@code <bar:fraction>} / {@code <bar:value:max[:length[:colour]]>}, {@code <center>...</center>} and
  * {@code <wrap:N>...</wrap>}. {@code <key:'i18n.key'[:'arg']*>} (aliases {@code <lang:>}, {@code <tr:>})
  * becomes a translatable component, and the context tags {@code <player> <rank> <purse> <bank> <island>
@@ -399,25 +398,6 @@ public final class TextParser {
                     validateColour(colour, raw);
                     current().children.add(new TextNode.Separator(colour, raw));
                 }
-                case "glyph", "sbglyph" -> {
-                    require(parts, 2, start, "<glyph:name>");
-                    List<TextNode> glyph = sub(parts.get(1), start);
-                    String constant = TextNode.constant(glyph);
-                    if (constant != null) {
-                        TextDomain.glyph(constant, raw);
-                    }
-                    current().children.add(new TextNode.Glyph(glyph, raw));
-                }
-                case "stat", "sbstat" -> openStat(parts, start, raw);
-                case "rarity" -> {
-                    require(parts, 2, start, "<rarity:name>");
-                    List<TextNode> rarity = sub(parts.get(1), start);
-                    String constant = TextNode.constant(rarity);
-                    if (constant != null) {
-                        TextDomain.rarity(constant, raw);
-                    }
-                    current().children.add(new TextNode.RarityDisplay(rarity, raw));
-                }
                 case "bar" -> openBar(parts, start, raw);
                 case "center" -> throw error(start, "Expected <center>");
                 case "key", "lang", "tr" -> openKey(parts, start);
@@ -502,19 +482,6 @@ public final class TextParser {
             frame.payload = width;
             frame.source = raw;
             push(frame);
-        }
-
-        private void openStat(List<String> parts, int start, String raw) {
-            if (parts.size() < 2 || parts.size() > 3) {
-                throw error(start, "Expected <stat:name> or <stat:name:value>");
-            }
-            List<TextNode> name = sub(parts.get(1), start);
-            String constant = TextNode.constant(name);
-            if (constant != null) {
-                TextDomain.statistic(constant, raw);
-            }
-            List<TextNode> value = parts.size() == 3 ? sub(parts.get(2), start) : null;
-            current().children.add(new TextNode.Stat(name, value, raw));
         }
 
         private void openBar(List<String> parts, int start, String raw) {

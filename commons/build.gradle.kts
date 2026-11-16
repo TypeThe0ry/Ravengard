@@ -36,7 +36,6 @@ dependencies {
     implementation(libs.configlib.yaml)
 
     implementation(libs.configurate.yaml)
-    implementation(libs.javapoet)
 
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
@@ -44,46 +43,4 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-sourceSets {
-    val main by getting
-
-    val codegen by creating {
-        java.srcDir("src/codegen/java")
-
-        compileClasspath += main.compileClasspath
-        runtimeClasspath += main.compileClasspath
-    }
-
-    codegen // just here to avoid "unused" warning
-}
-
-val generateItemTypes by tasks.registering(JavaExec::class) {
-    group = "codegen"
-    description = "Generate ItemType enum from SkyBlock YAML"
-
-    classpath = sourceSets["codegen"].runtimeClasspath
-    mainClass.set("net.swofty.codegen.ItemTypeGenerator")
-
-    args(
-        rootProject.projectDir
-            .resolve("configuration/skyblock/items")
-            .absolutePath,
-        layout.projectDirectory
-            .dir("src/generated/java")
-            .asFile
-            .absolutePath
-    )
-
-    inputs.dir(rootProject.projectDir.resolve("configuration/skyblock/items"))
-    outputs.dir(layout.projectDirectory.dir("src/generated/java"))
-}
-
-sourceSets["main"].java {
-    srcDir(layout.projectDirectory.dir("src/generated/java"))
-}
-
-tasks.compileJava {
-    dependsOn(generateItemTypes)
 }

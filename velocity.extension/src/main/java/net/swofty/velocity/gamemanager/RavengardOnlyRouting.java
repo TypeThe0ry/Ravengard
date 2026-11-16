@@ -8,18 +8,15 @@ public final class RavengardOnlyRouting {
     }
 
     public static ServerType lobbyDestination(@Nullable ServerType currentType, @Nullable ServerType requestedType) {
-        if (requestedType == null || requestedType == ServerType.PROTOTYPE_LOBBY) {
-            return ServerType.RAVENGARD_LOBBY;
-        }
-        return requestedType;
+        return requestedType == null ? ServerType.RAVENGARD_LOBBY : requestedType;
     }
 
     public static ServerType afkOrigin(@Nullable ServerType originType, @Nullable ServerType currentType) {
-        if (originType != null && originType.name().endsWith("_LOBBY")) {
-            return originType == ServerType.PROTOTYPE_LOBBY ? ServerType.RAVENGARD_LOBBY : originType;
+        if (originType == ServerType.RAVENGARD_LOBBY) {
+            return originType;
         }
-        if (currentType != null && currentType.name().endsWith("_LOBBY")) {
-            return currentType == ServerType.PROTOTYPE_LOBBY ? ServerType.RAVENGARD_LOBBY : currentType;
+        if (currentType == ServerType.RAVENGARD_LOBBY) {
+            return currentType;
         }
         return ServerType.RAVENGARD_LOBBY;
     }

@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SkyBlockVelocityCrashRecoveryTest {
 
@@ -17,15 +16,13 @@ class SkyBlockVelocityCrashRecoveryTest {
 
         assertEquals(ServerType.RAVENGARD_LOBBY, candidates.iterator().next());
         assertFalse(candidates.contains(ServerType.RAVENGARD_DUNGEON));
-        assertFalse(candidates.contains(ServerType.PROTOTYPE_LOBBY));
     }
 
     @Test
-    void nonRavengardCrashFallsBackOnlyToRavengardLobby() {
-        LinkedHashSet<ServerType> candidates = CrashRecoveryRouting.candidates(ServerType.BEDWARS_GAME);
+    void lobbyCrashFallsBackOnlyToRavengardLobby() {
+        LinkedHashSet<ServerType> candidates = CrashRecoveryRouting.candidates(ServerType.RAVENGARD_LOBBY);
 
         assertEquals(1, candidates.size());
         assertEquals(ServerType.RAVENGARD_LOBBY, candidates.iterator().next());
-        assertFalse(candidates.contains(ServerType.PROTOTYPE_LOBBY));
     }
 }

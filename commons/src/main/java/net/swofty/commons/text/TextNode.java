@@ -155,32 +155,10 @@ sealed interface TextNode {
         }
     }
 
-    record Glyph(List<TextNode> name, String source) implements TextNode {
-        @Override
-        public Component render(Object[] arguments) {
-            return TextDomain.glyph(plainOf(name, arguments), source);
-        }
-    }
-
-    record Stat(List<TextNode> name, List<TextNode> value, String source) implements TextNode {
-        @Override
-        public Component render(Object[] arguments) {
-            return TextDomain.stat(plainOf(name, arguments),
-                    value == null ? null : plainOf(value, arguments), source);
-        }
-    }
-
     record Custom(String name, List<TextNode> argument, String source) implements TextNode {
         @Override
         public Component render(Object[] arguments) {
             return TextDomain.custom(name, plainOf(argument, arguments), source);
-        }
-    }
-
-    record RarityDisplay(List<TextNode> name, String source) implements TextNode {
-        @Override
-        public Component render(Object[] arguments) {
-            return TextDomain.rarity(plainOf(name, arguments), source);
         }
     }
 

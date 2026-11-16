@@ -22,10 +22,8 @@ class RavengardConfigurationTransferTest {
         assertFalse(ActionPlayerJoin.isRavengardInternalTransfer(
                 null, ServerType.RAVENGARD_LOBBY));
         assertFalse(ActionPlayerJoin.isRavengardInternalTransfer(
-                ServerType.PROTOTYPE_LOBBY, ServerType.RAVENGARD_LOBBY));
+                null, ServerType.RAVENGARD_DUNGEON));
         assertFalse(ActionPlayerJoin.isRavengardInternalTransfer(
-                ServerType.MAIN_LOBBY, ServerType.RAVENGARD_DUNGEON));
-        assertFalse(ActionPlayerJoin.isRavengardInternalTransfer(
-                ServerType.RAVENGARD_LOBBY, ServerType.PROTOTYPE_LOBBY));
+                ServerType.RAVENGARD_LOBBY, null));
     }
 }

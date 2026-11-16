@@ -38,12 +38,7 @@ import net.swofty.type.generic.data.domain.AccountDomain;
 import net.swofty.type.generic.data.domain.GameDomain;
 import net.swofty.type.generic.data.domain.PlayerDataService;
 import net.swofty.type.generic.data.HypixelDataHandler;
-import net.swofty.type.generic.data.handlers.*;
-import net.swofty.type.generic.data.mongodb.AttributeDatabase;
-import net.swofty.type.generic.data.mongodb.BedWarsStatsDatabase;
 import net.swofty.type.generic.data.mongodb.MongoConnection;
-import net.swofty.type.generic.data.mongodb.ProfilesDatabase;
-import net.swofty.type.generic.data.mongodb.UserDatabase;
 import net.swofty.type.generic.entity.npc.HypixelNPC;
 import net.swofty.type.generic.event.HypixelEventClass;
 import net.swofty.type.generic.event.HypixelEventHandler;
@@ -92,7 +87,6 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
         });
         TextArgRenderers.register(HypixelPlayer.class, HypixelPlayer::getRankDisplayName);
         Text.registerTag(Rank.TAG, Rank::resolveTag);
-        final boolean isSkyBlockType = loader.getType().isSkyBlock();
         final boolean isRavengardType = loader instanceof RavengardTypeLoader;
         InstanceManager instanceManager = MinecraftServer.getInstanceManager();
 
@@ -126,30 +120,26 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
         loader.getCustomEvents().forEach(HypixelEventHandler::registerEventMethods);
         loopThroughPackage("net.swofty.type.generic.event.actions", HypixelEventClass.class).forEach(HypixelEventHandler::registerEventMethods);
         loopThroughPackage("net.swofty.type.generic.gui.v2.event", HypixelEventClass.class).forEach(HypixelEventHandler::registerEventMethods);
-        // SkyBlockGenericLoader always runs after the generic loader, so if we are a SkyBlock server,
-        // we will let that loader register the events
-        if (!isSkyBlockType && !isRavengardType) {
+        if (!isRavengardType) {
             HypixelEventHandler.register(HypixelConst.getEventHandler());
         }
 
         /**
-         * Register packet events assuming we are not a SkyBlock server, if we are
-         * then we will just cache the events and register them in the SkyBlockGenericLoader
+         * Register packet events
          */
         loopThroughPackage("net.swofty.type.generic.packet.packets.client", HypixelPacketClientListener.class)
                 .forEach(HypixelPacketClientListener::cacheListener);
         loopThroughPackage("net.swofty.type.generic.packet.packets.server", HypixelPacketServerListener.class)
                 .forEach(HypixelPacketServerListener::cacheListener);
-        if (!isSkyBlockType && !isRavengardType) {
+        if (!isRavengardType) {
             HypixelPacketClientListener.register(HypixelConst.getEventHandler());
             HypixelPacketServerListener.register(HypixelConst.getEventHandler());
         }
 
         /**
          * Start generic tablist
-         * SkyBlock has its own format so let SkyBlockGenericLoader handle it
          */
-        if (!isSkyBlockType && !(loader.getType() == ServerType.BEDWARS_GAME)) {
+        {
             MinecraftServer.getSchedulerManager().buildTask(() -> {
                 Collection<HypixelPlayer> players = getLoadedPlayers();
                 if (players.isEmpty())
@@ -188,7 +178,6 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
         /**
          * Presence heartbeat to keep friend status fresh
          */
-        net.swofty.type.generic.presence.PresenceHeartbeat.start();
 
         /**
          * Register databases
@@ -198,10 +187,6 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
         MongoClient mongoClient = MongoClients.create(settings);
 
         MongoConnection.connect(mongoClient);
-        ProfilesDatabase.connect(mongoClient);
-        AttributeDatabase.connect(mongoClient);
-        UserDatabase.connect(mongoClient);
-        BedWarsStatsDatabase.connect(mongoClient);
 
         ProxyPlayer.setTransferPreparation((playerUuid, targetServer) -> CompletableFuture.supplyAsync(() -> {
             HypixelPlayer player = MinecraftServer.getConnectionManager().getOnlinePlayerByUuid(playerUuid) instanceof HypixelPlayer hypixelPlayer
@@ -227,12 +212,6 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
         AchievementStatisticsService.initialize();
 
         // Register game data handlers
-        GameDataHandlerRegistry.register(new BedWarsDataHandler());
-        GameDataHandlerRegistry.register(new PrototypeLobbyDataHandler());
-        GameDataHandlerRegistry.register(new MurderMysteryDataHandler());
-        GameDataHandlerRegistry.register(new SkywarsDataHandler());
-        GameDataHandlerRegistry.register(new ReplayDataHandler());
-        GameDataHandlerRegistry.register(new ArcadeDataHandler());
 
         PlayerDataService.register(new AccountDomain());
         for (Class<? extends GameDataHandler> gameHandlerClass : loader.getAdditionalDataHandlers()) {
@@ -260,9 +239,8 @@ public record HypixelGenericLoader(HypixelTypeLoader loader) {
             }
         }, TaskSchedule.tick(2), TaskSchedule.tick(2));
 
-        // Register player provider given we aren't a SkyBlock server
-        // If we are a SkyBlock server, we will handle the player provider in the SkyBlockGenericLoader
-        if (!isSkyBlockType && !isRavengardType) {
+        // Ravengard servers register their own player provider
+        if (!isRavengardType) {
             // Handle ConnectionManager
             MinecraftServer.getConnectionManager().setPlayerProvider((playerConnection, gameProfile) -> {
                 HypixelPlayer player = new HypixelPlayer(playerConnection, gameProfile);

@@ -232,10 +232,7 @@ public class PartyBroadcastHandler implements RedisMessageHandler<Request, Respo
         if (!b.warper().equals(player.getUuid())) return DispatchResult.ok();
         int total = b.warped().size() + b.failed().size();
         player.sendMessage("<sep>");
-        player.sendMessage(HypixelConst.getTypeLoader().getType().isSkyBlock()
-                        ? "<e>空岛生存队伍传送<7>（{} 名玩家）"
-                        : "<e>队伍传送<7>（{} 名玩家）",
-                total);
+        player.sendMessage("<e>队伍传送<7>（{} 名玩家）", total);
         for (UUID uuid : b.warped()) {
             player.sendMessage("<a><l>✔ </l>{} <a>已传送到你的服务器", displayName(uuid));
         }
@@ -262,7 +259,7 @@ public class PartyBroadcastHandler implements RedisMessageHandler<Request, Respo
                 <9>队伍成员
                 \s
                 <e>点击跟随！""",
-                moverServerType.isSkyBlock() ? "空岛生存传送" : "Hypixel 传送");
+                "Hypixel 传送");
 
         player.sendMessage("""
                 <hover:'{2}'><click:run:'/p movetoserver {3}'>\

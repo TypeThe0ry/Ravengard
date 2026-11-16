@@ -150,15 +150,13 @@ public class HypixelEventHandler {
     private static void runOrWaitForData(EventMethodEntry entry, Event concreteEvent) {
         if (concreteEvent instanceof PlayerEvent event
                 && entry.requireDataLoaded()
-                && (HypixelDataHandler.getUser(event.getPlayer()) == null
-                || (HypixelConst.isIslandServer() && !((HypixelPlayer) event.getPlayer()).isReadyForEvents()))) {
+                && HypixelDataHandler.getUser(event.getPlayer()) == null) {
             Scheduler scheduler = MinecraftServer.getSchedulerManager();
 
             scheduler.submitTask(() -> {
                 Player player = event.getPlayer();
                 if (!player.isOnline()) return TaskSchedule.stop();
                 if (HypixelDataHandler.getUser(player) == null) return TaskSchedule.millis(2);
-                if (HypixelConst.isIslandServer() && !((HypixelPlayer) player).isReadyForEvents()) return TaskSchedule.millis(2);
 
                 runEvent(entry, concreteEvent);
                 return TaskSchedule.stop();

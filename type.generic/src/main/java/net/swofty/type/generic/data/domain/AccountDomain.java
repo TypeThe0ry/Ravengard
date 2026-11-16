@@ -69,9 +69,7 @@ public final class AccountDomain implements PlayerDataDomain<HypixelDataHandler>
         }
 
         HypixelNPC.updateForPlayer(player);
-        if (!HypixelConst.isIslandServer()) {
-            PlayerHolograms.spawnAll(player);
-        }
+        PlayerHolograms.spawnAll(player);
     }
 
     @Override

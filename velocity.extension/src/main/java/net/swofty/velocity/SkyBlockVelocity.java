@@ -48,12 +48,6 @@ import net.swofty.commons.config.ConfigProvider;
 import net.swofty.commons.data.SwoftyData;
 import net.swofty.commons.protocol.RedisProtocol;
 import net.swofty.commons.protocol.objects.proxy.from.*;
-import net.swofty.commons.protocol.objects.punishment.GetActivePunishmentProtocol;
-import net.swofty.commons.punishment.ActivePunishment;
-import net.swofty.commons.punishment.PunishmentMessages;
-import net.swofty.commons.punishment.PunishmentReason;
-import net.swofty.commons.punishment.PunishmentTag;
-import net.swofty.commons.punishment.PunishmentType;
 import net.swofty.commons.redis.ProxyHeartbeat;
 import net.swofty.commons.redis.RedisClient;
 import net.swofty.commons.redis.RedisEndpoint;
@@ -64,10 +58,6 @@ import net.swofty.commons.redis.RedisWatchdog;
 import net.swofty.redisapi.api.RedisAPI;
 import net.swofty.velocity.command.*;
 import net.swofty.velocity.data.AuthenticationDatabase;
-import net.swofty.velocity.data.CoopDatabase;
-import net.swofty.velocity.data.ProfilesDatabase;
-import net.swofty.velocity.data.StoreEntitlementsDatabase;
-import net.swofty.velocity.data.UserDatabase;
 import net.swofty.velocity.gamemanager.BalanceConfiguration;
 import net.swofty.velocity.gamemanager.BalanceConfigurations;
 import net.swofty.velocity.gamemanager.GameManager;
@@ -75,10 +65,8 @@ import net.swofty.velocity.gamemanager.CrashRecoveryRouting;
 import net.swofty.velocity.gamemanager.TransferHandler;
 import net.swofty.velocity.packet.PlayerChannelHandler;
 import net.swofty.velocity.packet.listener.PlayerMovementListener;
-import net.swofty.velocity.presence.PresencePublisher;
 import net.swofty.velocity.redis.RedisHandlerRegistry;
 import net.swofty.velocity.redis.listeners.ListenerStaffChat;
-import net.swofty.velocity.redis.listeners.ListenerStorePurchaseFulfillment;
 import net.swofty.velocity.testflow.TestFlowManager;
 import net.swofty.velocity.upstream.UpstreamForwarding;
 import net.swofty.velocity.text.ProxyText;
@@ -172,7 +160,6 @@ public class SkyBlockVelocity {
             (AwaitingEventExecutor<PostLoginEvent>) postLoginEvent -> EventTask.withContinuation(continuation -> {
                 injectPlayer(postLoginEvent.getPlayer());
                 TestFlowManager.handlePlayerJoin(postLoginEvent.getPlayer().getUsername());
-                PresencePublisher.publish(postLoginEvent.getPlayer(), true, (String) null, null);
 
                 // Broadcast staff join notification (servers will check if player is staff)
                 ListenerStaffChat.broadcastStaffJoin(postLoginEvent.getPlayer().getUniqueId());
@@ -194,7 +181,6 @@ public class SkyBlockVelocity {
 
                     // Handle test flow player leave
                     TestFlowManager.handlePlayerLeave(disconnectEvent.getPlayer().getUsername());
-                    PresencePublisher.publish(disconnectEvent.getPlayer(), false, (String) null, null);
                     removePlayer(disconnectEvent.getPlayer());
                 })
         );
@@ -205,18 +191,7 @@ public class SkyBlockVelocity {
                     RegisteredServer newServer = serverConnectedEvent.getServer();
                     TransferHandler.clearCrashRecoveryOnServerConnected(
                         serverConnectedEvent.getPlayer().getUniqueId(), newServer);
-                    var type = GameManager.getTypeFromRegisteredServer(newServer);
-                    PresencePublisher.publish(serverConnectedEvent.getPlayer(), true, newServer, type != null ? type.name() : null);
                 }));
-
-        server.getScheduler().buildTask(SkyBlockVelocity.getPlugin(), () -> {
-            server.getAllPlayers().forEach(player -> {
-                var current = player.getCurrentServer();
-                var type = current.map(conn -> GameManager.getTypeFromRegisteredServer(conn.getServer())).orElse(null);
-                PresencePublisher.publish(player, true, current.map(ServerConnection::getServer).orElse(null),
-                    type != null ? type.name() : null);
-            });
-        }).repeat(Duration.ofSeconds(10)).schedule();
 
         // Register commands
         CommandManager commandManager = proxy.getCommandManager();
@@ -249,12 +224,7 @@ public class SkyBlockVelocity {
         commandManager.register(lobbyCommandMeta, new LobbyCommand());
 
         // Handle database
-        new ProfilesDatabase("_placeHolder").connect(ConfigProvider.settings().getMongodb());
         new AuthenticationDatabase(new UUID(0, 0)).connect(ConfigProvider.settings().getMongodb());
-        UserDatabase.connect(ConfigProvider.settings().getMongodb());
-        StoreEntitlementsDatabase.connect(ConfigProvider.settings().getMongodb());
-        CoopDatabase.connect(ConfigProvider.settings().getMongodb());
-        ListenerStorePurchaseFulfillment.startRankExpirationReconciler();
 
         // Setup Redis
         RedisAPI.generateInstance(ConfigProvider.settings().getRedisUri());
@@ -268,7 +238,6 @@ public class SkyBlockVelocity {
             .forEach(RedisHandlerRegistry::register);
         RedisProtocol<?, ?>[] fromProxyProtocols = {
             new TeleportProtocol(), new PlayerSwitchedProtocol(),
-            new DoesServerHaveIslandProtocol(),
             new RunEventProtocol(), new PingServerProtocol(),
             new GivePlayersOriginTypeProtocol(), new BroadcastStaffChatProtocol()
         };
@@ -301,51 +270,10 @@ public class SkyBlockVelocity {
         }
     }
 
-    private boolean checkPunished(Player player) {
-        try {
-            ProxyService service = new ProxyService(ServiceType.PUNISHMENT);
-
-            CompletableFuture<?> banFuture = service.handleRequest(
-                new GetActivePunishmentProtocol.GetActivePunishmentMessage(player.getUniqueId(), PunishmentType.BAN.name()));
-            CompletableFuture<?> muteFuture = service.handleRequest(
-                new GetActivePunishmentProtocol.GetActivePunishmentMessage(player.getUniqueId(), PunishmentType.MUTE.name()));
-
-            CompletableFuture.allOf(banFuture, muteFuture).orTimeout(3, TimeUnit.SECONDS).join();
-
-            Object banResult = banFuture.join();
-            if (banResult instanceof GetActivePunishmentProtocol.GetActivePunishmentResponse(
-                boolean found1, String type1, String id, PunishmentReason reason1,
-                long at, List<PunishmentTag> tags1, boolean success1, String error1
-            ) && found1) {
-                ActivePunishment punishment = new ActivePunishment(
-                    type1, id, reason1, at, tags1);
-                ProxyText.disconnect(player, PunishmentMessages.banMessage(punishment));
-                return true;
-            }
-
-            Object muteResult = muteFuture.join();
-            if (muteResult instanceof GetActivePunishmentProtocol.GetActivePunishmentResponse(
-                boolean found, String type, String banId, PunishmentReason reason,
-                long expiresAt, List<PunishmentTag> tags, boolean success, String error
-            ) && found) {
-                ActivePunishment punishment = new ActivePunishment(
-                    type, banId, reason, expiresAt, tags);
-                player.sendMessage(PunishmentMessages.muteMessage(punishment));
-            }
-            return false;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     @Subscribe
     public EventTask onPlayerJoin(PlayerChooseInitialServerEvent event) {
         return EventTask.async(() -> {
             final Player player = event.getPlayer();
-
-            if (checkPunished(player)) {
-                return;
-            }
 
             if (ConfigProvider.settings().isRequireAuth()) {
                 ProxyText.disconnect(player, "<c>登录验证需要配置等候服务器；此天穹余烬专用代理没有配置。");
@@ -416,11 +344,6 @@ public class SkyBlockVelocity {
         if (!TransferHandler.beginCrashRecovery(playerUuid)) {
             event.setResult(KickedFromServerEvent.Notify.create(
                 ProxyText.render("<c>你的天穹余烬连接正在恢复中，请重新连接。")));
-            return;
-        }
-
-        if (checkPunished(event.getPlayer())) {
-            TransferHandler.clearCrashRecovery(playerUuid);
             return;
         }
 

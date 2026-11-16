@@ -2,7 +2,7 @@ package net.swofty.type.ravengardgeneric.item.attribute;
 
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.tag.Tag;
-import net.swofty.commons.skyblock.item.attribute.ItemAttribute;
+import net.swofty.type.generic.HypixelGenericLoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,7 @@ public abstract class RavengardItemAttribute<T> {
     }
 
     public static void registerItemAttributes() {
-        ItemAttribute.loopThroughPackage(
+        HypixelGenericLoader.loopThroughPackage(
                 "net.swofty.type.ravengardgeneric.item.attribute.attributes",
                 RavengardItemAttribute.class
         ).forEach(attributes::add);

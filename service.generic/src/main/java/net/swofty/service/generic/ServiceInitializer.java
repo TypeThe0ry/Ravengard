@@ -11,7 +11,6 @@ import net.swofty.commons.redis.RedisMessageBus;
 import net.swofty.commons.redis.RedisMessageContext;
 import net.swofty.commons.redis.RedisMessageHandler;
 import net.swofty.commons.redis.RedisWatchdog;
-import net.swofty.commons.skyblock.item.attribute.ItemAttribute;
 import net.swofty.redisapi.api.RedisAPI;
 import net.swofty.service.generic.redis.PingEndpoint;
 import net.swofty.service.generic.redis.ServiceRedisManager;
@@ -28,7 +27,6 @@ public class ServiceInitializer {
 
     public void init() {
         Logger.info("Initializing service {}...", service.getType().name());
-        ItemAttribute.registerItemAttributes();
 
         ServiceRedisManager.connect(ConfigProvider.settings().getRedisUri(), service.getType());
         RedisClient.registerResponseChannel(RedisChannels.SERVICE_RESPONSE);

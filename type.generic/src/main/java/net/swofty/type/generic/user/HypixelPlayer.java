@@ -64,7 +64,7 @@ public class HypixelPlayer extends Player {
 
 	private static ServerType resolveInitialOriginServer() {
 		if (HypixelConst.getTypeLoader() == null || HypixelConst.getTypeLoader().getType() == null) {
-			return ServerType.PROTOTYPE_LOBBY;
+			return ServerType.RAVENGARD_LOBBY;
 		}
 		return HypixelConst.getTypeLoader().getType();
 	}

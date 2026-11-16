@@ -18,7 +18,6 @@ import net.swofty.velocity.SkyBlockVelocity;
 import net.swofty.velocity.gamemanager.GameManager;
 import net.swofty.velocity.gamemanager.RavengardOnlyRouting;
 import net.swofty.velocity.gamemanager.TransferHandler;
-import net.swofty.velocity.presence.PresencePublisher;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -52,7 +51,6 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
         }
         if (action == PlayerHandlerProtocol.Action.IS_ONLINE) {
             Player player = potentialPlayer.get();
-            publishPresence(player, true);
             return new PlayerHandlerProtocol.Response(Map.of("isOnline", true), true, null);
         }
         Player player = potentialPlayer.get();
@@ -79,7 +77,6 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
                     return EMPTY;
                 }
 
-                publishPresence(player, true);
                 UnderstandableProxyServer ups = new UnderstandableProxyServer(
                     serverInfo.displayName(),
                     serverInfo.internalID(),
@@ -214,15 +211,5 @@ public class ListenerPlayerHandler implements RedisMessageHandler<
             .map(connection -> GameManager.getTypeFromRegisteredServer(connection.getServer()))
             .orElse(null);
         return RavengardOnlyRouting.afkOrigin(requestedOriginType, currentType);
-    }
-
-    private void publishPresence(Player player, boolean online) {
-        try {
-            Optional<ServerConnection> serverConn = player.getCurrentServer();
-            var type = serverConn.map(conn -> GameManager.getTypeFromRegisteredServer(conn.getServer())).orElse(null);
-            PresencePublisher.publish(player, online, serverConn.map(ServerConnection::getServer).orElse(null),
-                type != null ? type.name() : null);
-        } catch (Exception ignored) {
-        }
     }
 }

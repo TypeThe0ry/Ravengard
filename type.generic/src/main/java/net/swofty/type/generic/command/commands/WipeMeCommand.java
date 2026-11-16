@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
         labels = "deletemyprofiles wipeme",
         allowsConsole = false)
 public class WipeMeCommand extends HypixelCommand {
-    private static final ServerType DESTINATION = ServerType.PROTOTYPE_LOBBY;
+    private static final ServerType DESTINATION = ServerType.RAVENGARD_LOBBY;
     private static final long TRANSFER_TIMEOUT_SECONDS = 20;
 
     @Override
@@ -46,8 +46,8 @@ public class WipeMeCommand extends HypixelCommand {
         try {
             PlayerDataService.discardAll(type, playerUuid);
             PlayerWipeService.Result result = PlayerWipeService.wipe(playerUuid);
-            Logger.info("Wiped {} profile(s), {} island(s), {} leaderboard entr(ies) and {} tracked row(s) of {}",
-                    result.profiles().size(), result.islands(), result.leaderboards(), result.ownedRows(), playerUuid);
+            Logger.info("Wiped {} profile(s), {} leaderboard entr(ies) and {} tracked row(s) of {}",
+                    result.profiles().size(), result.leaderboards(), result.ownedRows(), playerUuid);
 
             if (type == DESTINATION) {
                 reload(player, playerUuid, type);
@@ -57,7 +57,7 @@ public class WipeMeCommand extends HypixelCommand {
             new ProxyPlayer(playerUuid).transferWithoutDataTo(DESTINATION)
                     .orTimeout(TRANSFER_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .exceptionally(error -> {
-                        Logger.error(error, "Failed to move wiped user {} to the prototype lobby", playerUuid);
+                        Logger.error(error, "Failed to move wiped user {} to the Ravengard lobby", playerUuid);
                         kick(player);
                         return null;
                     });

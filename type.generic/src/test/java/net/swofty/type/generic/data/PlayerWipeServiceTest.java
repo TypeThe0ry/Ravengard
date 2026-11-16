@@ -15,12 +15,11 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PlayerWipeServiceTest {
     private static final PlayerField<String> GAME_WINS =
-            PlayerField.create("game", "bedwars_wins", Codecs.STRING, null);
+            PlayerField.create("game", "game_wins", Codecs.STRING, null);
 
     @Test
     void keepsOnlyTheIdentityFieldsWhenTheAccountIsDeleted() {
@@ -31,7 +30,7 @@ class PlayerWipeServiceTest {
         store.stored.put(HypixelDataHandler.Data.LOCALE.accountField(), "\"EN_US\"");
         store.stored.put(HypixelDataHandler.Data.HYPIXEL_EXPERIENCE.accountField(), "123456");
         store.stored.put(HypixelDataHandler.Data.ACHIEVEMENT_DATA.accountField(), "{}");
-        store.stored.put(ProfileIndexes.SKYBLOCK, "a;a,b");
+        store.stored.put(ProfileIndexes.RAVENGARD, "a;a,b");
         store.stored.put(GAME_WINS, "42");
 
         PlayerWipeService.wipeAccount(store);
@@ -42,7 +41,7 @@ class PlayerWipeServiceTest {
                         .toList());
         assertFalse(store.stored.containsKey(HypixelDataHandler.Data.HYPIXEL_EXPERIENCE.accountField()));
         assertFalse(store.stored.containsKey(HypixelDataHandler.Data.ACHIEVEMENT_DATA.accountField()));
-        assertFalse(store.stored.containsKey(ProfileIndexes.SKYBLOCK));
+        assertFalse(store.stored.containsKey(ProfileIndexes.RAVENGARD));
         assertFalse(store.stored.containsKey(GAME_WINS));
     }
 
@@ -91,21 +90,18 @@ class PlayerWipeServiceTest {
     }
 
     @Test
-    void findsEveryProfileThroughBothAccountIndexes() {
-        UUID skyblockOne = UUID.randomUUID();
-        UUID skyblockTwo = UUID.randomUUID();
-        UUID ravengard = UUID.randomUUID();
+    void findsEveryProfileThroughTheAccountIndex() {
+        UUID first = UUID.randomUUID();
+        UUID second = UUID.randomUUID();
 
         Map<PlayerField<String>, String> indexes = Map.of(
-                ProfileIndexes.SKYBLOCK, skyblockOne + ";" + skyblockOne + "," + skyblockTwo,
-                ProfileIndexes.RAVENGARD, ravengard + ";" + ravengard);
+                ProfileIndexes.RAVENGARD, first + ";" + first + "," + second);
 
-        assertEquals(List.of(skyblockOne, skyblockTwo, ravengard),
-                PlayerWipeService.profileIdsFrom(indexes::get));
+        assertEquals(List.of(first, second), PlayerWipeService.profileIdsFrom(indexes::get));
     }
 
     @Test
-    void findsNoProfilesForAPlayerNeitherGameHasSeen() {
+    void findsNoProfilesForAPlayerWhoHasNeverPlayed() {
         assertEquals(List.of(), PlayerWipeService.profileIdsFrom(index -> null));
     }
 
@@ -114,19 +110,9 @@ class PlayerWipeServiceTest {
         UUID listed = UUID.randomUUID();
         UUID selectedOnly = UUID.randomUUID();
         Map<PlayerField<String>, String> indexes = Map.of(
-                ProfileIndexes.SKYBLOCK, selectedOnly + ";" + listed);
+                ProfileIndexes.RAVENGARD, selectedOnly + ";" + listed);
 
         assertEquals(List.of(listed, selectedOnly), PlayerWipeService.profileIdsFrom(indexes::get));
-    }
-
-    @Test
-    void listsAProfileHeldByBothIndexesOnlyOnce() {
-        UUID shared = UUID.randomUUID();
-        Map<PlayerField<String>, String> indexes = Map.of(
-                ProfileIndexes.SKYBLOCK, ";" + shared,
-                ProfileIndexes.RAVENGARD, ";" + shared);
-
-        assertEquals(List.of(shared), PlayerWipeService.profileIdsFrom(indexes::get));
     }
 
     @Test
@@ -137,7 +123,6 @@ class PlayerWipeServiceTest {
 
         assertTrue(names.contains("ravengard_tracked_items"));
         assertTrue(names.contains("ravengard_profiles"));
-        assertTrue(names.contains("bedwars_stat_events"));
         assertFalse(names.contains("ravengard_regions"));
     }
 
@@ -158,18 +143,6 @@ class PlayerWipeServiceTest {
                 .toBsonDocument().toJson();
         assertTrue(withoutProfiles.contains(playerUuid.toString()));
         assertFalse(withoutProfiles.contains(owned.profileField()));
-    }
-
-    @Test
-    void matchesRowsByOwnerAloneWhenTheCollectionHasNoProfileColumn() {
-        UUID playerUuid = UUID.randomUUID();
-        PlayerWipeService.OwnedCollection owned = named("bedwars_stat_events");
-
-        assertNull(owned.profileField());
-        String filter = PlayerWipeService.ownedFilter(owned, playerUuid, List.of(UUID.randomUUID().toString()))
-                .toBsonDocument().toJson();
-        assertTrue(filter.contains(playerUuid.toString()));
-        assertFalse(filter.contains("$or"));
     }
 
     private static PlayerWipeService.OwnedCollection named(String name) {

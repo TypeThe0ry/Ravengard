@@ -11,12 +11,10 @@ public final class ProfileIndexes {
     public static final String SELECTED_SEPARATOR = ";";
     public static final String PROFILE_SEPARATOR = ",";
 
-    public static final PlayerField<String> SKYBLOCK =
-            PlayerField.create("hypixel", "_profiles_index", Codecs.STRING, null);
     public static final PlayerField<String> RAVENGARD =
             PlayerField.create("ravengard", "_profiles_index", Codecs.STRING, null);
 
-    public static final List<PlayerField<String>> ALL = List.of(SKYBLOCK, RAVENGARD);
+    public static final List<PlayerField<String>> ALL = List.of(RAVENGARD);
 
     private ProfileIndexes() {}
 

@@ -226,8 +226,6 @@ public class HypixelDataHandler extends DataHandler {
             // Delay this as player needs to be loaded
             ScheduleUtility.delay(() -> {
                 if (!player.isOnline()) return;
-                if (HypixelConst.getTypeLoader().getType().isSkyBlock()) return;
-                if (HypixelConst.getTypeLoader().getType() == ServerType.BEDWARS_GAME) return;
 
                 String teamName = StringUtility.limitStringLength(rank.getPriorityCharacter() + player.getUsername(), 15);
                 Team team = new TeamBuilder("H" + teamName, MinecraftServer.getTeamManager())
@@ -239,8 +237,6 @@ public class HypixelDataHandler extends DataHandler {
             }, 5);
         }, (player, datapoint) -> {
             player.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(player));
-            if (HypixelConst.getTypeLoader().getType().isSkyBlock()) return;
-            if (HypixelConst.getTypeLoader().getType() == ServerType.BEDWARS_GAME) return;
 
             Rank rank = (Rank) datapoint.getValue();
             String teamName = StringUtility.limitStringLength(rank.getPriorityCharacter() + player.getUsername(), 15);
@@ -302,28 +298,9 @@ public class HypixelDataHandler extends DataHandler {
         TOGGLES("toggles", DatapointToggles.class, new DatapointToggles("toggles")),
 
         GAMEMODE("gamemode", DatapointGamemode.class, new DatapointGamemode("gamemode", GameMode.SURVIVAL),
-                (player, datapoint) -> {
-                    if (HypixelConst.getTypeLoader().getType().isSkyBlock()) {
-                        player.setGameMode((GameMode) datapoint.getValue());
-                    }
-                },
-                (player, datapoint) -> {
-                    if (HypixelConst.getTypeLoader().getType().isSkyBlock()) {
-                        // Reset to SURVIVAL if coming from non-SkyBlock server
-                        HypixelPlayer hypixelPlayer = (HypixelPlayer) player;
-                        if (hypixelPlayer.getOriginServer() == null || !hypixelPlayer.getOriginServer().isSkyBlock()) {
-                            player.setGameMode(GameMode.SURVIVAL);
-                        } else {
-                            player.setGameMode((GameMode) datapoint.getValue());
-                        }
-                    }
-                },
-                (player) -> {
-                    if (HypixelConst.getTypeLoader().getType().isSkyBlock()) {
-                        return new DatapointGamemode("gamemode", player.getGameMode());
-                    }
-                    return null; // Don't update gamemode for non-SkyBlock servers
-                }),
+                (player, datapoint) -> {},
+                (player, datapoint) -> {},
+                (player) -> null),
 
         // combine these for a HypixelSkin? could use the same in tab then and other places
         SKIN_SIGNATURE("skin_signature",
@@ -349,11 +326,7 @@ public class HypixelDataHandler extends DataHandler {
         QUEST_DATA("quest_data",
                 DatapointQuestData.class, new DatapointQuestData("quest_data")),
 
-        PARKOUR_DATA("parkour_data", DatapointParkourData.class, new DatapointParkourData("parkour_data")),
-
-        FRIEND_SORT("friend_sort", DatapointFriendSort.class,
-                new DatapointFriendSort("friend_sort",
-                        new DatapointFriendSort.FriendSortData(DatapointFriendSort.SortType.DEFAULT, false)))
+        PARKOUR_DATA("parkour_data", DatapointParkourData.class, new DatapointParkourData("parkour_data"))
         ;
 
         @Getter private final String key;

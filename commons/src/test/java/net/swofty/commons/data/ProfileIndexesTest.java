@@ -11,10 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProfileIndexesTest {
     @Test
-    void addressesBothIndexesOnTheAccountDocument() {
-        assertEquals("hypixel:_profiles_index", ProfileIndexes.SKYBLOCK.fullKey());
+    void addressesTheRavengardIndexOnTheAccountDocument() {
         assertEquals("ravengard:_profiles_index", ProfileIndexes.RAVENGARD.fullKey());
-        assertEquals(List.of(ProfileIndexes.SKYBLOCK, ProfileIndexes.RAVENGARD), ProfileIndexes.ALL);
+        assertEquals(List.of(ProfileIndexes.RAVENGARD), ProfileIndexes.ALL);
     }
 
     @Test

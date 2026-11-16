@@ -7,22 +7,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RavengardOnlyRoutingTest {
     @Test
-    void nullAndPrototypeLobbyDestinationsAreMappedToRavengard() {
+    void missingLobbyDestinationIsMappedToRavengard() {
         assertEquals(ServerType.RAVENGARD_LOBBY, RavengardOnlyRouting.lobbyDestination(null, null));
         assertEquals(ServerType.RAVENGARD_LOBBY,
-            RavengardOnlyRouting.lobbyDestination(ServerType.BEDWARS_GAME, ServerType.PROTOTYPE_LOBBY));
+            RavengardOnlyRouting.lobbyDestination(ServerType.RAVENGARD_DUNGEON, null));
     }
 
     @Test
     void explicitRavengardDestinationIsPreserved() {
         assertEquals(ServerType.RAVENGARD_LOBBY,
             RavengardOnlyRouting.lobbyDestination(ServerType.RAVENGARD_DUNGEON, ServerType.RAVENGARD_LOBBY));
+        assertEquals(ServerType.RAVENGARD_DUNGEON,
+            RavengardOnlyRouting.lobbyDestination(ServerType.RAVENGARD_LOBBY, ServerType.RAVENGARD_DUNGEON));
     }
 
     @Test
-    void afkRoutingNeverFallsBackToPrototypeLobby() {
+    void afkRoutingAlwaysEndsInTheRavengardLobby() {
         assertEquals(ServerType.RAVENGARD_LOBBY,
-            RavengardOnlyRouting.afkOrigin(ServerType.PROTOTYPE_LOBBY, null));
+            RavengardOnlyRouting.afkOrigin(ServerType.RAVENGARD_LOBBY, null));
         assertEquals(ServerType.RAVENGARD_LOBBY,
             RavengardOnlyRouting.afkOrigin(null, ServerType.RAVENGARD_DUNGEON));
     }
