@@ -25,7 +25,6 @@
 | `packer` | 资源包服务（`net.swofty.packer.HypixelPackServer.jar`） |
 | `configuration` | 运行配置、Ravengard 数据与资源包、翻译 |
 | `deploy/hangzhou` | 挂在已有 Velocity 之后的服务器部署方案 |
-| `docs` | 设计文档与计划 |
 
 ## 构建
 
