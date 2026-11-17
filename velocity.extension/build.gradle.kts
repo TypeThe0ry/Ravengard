@@ -1,3 +1,5 @@
+import java.net.URI
+import java.security.MessageDigest
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
@@ -26,11 +28,34 @@ repositories {
     maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
 }
 
+val velocityProxy = layout.buildDirectory.file("velocity/velocity-4.1.0-SNAPSHOT-9.jar")
+
+val fetchVelocityProxy = tasks.register("fetchVelocityProxy") {
+    val target = velocityProxy
+    val expected = "635ffe27b4fe1b97e61479012121d4e7c61a9eec99e6bd5a1f923053c2a259ce"
+    outputs.file(target)
+    doLast {
+        val file = target.get().asFile
+        val matches = file.isFile && MessageDigest.getInstance("SHA-256").digest(file.readBytes())
+            .joinToString("") { "%02x".format(it) } == expected
+        if (!matches) {
+            file.parentFile.mkdirs()
+            URI.create("https://fill-data.papermc.io/v1/objects/$expected/velocity-4.1.0-SNAPSHOT-9.jar")
+                .toURL().openStream().use { input -> file.outputStream().use { input.copyTo(it) } }
+            val actual = MessageDigest.getInstance("SHA-256").digest(file.readBytes())
+                .joinToString("") { "%02x".format(it) }
+            check(actual == expected) { "The downloaded Velocity proxy does not match its checksum" }
+        }
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach { dependsOn(fetchVelocityProxy) }
+
 dependencies {
     compileOnly(libs.velocity.api)
     testImplementation(libs.velocity.api)
     annotationProcessor(libs.velocity.api)
-    compileOnly(files("velocity-4.1.0-SNAPSHOT-9.jar"))
+    compileOnly(files(velocityProxy))
 
     implementation(libs.atlas.redis)
     implementation(libs.jedis)
