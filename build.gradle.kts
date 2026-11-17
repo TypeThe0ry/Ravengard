@@ -13,7 +13,7 @@ buildscript {
 plugins {
     base
     java
-    id("io.freefair.lombok") version "9.5.0" apply false
+    id("io.freefair.lombok") version "9.8.3" apply false
     id("io.sentry.jvm.gradle") version "6.19.0" apply false
 }
 
